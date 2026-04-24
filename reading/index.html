@@ -1,0 +1,1395 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>樂樂共讀日記 | Le Le Reading Diary</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Noto Sans TC', 'Noto Sans SC', sans-serif;
+      background-color: #FFF9F3;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #D4A843 0%, #E8C56B 100%);
+      color: white;
+      padding: 24px 20px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(212, 168, 67, 0.2);
+    }
+
+    .header h1 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .header p {
+      font-size: 14px;
+      opacity: 0.95;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .tab-bar {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+      justify-content: center;
+      flex-wrap: wrap;
+      background: white;
+      padding: 16px;
+      border-radius: 20px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    .tab-button {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 20px;
+      background: #f5f5f5;
+      color: #666;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+    }
+
+    .tab-button:hover {
+      background: #e8e8e8;
+    }
+
+    .tab-button.active {
+      background: #D4A843;
+      color: white;
+      box-shadow: 0 4px 12px rgba(212, 168, 67, 0.3);
+    }
+
+    .content-area {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .content-area.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Card styles */
+    .card {
+      background: white;
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      border: 1px solid #f0e8e0;
+      transition: all 0.3s ease;
+    }
+
+    .card:hover {
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      transform: translateY(-2px);
+    }
+
+    /* Children Tab */
+    .child-card {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .child-avatar {
+      font-size: 48px;
+      min-width: 60px;
+      text-align: center;
+    }
+
+    .child-info {
+      flex: 1;
+    }
+
+    .child-name {
+      font-size: 18px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 4px;
+    }
+
+    .child-meta {
+      font-size: 13px;
+      color: #999;
+      margin-bottom: 8px;
+    }
+
+    .child-stats {
+      display: flex;
+      gap: 16px;
+      font-size: 12px;
+    }
+
+    .stat {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .stat-value {
+      font-weight: 600;
+      color: #D4A843;
+    }
+
+    .child-level-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      color: white;
+      margin-bottom: 4px;
+    }
+
+    .level-red { background-color: #E74C3C; }
+    .level-yellow { background-color: #E8A317; }
+    .level-green { background-color: #27AE60; }
+
+    .child-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .card:hover .child-actions {
+      opacity: 1;
+    }
+
+    .btn-small {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 12px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-edit {
+      background: #E8A317;
+      color: white;
+    }
+
+    .btn-edit:hover {
+      background: #d4921a;
+    }
+
+    .btn-delete {
+      background: #E74C3C;
+      color: white;
+    }
+
+    .btn-delete:hover {
+      background: #c0392b;
+    }
+
+    /* Form styles */
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #333;
+      font-size: 14px;
+    }
+
+    input[type="text"],
+    input[type="date"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #e0d8d0;
+      border-radius: 10px;
+      font-family: 'Noto Sans TC', 'Noto Sans SC', sans-serif;
+      font-size: 14px;
+      transition: border-color 0.2s;
+    }
+
+    input[type="text"]:focus,
+    input[type="date"]:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: #D4A843;
+      box-shadow: 0 0 0 3px rgba(212, 168, 67, 0.1);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    /* Emoji picker */
+    .emoji-picker {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .emoji-option {
+      padding: 12px;
+      border: 2px solid #e0d8d0;
+      border-radius: 10px;
+      background: white;
+      font-size: 24px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+
+    .emoji-option:hover {
+      border-color: #D4A843;
+      transform: scale(1.1);
+    }
+
+    .emoji-option.selected {
+      border-color: #D4A843;
+      background: #FFF9F3;
+    }
+
+    /* Buttons */
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-family: 'Noto Sans TC', 'Noto Sans SC', sans-serif;
+    }
+
+    .btn-primary {
+      background: #D4A843;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #C49633;
+      box-shadow: 0 4px 12px rgba(212, 168, 67, 0.3);
+    }
+
+    .btn-secondary {
+      background: #f5f5f5;
+      color: #333;
+    }
+
+    .btn-secondary:hover {
+      background: #e8e8e8;
+    }
+
+    /* Checkbox styles */
+    .checkbox-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+      accent-color: #D4A843;
+    }
+
+    /* Range slider */
+    .range-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    input[type="range"] {
+      flex: 1;
+      height: 6px;
+      border-radius: 3px;
+      background: #e0d8d0;
+      outline: none;
+      -webkit-appearance: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #D4A843;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #D4A843;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    .range-value {
+      min-width: 50px;
+      text-align: center;
+      font-weight: 600;
+      color: #D4A843;
+    }
+
+    /* Star rating */
+    .star-rating {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .star {
+      font-size: 28px;
+      cursor: pointer;
+      opacity: 0.3;
+      transition: all 0.2s;
+    }
+
+    .star:hover,
+    .star.active {
+      opacity: 1;
+      transform: scale(1.15);
+    }
+
+    /* Book dropdown search */
+    .book-search {
+      position: relative;
+    }
+
+    .book-dropdown {
+      max-height: 300px;
+      overflow-y: auto;
+      margin-top: 8px;
+      border: 1px solid #e0d8d0;
+      border-radius: 10px;
+      background: white;
+      display: none;
+      position: absolute;
+      width: 100%;
+      z-index: 10;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .book-dropdown.show {
+      display: block;
+    }
+
+    .book-item {
+      padding: 12px;
+      border-bottom: 1px solid #f0e8e0;
+      cursor: pointer;
+      transition: background 0.2s;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .book-item:hover {
+      background: #FFF9F3;
+    }
+
+    .book-cover {
+      width: 40px;
+      height: 50px;
+      background: #f5f5f5;
+      border-radius: 4px;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #999;
+      overflow: hidden;
+    }
+
+    .book-cover img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .book-info {
+      flex: 1;
+    }
+
+    .book-title {
+      font-weight: 600;
+      font-size: 13px;
+      color: #333;
+      margin-bottom: 2px;
+    }
+
+    .book-meta {
+      font-size: 11px;
+      color: #999;
+    }
+
+    /* Records list */
+    .record-item {
+      border-left: 4px solid #D4A843;
+      padding: 12px;
+      margin-bottom: 12px;
+      background: #FFF9F3;
+      border-radius: 8px;
+    }
+
+    .record-date {
+      font-weight: 600;
+      color: #D4A843;
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
+
+    .record-book {
+      font-size: 14px;
+      color: #333;
+      margin-bottom: 6px;
+    }
+
+    .record-details {
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 4px;
+    }
+
+    .record-note {
+      font-size: 13px;
+      color: #555;
+      margin-top: 8px;
+      padding: 8px;
+      background: white;
+      border-radius: 6px;
+      border-left: 2px solid #D4A843;
+    }
+
+    .record-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    /* Progress bar */
+    .progress-section {
+      margin-bottom: 24px;
+    }
+
+    .progress-title {
+      font-weight: 600;
+      font-size: 14px;
+      margin-bottom: 8px;
+      color: #333;
+    }
+
+    .progress-bar-container {
+      background: #e0d8d0;
+      border-radius: 10px;
+      height: 20px;
+      overflow: hidden;
+      margin-bottom: 4px;
+    }
+
+    .progress-bar {
+      height: 100%;
+      border-radius: 10px;
+      transition: width 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 8px;
+      color: white;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .progress-bar.red {
+      background: linear-gradient(90deg, #E74C3C 0%, #EC6E5C 100%);
+    }
+
+    .progress-bar.yellow {
+      background: linear-gradient(90deg, #E8A317 0%, #F0B837 100%);
+    }
+
+    .progress-bar.green {
+      background: linear-gradient(90deg, #27AE60 0%, #3CB371 100%);
+    }
+
+    .progress-text {
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 12px;
+    }
+
+    /* Timeline */
+    .timeline {
+      margin-top: 16px;
+    }
+
+    .timeline-item {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 12px;
+      position: relative;
+      padding-left: 16px;
+    }
+
+    .timeline-item:before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 6px;
+      width: 8px;
+      height: 8px;
+      background: #D4A843;
+      border-radius: 50%;
+    }
+
+    .timeline-item-content {
+      flex: 1;
+    }
+
+    .timeline-date {
+      font-size: 12px;
+      color: #D4A843;
+      font-weight: 600;
+    }
+
+    .timeline-book {
+      font-size: 13px;
+      color: #333;
+      margin-bottom: 2px;
+    }
+
+    .timeline-child {
+      font-size: 12px;
+      color: #999;
+    }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #999;
+    }
+
+    .empty-state-emoji {
+      font-size: 48px;
+      margin-bottom: 12px;
+    }
+
+    .empty-state-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #666;
+      margin-bottom: 8px;
+    }
+
+    .empty-state-text {
+      font-size: 13px;
+      color: #999;
+      margin-bottom: 16px;
+    }
+
+    /* Recommendation cards */
+    .recommendation-card {
+      text-align: center;
+      background: white;
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 16px;
+      border: 1px solid #f0e8e0;
+    }
+
+    .rec-cover {
+      width: 100%;
+      height: 180px;
+      background: linear-gradient(135deg, #f0e8e0 0%, #e8dfd7 100%);
+      border-radius: 12px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      overflow: hidden;
+    }
+
+    .rec-cover img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .rec-title {
+      font-weight: 600;
+      font-size: 14px;
+      color: #333;
+      margin-bottom: 6px;
+    }
+
+    .rec-info {
+      font-size: 12px;
+      color: #999;
+      margin-bottom: 8px;
+    }
+
+    .rec-level {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      color: white;
+      margin-bottom: 12px;
+    }
+
+    .rec-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .rec-actions .btn {
+      flex: 1;
+      padding: 8px 12px;
+      font-size: 13px;
+    }
+
+    /* Encouragement */
+    .encouragement {
+      background: linear-gradient(135deg, #fff4e6 0%, #fffaf0 100%);
+      border: 1px solid #ffd699;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .encouragement-emoji {
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+
+    .encouragement-text {
+      font-weight: 600;
+      color: #d4921a;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      padding: 24px 20px;
+      color: #999;
+      font-size: 12px;
+      margin-top: 40px;
+      border-top: 1px solid #e8dfd7;
+    }
+
+    .footer-links {
+      margin-bottom: 12px;
+    }
+
+    .footer-links a {
+      color: #D4A843;
+      text-decoration: none;
+      margin: 0 8px;
+    }
+
+    .footer-links a:hover {
+      text-decoration: underline;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .container {
+        padding: 12px;
+      }
+
+      .header h1 {
+        font-size: 24px;
+      }
+
+      .tab-bar {
+        gap: 8px;
+      }
+
+      .tab-button {
+        padding: 8px 14px;
+        font-size: 13px;
+      }
+
+      .emoji-picker {
+        grid-template-columns: repeat(4, 1fr);
+      }
+
+      .card {
+        padding: 16px;
+      }
+
+      .child-avatar {
+        font-size: 40px;
+        min-width: 50px;
+      }
+
+      .rec-cover {
+        height: 150px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>📖 樂樂共讀日記</h1>
+    <p>記錄每一次溫暖的閱讀時光</p>
+  </div>
+
+  <div class="container">
+    <div class="tab-bar">
+      <button class="tab-button active" data-tab="children">👶 孩子管理</button>
+      <button class="tab-button" data-tab="record">📖 觀察記錄</button>
+      <button class="tab-button" data-tab="progress">📊 進度總覽</button>
+      <button class="tab-button" data-tab="recommend">📚 選書推薦</button>
+    </div>
+
+    <!-- Tab 1: Children Management -->
+    <div id="children" class="content-area active">
+      <div class="card" style="margin-bottom: 24px;">
+        <h3 style="margin-bottom: 16px;">➕ 新增孩子</h3>
+        <div class="form-group">
+          <label>孩子名字</label>
+          <input type="text" id="childName" placeholder="例如：小寶、樂樂">
+        </div>
+
+        <div class="form-group">
+          <label>選擇頭像</label>
+          <div class="emoji-picker" id="emojiPicker">
+            <div class="emoji-option" data-emoji="👶">👶</div>
+            <div class="emoji-option" data-emoji="🧒">🧒</div>
+            <div class="emoji-option" data-emoji="👧">👧</div>
+            <div class="emoji-option" data-emoji="👦">👦</div>
+            <div class="emoji-option" data-emoji="🎀">🎀</div>
+            <div class="emoji-option" data-emoji="🌟">🌟</div>
+            <div class="emoji-option" data-emoji="🌙">🌙</div>
+            <div class="emoji-option" data-emoji="⭐">⭐</div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>起始閱讀級別</label>
+          <select id="childLevel">
+            <option value="RED">🔴 RED (初階)</option>
+            <option value="YELLOW" selected>🟡 YELLOW (中階)</option>
+            <option value="GREEN">🟢 GREEN (高階)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>開始日期</label>
+          <input type="date" id="childStartDate">
+        </div>
+
+        <button class="btn btn-primary" onclick="addChild()">✨ 新增孩子</button>
+      </div>
+
+      <div id="childrenList"></div>
+    </div>
+
+    <!-- Tab 2: Record -->
+    <div id="record" class="content-area">
+      <div class="card" style="margin-bottom: 24px;">
+        <h3 style="margin-bottom: 16px;">📝 記錄閱讀</h3>
+
+        <div class="form-group">
+          <label>選擇孩子</label>
+          <select id="recordChildSelect" onchange="updateBookFilter()">
+            <option value="">-- 請選擇孩子 --</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>選擇書籍</label>
+          <div class="book-search">
+            <input type="text" id="bookSearch" placeholder="搜尋書名或編號..." onkeyup="filterBooks()">
+            <div class="book-dropdown" id="bookDropdown"></div>
+          </div>
+          <input type="hidden" id="recordBookId">
+        </div>
+
+        <div class="form-group">
+          <label>日期</label>
+          <input type="date" id="recordDate">
+        </div>
+
+        <div class="form-group">
+          <label>時長</label>
+          <div class="range-container">
+            <input type="range" id="recordDuration" min="1" max="30" value="15" onchange="updateDurationDisplay()">
+            <span class="range-value" id="durationDisplay">15 分鐘</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>孩子反應 (可複選)</label>
+          <div class="checkbox-group">
+            <div class="checkbox-item">
+              <input type="checkbox" id="reaction1" value="喜歡的段落或畫面">
+              <label for="reaction1">喜歡的段落或畫面</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="reaction2" value="抗拒或跳過的地方">
+              <label for="reaction2">抗拒或跳過的地方</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="reaction3" value="自發的提問">
+              <label for="reaction3">自發的提問</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="reaction4" value="主動請求再讀一次">
+              <label for="reaction4">主動請求再讀一次</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="reaction5" value="連結到生活經驗">
+              <label for="reaction5">連結到生活經驗</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="reaction6" value="手足之間一起聽">
+              <label for="reaction6">手足之間一起聽</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Irene 筆記</label>
+          <textarea id="recordNote" placeholder="記錄孩子的反應、有趣的對話、家長心得..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>素材潛力 (星級評分)</label>
+          <div class="star-rating" id="starRating">
+            <span class="star" data-value="1">★</span>
+            <span class="star" data-value="2">★</span>
+            <span class="star" data-value="3">★</span>
+          </div>
+        </div>
+
+        <button class="btn btn-primary" onclick="saveRecord()">💾 保存記錄</button>
+      </div>
+
+      <div>
+        <h3 style="margin-bottom: 16px;">📚 閱讀歷史</h3>
+        <div id="recordsList"></div>
+      </div>
+    </div>
+
+    <!-- Tab 3: Progress -->
+    <div id="progress" class="content-area">
+      <div class="form-group" style="margin-bottom: 24px;">
+        <label>選擇孩子</label>
+        <select id="progressChildSelect" onchange="updateProgress()">
+          <option value="">-- 請選擇孩子 --</option>
+        </select>
+      </div>
+
+      <div id="progressContent"></div>
+    </div>
+
+    <!-- Tab 4: Recommend -->
+    <div id="recommend" class="content-area">
+      <div class="form-group" style="margin-bottom: 24px;">
+        <label>選擇孩子</label>
+        <select id="recommendChildSelect" onchange="updateRecommendations()">
+          <option value="">-- 請選擇孩子 --</option>
+        </select>
+      </div>
+
+      <div id="recommendContent"></div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="footer-links">
+      <a href="#" onclick="alert('樂樂文化官網'); return false;">樂樂文化</a>
+      <a href="#" onclick="alert('聯繫我們'); return false;">聯繫我們</a>
+      <a href="#" onclick="alert('幫助中心'); return false;">幫助中心</a>
+    </div>
+    <p>© 2026 樂樂文化 Le Le Culture. 記錄成長，見證奇跡。</p>
+  </div>
+
+  <script>
+    // BOOKS data
+    const BOOKS=[{"id": "RED1", "l": "RED", "n": 1, "zh": "溜冰", "en": "Ice skating", "c": "/covers/RED1.png"}, {"id": "RED2", "l": "RED", "n": 2, "zh": "坐過山車", "en": "Roller coaster ride", "c": "/covers/RED2.png"}, {"id": "RED3", "l": "RED", "n": 3, "zh": "玩滑板", "en": "Skateboarding", "c": "/covers/RED3.png"}, {"id": "RED4", "l": "RED", "n": 4, "zh": "收玩具", "en": "Putting away the toys", "c": "/covers/RED4.png"}, {"id": "RED5", "l": "RED", "n": 5, "zh": "機器人幫我", "en": "A robot helps me", "c": "/covers/RED5.png"}, {"id": "RED6", "l": "RED", "n": 6, "zh": "玩什麼", "en": "What to play?", "c": "/covers/RED6.png"}, {"id": "RED7", "l": "RED", "n": 7, "zh": "救火", "en": "Fire fighting", "c": "/covers/RED7.png"}, {"id": "RED8", "l": "RED", "n": 8, "zh": "生日", "en": "Birthday", "c": "/covers/RED8.png"}, {"id": "RED9", "l": "RED", "n": 9, "zh": "當媽媽", "en": "Being a mom", "c": "/covers/RED9.png"}, {"id": "RED10", "l": "RED", "n": 10, "zh": "誰在運動", "en": "Who is exercising?", "c": "/covers/RED10.png"}, {"id": "RED11", "l": "RED", "n": 11, "zh": "今天", "en": "Today", "c": "/covers/RED11.png"}, {"id": "RED12", "l": "RED", "n": 12, "zh": "沖浪", "en": "Surfing", "c": "/covers/RED12.png"}, {"id": "RED13", "l": "RED", "n": 13, "zh": "停車", "en": "Stop the car", "c": "/covers/RED13.png"}, {"id": "RED14", "l": "RED", "n": 14, "zh": "比賽", "en": "A race", "c": "/covers/RED14.png"}, {"id": "RED15", "l": "RED", "n": 15, "zh": "藏起來", "en": "Hiding", "c": "/covers/RED15.png"}, {"id": "RED16", "l": "RED", "n": 16, "zh": "怎麼了", "en": "What's wrong?", "c": "/covers/RED16.png"}, {"id": "RED17", "l": "RED", "n": 17, "zh": "行不行", "en": "Is it OK?", "c": "/covers/RED17.png"}, {"id": "RED18", "l": "RED", "n": 18, "zh": "去公園", "en": "Going to the park", "c": "/covers/RED18.png"}, {"id": "RED19", "l": "RED", "n": 19, "zh": "小熊", "en": "The little bear", "c": "/covers/RED19.png"}, {"id": "RED20", "l": "RED", "n": 20, "zh": "牠是誰", "en": "What is it?", "c": "/covers/RED20.png"}, {"id": "RED21", "l": "RED", "n": 21, "zh": "吃草的動物", "en": "Grass-eating animals", "c": "/covers/RED21.png"}, {"id": "RED22", "l": "RED", "n": 22, "zh": "動物花紋", "en": "Animals with colored markings", "c": "/covers/RED22.png"}, {"id": "RED23", "l": "RED", "n": 23, "zh": "動物和泰山", "en": "Animals and Tarzan", "c": "/covers/RED23.png"}, {"id": "RED24", "l": "RED", "n": 24, "zh": "動物拍照", "en": "Taking photos of animals", "c": "/covers/RED24.png"}, {"id": "RED25", "l": "RED", "n": 25, "zh": "爬樹的動物", "en": "Animals climb a tree", "c": "/covers/RED25.png"}, {"id": "RED26", "l": "RED", "n": 26, "zh": "魚和蝦", "en": "Fish and shrimps", "c": "/covers/RED26.png"}, {"id": "RED27", "l": "RED", "n": 27, "zh": "烏鴉", "en": "The crows", "c": "/covers/RED27.png"}, {"id": "RED28", "l": "RED", "n": 28, "zh": "動物的叫聲", "en": "Animals sounds", "c": "/covers/RED28.png"}, {"id": "RED29", "l": "RED", "n": 29, "zh": "不一樣的動物", "en": "The unique animals", "c": "/covers/RED29.png"}, {"id": "RED30", "l": "RED", "n": 30, "zh": "斑馬過河", "en": "The zebras crossed the river", "c": "/covers/RED30.png"}, {"id": "RED31", "l": "RED", "n": 31, "zh": "動物在哪裏", "en": "Where are the animals?", "c": "/covers/RED31.png"}, {"id": "RED32", "l": "RED", "n": 32, "zh": "動物變變變", "en": "Animals change", "c": "/covers/RED32.png"}, {"id": "RED33", "l": "RED", "n": 33, "zh": "動物的蛋", "en": "Animals' eggs", "c": "/covers/RED33.png"}, {"id": "RED34", "l": "RED", "n": 34, "zh": "書", "en": "Books", "c": "/covers/RED34.png"}, {"id": "RED35", "l": "RED", "n": 35, "zh": "老師", "en": "The teacher", "c": "/covers/RED35.png"}, {"id": "RED36", "l": "RED", "n": 36, "zh": "筆盒", "en": "The pencil box", "c": "/covers/RED36.png"}, {"id": "RED37", "l": "RED", "n": 37, "zh": "長方形", "en": "Rectangle shapes", "c": "/covers/RED37.png"}, {"id": "RED38", "l": "RED", "n": 38, "zh": "學校活動", "en": "School activities", "c": "/covers/RED38.png"}, {"id": "RED39", "l": "RED", "n": 39, "zh": "學校", "en": "A school", "c": "/covers/RED39.png"}, {"id": "RED40", "l": "RED", "n": 40, "zh": "去學校", "en": "Going to school", "c": "/covers/RED40.png"}, {"id": "RED41", "l": "RED", "n": 41, "zh": "我你他", "en": "I / you / (s)he", "c": "/covers/RED41.png"}, {"id": "RED42", "l": "RED", "n": 42, "zh": "誰的錯", "en": "Whose fault?", "c": "/covers/RED42.png"}, {"id": "RED43", "l": "RED", "n": 43, "zh": "秘密 The secret", "en": "The secret", "c": "/covers/RED43.png"}, {"id": "RED44", "l": "RED", "n": 44, "zh": "對不起", "en": "Sorry", "c": "/covers/RED44.png"}, {"id": "RED45", "l": "RED", "n": 45, "zh": "像什麼", "en": "What does it look like?", "c": "/covers/RED45.png"}, {"id": "RED46", "l": "RED", "n": 46, "zh": "一片沙漠", "en": "A stretch of dessert", "c": "/covers/RED46.png"}, {"id": "RED47", "l": "RED", "n": 47, "zh": "一半", "en": "Half of it", "c": "/covers/RED47.png"}, {"id": "RED48", "l": "RED", "n": 48, "zh": "上下", "en": "Up and down", "c": "/covers/RED48.png"}, {"id": "RED49", "l": "RED", "n": 49, "zh": "長短", "en": "Long and short", "c": "/covers/RED49.png"}, {"id": "RED50", "l": "RED", "n": 50, "zh": "厚薄", "en": "Thick and thin", "c": "/covers/RED50.png"}, {"id": "RED51", "l": "RED", "n": 51, "zh": "好大好大", "en": "It's so big", "c": "/covers/RED51.png"}, {"id": "RED52", "l": "RED", "n": 52, "zh": "我是老五", "en": "I am the fifth child", "c": "/covers/RED52.png"}, {"id": "RED53", "l": "RED", "n": 53, "zh": "不大不小", "en": "It's not too big and not too small", "c": "/covers/RED53.png"}, {"id": "RED54", "l": "RED", "n": 54, "zh": "一顆心", "en": "One heart", "c": "/covers/RED54.png"}, {"id": "RED55", "l": "RED", "n": 55, "zh": "我在家嗎", "en": "Am I at home", "c": "/covers/RED55.png"}, {"id": "RED56", "l": "RED", "n": 56, "zh": "姐姐和妹妹", "en": "Sisters", "c": "/covers/RED56.png"}, {"id": "RED57", "l": "RED", "n": 57, "zh": "小寶寶", "en": "The little baby", "c": "/covers/RED57.png"}, {"id": "RED58", "l": "RED", "n": 58, "zh": "家", "en": "Home", "c": "/covers/RED58.png"}, {"id": "RED59", "l": "RED", "n": 59, "zh": "媽媽", "en": "Mom", "c": "/covers/RED59.png"}, {"id": "RED60", "l": "RED", "n": 60, "zh": "大家", "en": "All of us", "c": "/covers/RED60.png"}, {"id": "RED61", "l": "RED", "n": 61, "zh": "弟弟", "en": "The younger brother", "c": "/covers/RED61.png"}, {"id": "RED62", "l": "RED", "n": 62, "zh": "哪個好看", "en": "Which one is prettier?", "c": "/covers/RED62.png"}, {"id": "RED63", "l": "RED", "n": 63, "zh": "不癢了", "en": "It's not itchy any more", "c": "/covers/RED63.png"}, {"id": "RED64", "l": "RED", "n": 64, "zh": "臉", "en": "The face", "c": "/covers/RED64.png"}, {"id": "RED65", "l": "RED", "n": 65, "zh": "疤", "en": "The scab", "c": "/covers/RED65.png"}, {"id": "RED66", "l": "RED", "n": 66, "zh": "翅膀", "en": "The wings", "c": "/covers/RED66.png"}, {"id": "RED67", "l": "RED", "n": 67, "zh": "癢", "en": "Feeling itchy", "c": "/covers/RED67.png"}, {"id": "RED68", "l": "RED", "n": 68, "zh": "蛋糕", "en": "The cakes", "c": "/covers/RED68.png"}, {"id": "RED69", "l": "RED", "n": 69, "zh": "吃東西", "en": "Eat something", "c": "/covers/RED69.png"}, {"id": "RED70", "l": "RED", "n": 70, "zh": "湯", "en": "The soup", "c": "/covers/RED70.png"}, {"id": "RED71", "l": "RED", "n": 71, "zh": "魚", "en": "Fish", "c": "/covers/RED71.png"}, {"id": "RED72", "l": "RED", "n": 72, "zh": "點心", "en": "Snacks", "c": "/covers/RED72.png"}, {"id": "RED73", "l": "RED", "n": 73, "zh": "想吃東西", "en": "Would like to eat something", "c": "/covers/RED73.png"}, {"id": "RED74", "l": "RED", "n": 74, "zh": "蛋炒飯", "en": "The rice fried with eggs", "c": "/covers/RED74.png"}, {"id": "RED75", "l": "RED", "n": 75, "zh": "雞蛋", "en": "The chicken eggs", "c": "/covers/RED75.png"}, {"id": "RED76", "l": "RED", "n": 76, "zh": "水果", "en": "Fruits", "c": "/covers/RED76.png"}, {"id": "RED77", "l": "RED", "n": 77, "zh": "花 Flowers", "en": "Flowers", "c": "/covers/RED77.png"}, {"id": "RED78", "l": "RED", "n": 78, "zh": "櫻桃樹", "en": "A cherry tree", "c": "/covers/RED78.png"}, {"id": "RED79", "l": "RED", "n": 79, "zh": "風", "en": "Wind", "c": "/covers/RED79.png"}, {"id": "RED80", "l": "RED", "n": 80, "zh": "樹", "en": "Trees", "c": "/covers/RED80.png"}, {"id": "RED81", "l": "RED", "n": 81, "zh": "海邊", "en": "The seaside", "c": "/covers/RED81.png"}, {"id": "RED82", "l": "RED", "n": 82, "zh": "大浪", "en": "The big wave", "c": "/covers/RED82.png"}, {"id": "RED83", "l": "RED", "n": 83, "zh": "世界", "en": "The world", "c": "/covers/RED83.png"}, {"id": "RED84", "l": "RED", "n": 84, "zh": "開花了", "en": "The flowers blossom", "c": "/covers/RED84.png"}, {"id": "RED85", "l": "RED", "n": 85, "zh": "幾隻腳", "en": "How many legs?", "c": "/covers/RED85.png"}, {"id": "RED86", "l": "RED", "n": 86, "zh": "十五隻小鳥", "en": "Fifteen little birds", "c": "/covers/RED86.png"}, {"id": "RED87", "l": "RED", "n": 87, "zh": "好多錢", "en": "Lots of money", "c": "/covers/RED87.png"}, {"id": "RED88", "l": "RED", "n": 88, "zh": "一星期", "en": "One week", "c": "/covers/RED88.png"}, {"id": "RED89", "l": "RED", "n": 89, "zh": "下雪", "en": "It's snowing", "c": "/covers/RED89.png"}, {"id": "RED90", "l": "RED", "n": 90, "zh": "雲", "en": "The clouds", "c": "/covers/RED90.png"}, {"id": "RED91", "l": "RED", "n": 91, "zh": "閃電", "en": "The lightning", "c": "/covers/RED91.png"}, {"id": "RED92", "l": "RED", "n": 92, "zh": "雨天", "en": "The rainy days", "c": "/covers/RED92.png"}, {"id": "RED93", "l": "RED", "n": 93, "zh": "什麼顏色", "en": "What color is it?", "c": "/covers/RED93.png"}, {"id": "RED94", "l": "RED", "n": 94, "zh": "果汁的顏色", "en": "The colored juice", "c": "/covers/RED94.png"}, {"id": "RED95", "l": "RED", "n": 95, "zh": "顏色豆", "en": "The colored beans", "c": "/covers/RED95.png"}, {"id": "RED96", "l": "RED", "n": 96, "zh": "變顏色", "en": "Change colors", "c": "/covers/RED96.png"}, {"id": "RED97", "l": "RED", "n": 97, "zh": "鞋子", "en": "Shoes", "c": "/covers/RED97.png"}, {"id": "RED98", "l": "RED", "n": 98, "zh": "毛線", "en": "Yarns", "c": "/covers/RED98.png"}, {"id": "RED99", "l": "RED", "n": 99, "zh": "雨衣", "en": "The rain coat", "c": "/covers/RED99.png"}, {"id": "RED100", "l": "RED", "n": 100, "zh": "衣服", "en": "The clothes", "c": "/covers/RED100.png"}, {"id": "YELLOW1", "l": "YELLOW", "n": 1, "zh": "忘了", "en": "Forgot", "c": "/covers/YELLOW1.jpg"}, {"id": "YELLOW2", "l": "YELLOW", "n": 2, "zh": "我沒空", "en": "I am not free.", "c": "/covers/YELLOW2.jpg"}, {"id": "YELLOW3", "l": "YELLOW", "n": 3, "zh": "找什麼", "en": "", "c": "/covers/YELLOW3.jpg"}, {"id": "YELLOW4", "l": "YELLOW", "n": 4, "zh": "生病", "en": "", "c": "/covers/YELLOW4.jpg"}, {"id": "YELLOW5", "l": "YELLOW", "n": 5, "zh": "拉吊床", "en": "Pulling the hammock", "c": "/covers/YELLOW5.jpg"}, {"id": "YELLOW6", "l": "YELLOW", "n": 6, "zh": "下不來", "en": "Could not come down", "c": "/covers/YELLOW6.jpg"}, {"id": "YELLOW7", "l": "YELLOW", "n": 7, "zh": "禮物在哪兒", "en": "", "c": "/covers/YELLOW7.jpg"}, {"id": "YELLOW8", "l": "YELLOW", "n": 8, "zh": "夢到什麼", "en": "What did I dream of?", "c": "/covers/YELLOW8.jpg"}, {"id": "YELLOW9", "l": "YELLOW", "n": 9, "zh": "我們很無聊", "en": "We are bored", "c": "/covers/YELLOW9.jpg"}, {"id": "YELLOW10", "l": "YELLOW", "n": 10, "zh": "做拼圖", "en": "Making puzzles", "c": "/covers/YELLOW10.jpg"}, {"id": "YELLOW11", "l": "YELLOW", "n": 11, "zh": "我還是很愛你", "en": "I still love you", "c": "/covers/YELLOW11.jpg"}, {"id": "YELLOW12", "l": "YELLOW", "n": 12, "zh": "照顧寵物", "en": "Looking after a pet", "c": "/covers/YELLOW12.jpg"}, {"id": "YELLOW13", "l": "YELLOW", "n": 13, "zh": "你想住在哪裏", "en": "Where do you want to live?", "c": "/covers/YELLOW13.jpg"}, {"id": "YELLOW14", "l": "YELLOW", "n": 14, "zh": "動物的船沉了", "en": "The animals' boat was sinking", "c": "/covers/YELLOW14.jpg"}, {"id": "YELLOW15", "l": "YELLOW", "n": 15, "zh": "不是真的動物", "en": "Not real animals", "c": "/covers/YELLOW15.jpg"}, {"id": "YELLOW16", "l": "YELLOW", "n": 16, "zh": "動物的朋友", "en": "Animals' friends", "c": "/covers/YELLOW16.jpg"}, {"id": "YELLOW17", "l": "YELLOW", "n": 17, "zh": "狗兒", "en": "The dogs", "c": "/covers/YELLOW17.jpg"}, {"id": "YELLOW18", "l": "YELLOW", "n": 18, "zh": "老鷹和兔子", "en": "The eagle and the hare", "c": "/covers/YELLOW18.jpg"}, {"id": "YELLOW19", "l": "YELLOW", "n": 19, "zh": "好看的動物", "en": "Nice looking animals", "c": "/covers/YELLOW19.jpg"}, {"id": "YELLOW20", "l": "YELLOW", "n": 20, "zh": "會飛的動物", "en": "Flying animals", "c": "/covers/YELLOW20.jpg"}, {"id": "YELLOW21", "l": "YELLOW", "n": 21, "zh": "什麼動物最棒", "en": "Who is the most powerful animal?", "c": "/covers/YELLOW21.jpg"}, {"id": "YELLOW22", "l": "YELLOW", "n": 22, "zh": "說話的魚", "en": "The fish that talks", "c": "/covers/YELLOW22.jpg"}, {"id": "YELLOW23", "l": "YELLOW", "n": 23, "zh": "動物的腳印", "en": "Animal Footprints", "c": "/covers/YELLOW23.png"}, {"id": "YELLOW24", "l": "YELLOW", "n": 24, "zh": "貓兒在哪裏", "en": "Where is the cat?", "c": "/covers/YELLOW24.jpg"}, {"id": "YELLOW25", "l": "YELLOW", "n": 25, "zh": "動物寶寶", "en": "Animal babies", "c": "/covers/YELLOW25.jpg"}, {"id": "YELLOW26", "l": "YELLOW", "n": 26, "zh": "魚鷹", "en": "The fish hawk", "c": "/covers/YELLOW26.jpg"}, {"id": "YELLOW27", "l": "YELLOW", "n": 27, "zh": "小鴨", "en": "The duckling", "c": "/covers/YELLOW27.jpg"}, {"id": "YELLOW28", "l": "YELLOW", "n": 28, "zh": "剪紙", "en": "Paper cutting", "c": "/covers/YELLOW28.jpg"}, {"id": "YELLOW29", "l": "YELLOW", "n": 29, "zh": "比賽", "en": "A race", "c": "/covers/YELLOW29.jpg"}, {"id": "YELLOW30", "l": "YELLOW", "n": 30, "zh": "橡皮", "en": "The erasers", "c": "/covers/YELLOW30.jpg"}, {"id": "YELLOW31", "l": "YELLOW", "n": 31, "zh": "摺紙 Paper folding", "en": "Paper folding", "c": "/covers/YELLOW31.jpg"}, {"id": "YELLOW32", "l": "YELLOW", "n": 32, "zh": "少了什麼", "en": "What's missing?", "c": "/covers/YELLOW32.jpg"}, {"id": "YELLOW33", "l": "YELLOW", "n": 33, "zh": "剪剪貼貼", "en": "Cut and paste", "c": "/covers/YELLOW33.jpg"}, {"id": "YELLOW34", "l": "YELLOW", "n": 34, "zh": "帶寶貝到學校", "en": "Bring your treasure to school", "c": "/covers/YELLOW34.jpg"}, {"id": "YELLOW35", "l": "YELLOW", "n": 35, "zh": "新書包", "en": "A New School Bag", "c": "/covers/YELLOW35.jpg"}, {"id": "YELLOW36", "l": "YELLOW", "n": 36, "zh": "破了", "en": "It's broken", "c": "/covers/YELLOW36.jpg"}, {"id": "YELLOW37", "l": "YELLOW", "n": 37, "zh": "不一樣", "en": "Different", "c": "/covers/YELLOW37.jpg"}, {"id": "YELLOW38", "l": "YELLOW", "n": 38, "zh": "甜蜜蜜", "en": "So sweet", "c": "/covers/YELLOW38.jpg"}, {"id": "YELLOW39", "l": "YELLOW", "n": 39, "zh": "還是好朋友", "en": "Still close friends", "c": "/covers/YELLOW39.jpg"}, {"id": "YELLOW40", "l": "YELLOW", "n": 40, "zh": "不見了", "en": "Disappeared", "c": "/covers/YELLOW40.jpg"}, {"id": "YELLOW41", "l": "YELLOW", "n": 41, "zh": "一堆什麼", "en": "A pile of what?", "c": "/covers/YELLOW41.jpg"}, {"id": "YELLOW42", "l": "YELLOW", "n": 42, "zh": "撞到了", "en": "Bumped into something", "c": "/covers/YELLOW42.jpg"}, {"id": "YELLOW43", "l": "YELLOW", "n": 43, "zh": "知道和不知道", "en": "Knowing 、not knowing", "c": "/covers/YELLOW43.jpg"}, {"id": "YELLOW44", "l": "YELLOW", "n": 44, "zh": "真假恐龍", "en": "Real and fake dinosaurs", "c": "/covers/YELLOW44.jpg"}, {"id": "YELLOW45", "l": "YELLOW", "n": 45, "zh": "我是美美", "en": "I am Mei Mei", "c": "/covers/YELLOW45.jpg"}, {"id": "YELLOW46", "l": "YELLOW", "n": 46, "zh": "不是雙胞胎", "en": "Not twins", "c": "/covers/YELLOW46.jpg"}, {"id": "YELLOW47", "l": "YELLOW", "n": 47, "zh": "老大老二", "en": "The eldest one and the second eldest one", "c": "/covers/YELLOW47.jpg"}, {"id": "YELLOW48", "l": "YELLOW", "n": 48, "zh": "抱妹妹", "en": "Hugging my younger sister", "c": "/covers/YELLOW48.jpg"}, {"id": "YELLOW49", "l": "YELLOW", "n": 49, "zh": "我也很好", "en": "I am good too", "c": "/covers/YELLOW49.jpg"}, {"id": "YELLOW50", "l": "YELLOW", "n": 50, "zh": "全家人", "en": "The whole family", "c": "/covers/YELLOW50.jpg"}, {"id": "YELLOW51", "l": "YELLOW", "n": 51, "zh": "我的家", "en": "My home", "c": "/covers/YELLOW51.jpg"}, {"id": "YELLOW52", "l": "YELLOW", "n": 52, "zh": "騎在我身上", "en": "Ride on me", "c": "/covers/YELLOW52.jpg"}, {"id": "YELLOW53", "l": "YELLOW", "n": 53, "zh": "畫龍", "en": "To draw a dragon", "c": "/covers/YELLOW53.jpg"}, {"id": "YELLOW54", "l": "YELLOW", "n": 54, "zh": "用耳朵聽", "en": "To listen with your ears", "c": "/covers/YELLOW54.jpg"}, {"id": "YELLOW55", "l": "YELLOW", "n": 55, "zh": "畫小鳥", "en": "To draw a bird", "c": "/covers/YELLOW55.jpg"}, {"id": "YELLOW56", "l": "YELLOW", "n": 56, "zh": "動物們吃東西", "en": "The animals eat food", "c": "/covers/YELLOW56.jpg"}, {"id": "YELLOW57", "l": "YELLOW", "n": 57, "zh": "小鱷魚吃東西", "en": "The Little crocodile eats food", "c": "/covers/YELLOW57.jpg"}, {"id": "YELLOW58", "l": "YELLOW", "n": 58, "zh": "做餅乾", "en": "To make cookies", "c": "/covers/YELLOW58.jpg"}, {"id": "YELLOW59", "l": "YELLOW", "n": 59, "zh": "甜餅乾", "en": "Cookies", "c": "/covers/YELLOW59.jpg"}, {"id": "YELLOW60", "l": "YELLOW", "n": 60, "zh": "新鮮的水果", "en": "Fresh fruits", "c": "/covers/YELLOW60.jpg"}, {"id": "YELLOW61", "l": "YELLOW", "n": 61, "zh": "剩下的食物", "en": "Leftovers", "c": "/covers/YELLOW61.jpg"}, {"id": "YELLOW62", "l": "YELLOW", "n": 62, "zh": "蔥油餅", "en": "Green onion pancakes", "c": "/covers/YELLOW62.jpg"}, {"id": "YELLOW63", "l": "YELLOW", "n": 63, "zh": "大水", "en": "The flood", "c": "/covers/YELLOW63.jpg"}, {"id": "YELLOW64", "l": "YELLOW", "n": 64, "zh": "沒有下雨", "en": "No rain", "c": "/covers/YELLOW64.jpg"}, {"id": "YELLOW65", "l": "YELLOW", "n": 65, "zh": "堅果", "en": "A nut", "c": "/covers/YELLOW65.jpg"}, {"id": "YELLOW66", "l": "YELLOW", "n": 66, "zh": "寶石", "en": "A diamond", "c": "/covers/YELLOW66.jpg"}, {"id": "YELLOW67", "l": "YELLOW", "n": 67, "zh": "鳥蛋", "en": "The bird's eggs", "c": "/covers/YELLOW67.jpg"}, {"id": "YELLOW68", "l": "YELLOW", "n": 68, "zh": "植物", "en": "A plant", "c": "/covers/YELLOW68.jpg"}, {"id": "YELLOW69", "l": "YELLOW", "n": 69, "zh": "星球", "en": "The planets", "c": "/covers/YELLOW69.jpg"}, {"id": "YELLOW70", "l": "YELLOW", "n": 70, "zh": "彩虹", "en": "The rainbows", "c": "/covers/YELLOW70.jpg"}, {"id": "YELLOW71", "l": "YELLOW", "n": 71, "zh": "數數看", "en": "Let's count", "c": "/covers/YELLOW71.jpg"}, {"id": "YELLOW72", "l": "YELLOW", "n": 72, "zh": "二四六八十", "en": "Two four six eight ten", "c": "/covers/YELLOW72.jpg"}, {"id": "YELLOW73", "l": "YELLOW", "n": 73, "zh": "多少", "en": "How many?", "c": "/covers/YELLOW73.jpg"}, {"id": "YELLOW74", "l": "YELLOW", "n": 74, "zh": "第一第二第三", "en": "The first, second and third", "c": "/covers/YELLOW74.jpg"}, {"id": "YELLOW75", "l": "YELLOW", "n": 75, "zh": "第四", "en": "The fourth one", "c": "/covers/YELLOW75.jpg"}, {"id": "YELLOW76", "l": "YELLOW", "n": 76, "zh": "一二三四五六七", "en": "1234567", "c": "/covers/YELLOW76.jpg"}, {"id": "YELLOW77", "l": "YELLOW", "n": 77, "zh": "四季", "en": "The four seasons", "c": "/covers/YELLOW77.jpg"}, {"id": "YELLOW78", "l": "YELLOW", "n": 78, "zh": "天氣", "en": "The weather", "c": "/covers/YELLOW78.jpg"}, {"id": "YELLOW79", "l": "YELLOW", "n": 79, "zh": "冬天和春天", "en": "Winter and spring", "c": "/covers/YELLOW79.jpg"}, {"id": "YELLOW80", "l": "YELLOW", "n": 80, "zh": "颱風", "en": "Typhoon", "c": "/covers/YELLOW80.jpg"}, {"id": "YELLOW81", "l": "YELLOW", "n": 81, "zh": "晴天", "en": "Sunny day", "c": "/covers/YELLOW81.jpg"}, {"id": "YELLOW82", "l": "YELLOW", "n": 82, "zh": "很酷的顏色", "en": "Cool colors", "c": "/covers/YELLOW82.jpg"}, {"id": "YELLOW83", "l": "YELLOW", "n": 83, "zh": "彩虹衣", "en": "The rainbow clothes", "c": "/covers/YELLOW83.jpg"}, {"id": "YELLOW84", "l": "YELLOW", "n": 84, "zh": "顏色變了", "en": "Changing colors", "c": "/covers/YELLOW84.jpg"}, {"id": "YELLOW85", "l": "YELLOW", "n": 85, "zh": "彩虹糖果屋", "en": "The colorful candy house", "c": "/covers/YELLOW85.jpg"}, {"id": "YELLOW86", "l": "YELLOW", "n": 86, "zh": "拐杖和帽子", "en": "The cane and the hat", "c": "/covers/YELLOW86.jpg"}, {"id": "YELLOW87", "l": "YELLOW", "n": 87, "zh": "女孩子的衣物", "en": "Girls' clothes", "c": "/covers/YELLOW87.jpg"}, {"id": "YELLOW88", "l": "YELLOW", "n": 88, "zh": "一層一層衣服", "en": "Layers of clothes", "c": "/covers/YELLOW88.jpg"}, {"id": "YELLOW89", "l": "YELLOW", "n": 89, "zh": "姐姐穿衣服", "en": "Elder sister gets dressed", "c": "/covers/YELLOW89.jpg"}, {"id": "YELLOW90", "l": "YELLOW", "n": 90, "zh": "害怕", "en": "Frightened", "c": "/covers/YELLOW90.jpg"}, {"id": "YELLOW91", "l": "YELLOW", "n": 91, "zh": "笑臉", "en": "A happy face", "c": "/covers/YELLOW91.jpg"}, {"id": "YELLOW92", "l": "YELLOW", "n": 92, "zh": "節日", "en": "Festivals (1)", "c": "/covers/YELLOW92.jpg"}, {"id": "YELLOW93", "l": "YELLOW", "n": 93, "zh": "節日 (2)", "en": "Festivals (2)", "c": "/covers/YELLOW93.jpg"}, {"id": "YELLOW94", "l": "YELLOW", "n": 94, "zh": "醫生", "en": "Doctor", "c": "/covers/YELLOW94.jpg"}, {"id": "YELLOW95", "l": "YELLOW", "n": 95, "zh": "醫院", "en": "The hospital", "c": "/covers/YELLOW95.jpg"}, {"id": "YELLOW96", "l": "YELLOW", "n": 96, "zh": "是學生", "en": "A student", "c": "/covers/YELLOW96.jpg"}, {"id": "YELLOW97", "l": "YELLOW", "n": 97, "zh": "長大要做什麼", "en": "What do you want to be when you grow up?", "c": "/covers/YELLOW97.jpg"}, {"id": "YELLOW98", "l": "YELLOW", "n": 98, "zh": "坐直升機", "en": "Take a helicopter", "c": "/covers/YELLOW98.jpg"}, {"id": "YELLOW99", "l": "YELLOW", "n": 99, "zh": "不同的車", "en": "Different vehicles", "c": "/covers/YELLOW99.jpg"}, {"id": "YELLOW100", "l": "YELLOW", "n": 100, "zh": "坐什麼車快", "en": "Which vehicle is faster?", "c": "/covers/YELLOW100.jpg"}, {"id": "GREEN1", "l": "GREEN", "n": 1, "zh": "說秘密", "en": "Going to school", "c": "/covers/GREEN1.jpg"}, {"id": "GREEN2", "l": "GREEN", "n": 2, "zh": "上學", "en": "Going to school", "c": "/covers/GREEN2.jpg"}, {"id": "GREEN3", "l": "GREEN", "n": 3, "zh": "數一數", "en": "Counting", "c": "/covers/GREEN3.jpg"}, {"id": "GREEN4", "l": "GREEN", "n": 4, "zh": "誰是書蟲", "en": "Who is the bookworm?", "c": "/covers/GREEN4.jpg"}, {"id": "GREEN5", "l": "GREEN", "n": 5, "zh": "做我喜歡的事", "en": "Doing things that I like to do", "c": "/covers/GREEN5.jpg"}, {"id": "GREEN6", "l": "GREEN", "n": 6, "zh": "捉迷藏", "en": "Hide and seek", "c": "/covers/GREEN6.jpg"}, {"id": "GREEN7", "l": "GREEN", "n": 7, "zh": "練習", "en": "Practice", "c": "/covers/GREEN7.jpg"}, {"id": "GREEN8", "l": "GREEN", "n": 8, "zh": "玩接龍遊戲", "en": "Play a Word Chain game", "c": "/covers/GREEN8.jpg"}, {"id": "GREEN9", "l": "GREEN", "n": 9, "zh": "找蛋遊戲", "en": "Egg Hunt game", "c": "/covers/GREEN9.jpg"}, {"id": "GREEN10", "l": "GREEN", "n": 10, "zh": "學游泳", "en": "Learning to swim", "c": "/covers/GREEN10.jpg"}, {"id": "GREEN11", "l": "GREEN", "n": 11, "zh": "躲貓貓", "en": "Duo mao mao(colloquial Chinese for hide-and-seek)", "c": "/covers/GREEN11.jpg"}, {"id": "GREEN12", "l": "GREEN", "n": 12, "zh": "燙鞦韆", "en": "To swing", "c": "/covers/GREEN12.jpg"}, {"id": "GREEN13", "l": "GREEN", "n": 13, "zh": "怕鬼", "en": "Being afraid of ghosts", "c": "/covers/GREEN13.jpg"}, {"id": "GREEN14", "l": "GREEN", "n": 14, "zh": "想要有一雙鞋", "en": "Imagine that I have a pair of shoes", "c": "/covers/GREEN14.jpg"}, {"id": "GREEN15", "l": "GREEN", "n": 15, "zh": "滑滑梯", "en": "Sliding down a slide", "c": "/covers/GREEN15.jpg"}, {"id": "GREEN16", "l": "GREEN", "n": 16, "zh": "當一把傘", "en": "Being an umbrella", "c": "/covers/GREEN16.jpg"}, {"id": "GREEN17", "l": "GREEN", "n": 17, "zh": "幫忙", "en": "Being helpful", "c": "/covers/GREEN17.jpg"}, {"id": "GREEN18", "l": "GREEN", "n": 18, "zh": "騎車", "en": "Riding a bike", "c": "/covers/GREEN18.jpg"}, {"id": "GREEN19", "l": "GREEN", "n": 19, "zh": "放風箏", "en": "Flying a kite", "c": "/covers/GREEN19.jpg"}, {"id": "GREEN20", "l": "GREEN", "n": 20, "zh": "寫兒歌", "en": "Writing nursery rhymes", "c": "/covers/GREEN20.jpg"}, {"id": "GREEN21", "l": "GREEN", "n": 21, "zh": "樹熊", "en": "Koalas", "c": "/covers/GREEN21.jpg"}, {"id": "GREEN22", "l": "GREEN", "n": 22, "zh": "兩隻豬", "en": "Two pigs", "c": "/covers/GREEN22.jpg"}, {"id": "GREEN23", "l": "GREEN", "n": 23, "zh": "螢火蟲", "en": "Fireflies", "c": "/covers/GREEN23.jpg"}, {"id": "GREEN24", "l": "GREEN", "n": 24, "zh": "烏鴉", "en": "Crows", "c": "/covers/GREEN24.jpg"}, {"id": "GREEN25", "l": "GREEN", "n": 25, "zh": "老鼠和貓兒", "en": "The rat and the cat", "c": "/covers/GREEN25.jpg"}, {"id": "GREEN26", "l": "GREEN", "n": 26, "zh": "小鴨找媽媽", "en": "A duckling looking for his mom", "c": "/covers/GREEN26.jpg"}, {"id": "GREEN27", "l": "GREEN", "n": 27, "zh": "小豬不笨", "en": "The little pig is not stupid", "c": "/covers/GREEN27.jpg"}, {"id": "GREEN28", "l": "GREEN", "n": 28, "zh": "動物的叫聲", "en": "Animal calls", "c": "/covers/GREEN28.jpg"}, {"id": "GREEN29", "l": "GREEN", "n": 29, "zh": "北極熊", "en": "Polar bears", "c": "/covers/GREEN29.jpg"}, {"id": "GREEN30", "l": "GREEN", "n": 30, "zh": "黑熊媽媽說話", "en": "Mommy black bear was talking", "c": "/covers/GREEN30.jpg"}, {"id": "GREEN31", "l": "GREEN", "n": 31, "zh": "動物幫手", "en": "Animal helper", "c": "/covers/GREEN31.jpg"}, {"id": "GREEN32", "l": "GREEN", "n": 32, "zh": "蜘蛛", "en": "A spider", "c": "/covers/GREEN32.jpg"}, {"id": "GREEN33", "l": "GREEN", "n": 33, "zh": "海獺", "en": "Sea otters", "c": "/covers/GREEN33.jpg"}, {"id": "GREEN34", "l": "GREEN", "n": 34, "zh": "狗兒一家", "en": "The dog family", "c": "/covers/GREEN34.jpg"}, {"id": "GREEN35", "l": "GREEN", "n": 35, "zh": "小藍企鵝", "en": "The small blue penguins", "c": "/covers/GREEN35.jpg"}, {"id": "GREEN36", "l": "GREEN", "n": 36, "zh": "小動物", "en": "Small animals", "c": "/covers/GREEN36.jpg"}, {"id": "GREEN37", "l": "GREEN", "n": 37, "zh": "瓢蟲", "en": "Ladybugs", "c": "/covers/GREEN37.jpg"}, {"id": "GREEN38", "l": "GREEN", "n": 38, "zh": "松鼠", "en": "Squirrels", "c": "/covers/GREEN38.jpg"}, {"id": "GREEN39", "l": "GREEN", "n": 39, "zh": "綿羊", "en": "Sheep", "c": "/covers/GREEN39.jpg"}, {"id": "GREEN40", "l": "GREEN", "n": 40, "zh": "動物玩偶", "en": "Stuffed toys", "c": "/covers/GREEN40.jpg"}, {"id": "GREEN41", "l": "GREEN", "n": 41, "zh": "動物會保護自己", "en": "Animals know how to protect themselves", "c": "/covers/GREEN41.jpg"}, {"id": "GREEN42", "l": "GREEN", "n": 42, "zh": "螃蟹", "en": "Crabs", "c": "/covers/GREEN42.jpg"}, {"id": "GREEN43", "l": "GREEN", "n": 43, "zh": "刺蝟", "en": "Hedgehogs", "c": "/covers/GREEN43.jpg"}, {"id": "GREEN44", "l": "GREEN", "n": 44, "zh": "小河馬和大烏龜", "en": "The small hippo and the big turtle", "c": "/covers/GREEN44.jpg"}, {"id": "GREEN45", "l": "GREEN", "n": 45, "zh": "松鼠玩偶", "en": "Stuffed toy squirrel", "c": "/covers/GREEN45.jpg"}, {"id": "GREEN46", "l": "GREEN", "n": 46, "zh": "噴水的龍", "en": "The dragon that puffs water", "c": "/covers/GREEN46.jpg"}, {"id": "GREEN47", "l": "GREEN", "n": 47, "zh": "蓋房子", "en": "Building a house", "c": "/covers/GREEN47.jpg"}, {"id": "GREEN48", "l": "GREEN", "n": 48, "zh": "奶奶", "en": "Grandma", "c": "/covers/GREEN48.jpg"}, {"id": "GREEN49", "l": "GREEN", "n": 49, "zh": "爸爸沒回家", "en": "Dad did not come home", "c": "/covers/GREEN49.jpg"}, {"id": "GREEN50", "l": "GREEN", "n": 50, "zh": "會飛的房子", "en": "Flying house", "c": "/covers/GREEN50.jpg"}, {"id": "GREEN51", "l": "GREEN", "n": 51, "zh": "媽媽愛誰多一點", "en": "Mom loves whom a bit more?", "c": "/covers/GREEN51.jpg"}, {"id": "GREEN52", "l": "GREEN", "n": 52, "zh": "狗狗和我", "en": "The doggy and I", "c": "/covers/GREEN52.jpg"}, {"id": "GREEN53", "l": "GREEN", "n": 53, "zh": "家人聽對了嗎", "en": "Did my family hear it correctly?", "c": "/covers/GREEN53.jpg"}, {"id": "GREEN54", "l": "GREEN", "n": 54, "zh": "海盜弟弟", "en": "My younger brother being a pirate", "c": "/covers/GREEN54.jpg"}, {"id": "GREEN55", "l": "GREEN", "n": 55, "zh": "家裏有聲音", "en": "A sound in the house", "c": "/covers/GREEN55.jpg"}, {"id": "GREEN56", "l": "GREEN", "n": 56, "zh": "媽媽出差", "en": "Mom on a business trip", "c": "/covers/GREEN56.jpg"}, {"id": "GREEN57", "l": "GREEN", "n": 57, "zh": "花園房子", "en": "House with a garden", "c": "/covers/GREEN57.jpg"}, {"id": "GREEN58", "l": "GREEN", "n": 58, "zh": "把弟弟送給你", "en": "Giving away my younger brother", "c": "/covers/GREEN58.jpg"}, {"id": "GREEN59", "l": "GREEN", "n": 59, "zh": "我不貪心", "en": "I am not greedy", "c": "/covers/GREEN59.jpg"}, {"id": "GREEN60", "l": "GREEN", "n": 60, "zh": "我的好朋友", "en": "My best friend", "c": "/covers/GREEN60.jpg"}, {"id": "GREEN61", "l": "GREEN", "n": 61, "zh": "家裏的好人和壞人", "en": "Good guys and bad guys at home", "c": "/covers/GREEN61.jpg"}, {"id": "GREEN62", "l": "GREEN", "n": 62, "zh": "妹妹", "en": "Younger sister", "c": "/covers/GREEN62.jpg"}, {"id": "GREEN63", "l": "GREEN", "n": 63, "zh": "媽媽像什麼", "en": "What is Mom like?", "c": "/covers/GREEN63.jpg"}, {"id": "GREEN64", "l": "GREEN", "n": 64, "zh": "我討厭的事", "en": "The things that I hate", "c": "/covers/GREEN64.jpg"}, {"id": "GREEN65", "l": "GREEN", "n": 65, "zh": "冬眠的弟弟", "en": "Younger brother hibernated", "c": "/covers/GREEN65.jpg"}, {"id": "GREEN66", "l": "GREEN", "n": 66, "zh": "尾巴", "en": "Tails", "c": "/covers/GREEN66.jpg"}, {"id": "GREEN67", "l": "GREEN", "n": 67, "zh": "角、鬍鬚和尾巴", "en": "Horns, whiskers, and a tail", "c": "/covers/GREEN67.jpg"}, {"id": "GREEN68", "l": "GREEN", "n": 68, "zh": "腿斷了", "en": "Broken leg", "c": "/covers/GREEN68.jpg"}, {"id": "GREEN69", "l": "GREEN", "n": 69, "zh": "熊貓的毛", "en": "The panda's fur", "c": "/covers/GREEN69.jpg"}, {"id": "GREEN70", "l": "GREEN", "n": 70, "zh": "大熊的背", "en": "The big bear's back", "c": "/covers/GREEN70.jpg"}, {"id": "GREEN71", "l": "GREEN", "n": 71, "zh": "羽毛", "en": "Feathers", "c": "/covers/GREEN71.jpg"}, {"id": "GREEN72", "l": "GREEN", "n": 72, "zh": "牙齒", "en": "Teeth", "c": "/covers/GREEN72.jpg"}, {"id": "GREEN73", "l": "GREEN", "n": 73, "zh": "頭上的大包", "en": "A lump on the forehead", "c": "/covers/GREEN73.jpg"}, {"id": "GREEN74", "l": "GREEN", "n": 74, "zh": "腳受傷了", "en": "The wounded leg", "c": "/covers/GREEN74.jpg"}, {"id": "GREEN75", "l": "GREEN", "n": 75, "zh": "熊熊生病了", "en": "The bear got sick", "c": "/covers/GREEN75.jpg"}, {"id": "GREEN76", "l": "GREEN", "n": 76, "zh": "生病的公雞", "en": "The sick rooster", "c": "/covers/GREEN76.jpg"}, {"id": "GREEN77", "l": "GREEN", "n": 77, "zh": "長毛巴", "en": "Regrowing a tail", "c": "/covers/GREEN77.jpg"}, {"id": "GREEN78", "l": "GREEN", "n": 78, "zh": "薯片 Chips", "en": "Chips", "c": "/covers/GREEN78.jpg"}, {"id": "GREEN79", "l": "GREEN", "n": 79, "zh": "水果", "en": "Fruit", "c": "/covers/GREEN79.jpg"}, {"id": "GREEN80", "l": "GREEN", "n": 80, "zh": "青菜和蘿蔔", "en": "Vegetables and carrots", "c": "/covers/GREEN80.jpg"}, {"id": "GREEN81", "l": "GREEN", "n": 81, "zh": "冰淇淋", "en": "Ice cream", "c": "/covers/GREEN81.jpg"}, {"id": "GREEN82", "l": "GREEN", "n": 82, "zh": "烤鴨", "en": "Roast duck", "c": "/covers/GREEN82.jpg"}, {"id": "GREEN83", "l": "GREEN", "n": 83, "zh": "巧克力蛋糕", "en": "Chocolate cake", "c": "/covers/GREEN83.jpg"}, {"id": "GREEN84", "l": "GREEN", "n": 84, "zh": "花蜜和花粉", "en": "Honey and pollen", "c": "/covers/GREEN84.jpg"}, {"id": "GREEN85", "l": "GREEN", "n": 85, "zh": "零食", "en": "Snacks", "c": "/covers/GREEN85.jpg"}, {"id": "GREEN86", "l": "GREEN", "n": 86, "zh": "西瓜和番茄", "en": "Watermelons and tomatoes", "c": "/covers/GREEN86.jpg"}, {"id": "GREEN87", "l": "GREEN", "n": 87, "zh": "香味", "en": "Fragrance", "c": "/covers/GREEN87.jpg"}, {"id": "GREEN88", "l": "GREEN", "n": 88, "zh": "好吃的東西", "en": "Yummy stuff", "c": "/covers/GREEN88.jpg"}, {"id": "GREEN89", "l": "GREEN", "n": 89, "zh": "先吃再付錢", "en": "Pay after eating", "c": "/covers/GREEN89.jpg"}, {"id": "GREEN90", "l": "GREEN", "n": 90, "zh": "食物夢", "en": "Food dream", "c": "/covers/GREEN90.jpg"}, {"id": "GREEN91", "l": "GREEN", "n": 91, "zh": "星星吃月亮", "en": "The stars ate the moon", "c": "/covers/GREEN91.jpg"}, {"id": "GREEN92", "l": "GREEN", "n": 92, "zh": "找寶藏", "en": "A Treasure Hunt", "c": "/covers/GREEN92.jpg"}, {"id": "GREEN93", "l": "GREEN", "n": 93, "zh": "我喜歡大自然", "en": "I love nature", "c": "/covers/GREEN93.jpg"}, {"id": "GREEN94", "l": "GREEN", "n": 94, "zh": "遊太空", "en": "A space trip", "c": "/covers/GREEN94.jpg"}, {"id": "GREEN95", "l": "GREEN", "n": 95, "zh": "寶石", "en": "Precious stones", "c": "/covers/GREEN95.jpg"}, {"id": "GREEN96", "l": "GREEN", "n": 96, "zh": "老樹 The old tree", "en": "The old tree", "c": "/covers/GREEN96.jpg"}, {"id": "GREEN97", "l": "GREEN", "n": 97, "zh": "美麗的星星", "en": "Beautiful stars", "c": "/covers/GREEN97.jpg"}, {"id": "GREEN98", "l": "GREEN", "n": 98, "zh": "雨天的積水", "en": "Puddles on the rainy days", "c": "/covers/GREEN98.jpg"}, {"id": "GREEN99", "l": "GREEN", "n": 99, "zh": "春夏秋冬", "en": "Spring summer autumn winter", "c": "/covers/GREEN99.jpg"}, {"id": "GREEN100", "l": "GREEN", "n": 100, "zh": "小種子", "en": "The little seed", "c": "/covers/GREEN100.jpg"}];
+
+    let data = JSON.parse(localStorage.getItem('lele_reading_data')) || { children: [], records: [] };
+    let selectedEmoji = '👶';
+    let selectedStars = 0;
+    let recordEditId = null;
+    let currentFilterLevel = null;
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('recordDate').value = today;
+      document.getElementById('childStartDate').value = today;
+      updateAllSelects();
+      renderChildren();
+      setupTabs();
+      setupEmojiPicker();
+      setupStarRating();
+    });
+
+    function setupTabs() {
+      document.querySelectorAll('.tab-button').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const tabName = btn.getAttribute('data-tab');
+          document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+          document.querySelectorAll('.content-area').forEach(c => c.classList.remove('active'));
+          btn.classList.add('active');
+          document.getElementById(tabName).classList.add('active');
+          if (tabName === 'progress') updateProgress();
+          if (tabName === 'recommend') updateRecommendations();
+        });
+      });
+    }
+
+    function setupEmojiPicker() {
+      document.querySelectorAll('.emoji-option').forEach(option => {
+        option.addEventListener('click', () => {
+          document.querySelectorAll('.emoji-option').forEach(o => o.classList.remove('selected'));
+          option.classList.add('selected');
+          selectedEmoji = option.getAttribute('data-emoji');
+        });
+      });
+      document.querySelector('.emoji-option').classList.add('selected');
+    }
+
+    function setupStarRating() {
+      document.querySelectorAll('.star').forEach(star => {
+        star.addEventListener('click', () => {
+          selectedStars = parseInt(star.getAttribute('data-value'));
+          document.querySelectorAll('.star').forEach((s, i) => {
+            s.classList.toggle('active', i < selectedStars);
+          });
+        });
+      });
+    }
+
+    function addChild() {
+      const name = document.getElementById('childName').value.trim();
+      const level = document.getElementById('childLevel').value;
+      const startDate = document.getElementById('childStartDate').value;
+      if (!name) { alert('請輸入孩子名字'); return; }
+      const child = { id: Date.now() + Math.random(), name, emoji: selectedEmoji, level, startDate, createdAt: new Date().toISOString() };
+      data.children.push(child);
+      saveData();
+      document.getElementById('childName').value = '';
+      document.getElementById('childLevel').value = 'YELLOW';
+      renderChildren();
+      updateAllSelects();
+      alert('✨ ' + name + ' 已加入！');
+    }
+
+    function renderChildren() {
+      const list = document.getElementById('childrenList');
+      if (data.children.length === 0) {
+        list.innerHTML = '<div class="empty-state"><div class="empty-state-emoji">👶</div><div class="empty-state-title">還沒有孩子</div><div class="empty-state-text">新增第一位孩子，開始記錄共讀時光吧</div></div>';
+        return;
+      }
+      list.innerHTML = data.children.map(child => {
+        const recordCount = data.records.filter(r => r.childId === child.id).length;
+        const totalMinutes = data.records.filter(r => r.childId === child.id).reduce((sum, r) => sum + (r.duration || 0), 0);
+        return `
+          <div class="card child-card" onclick="viewChild(${child.id})">
+            <div class="child-avatar">${child.emoji}</div>
+            <div class="child-info">
+              <div class="child-level-badge ${child.level === 'RED' ? 'level-red' : child.level === 'YELLOW' ? 'level-yellow' : 'level-green'}">
+                ${child.level === 'RED' ? '🔴 RED' : child.level === 'YELLOW' ? '🟡 YELLOW' : '🟢 GREEN'}
+              </div>
+              <div class="child-name">${child.name}</div>
+              <div class="child-meta">加入於 ${new Date(child.startDate).toLocaleDateString('zh-TW')}</div>
+              <div class="child-stats">
+                <div class="stat"><span class="stat-value">${recordCount}</span> 次記錄</div>
+                <div class="stat"><span class="stat-value">${totalMinutes}</span> 分鐘</div>
+              </div>
+              <div class="child-actions">
+                <button class="btn-small btn-edit" onclick="editChild(${child.id}, event)">編輯</button>
+                <button class="btn-small btn-delete" onclick="deleteChild(${child.id}, event)">刪除</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function deleteChild(id, e) {
+      e.stopPropagation();
+      if (!confirm('確定要刪除這位孩子嗎？記錄也會被刪除。')) return;
+      data.children = data.children.filter(c => c.id !== id);
+      data.records = data.records.filter(r => r.childId !== id);
+      saveData();
+      renderChildren();
+      updateAllSelects();
+    }
+
+    function editChild(id, e) {
+      e.stopPropagation();
+      const child = data.children.find(c => c.id === id);
+      if (!child) return;
+      const newName = prompt('編輯名字:', child.name);
+      if (newName && newName.trim()) {
+        child.name = newName.trim();
+        saveData();
+        renderChildren();
+        updateAllSelects();
+      }
+    }
+
+    function updateAllSelects() {
+      const selects = ['recordChildSelect', 'progressChildSelect', 'recommendChildSelect'];
+      const baseOption = '<option value="">-- 請選擇孩子 --</option>';
+      const childOptions = data.children.map(c => `<option value="${c.id}">${c.emoji} ${c.name}</option>`).join('');
+      selects.forEach(id => { document.getElementById(id).innerHTML = baseOption + childOptions; });
+    }
+
+    function updateBookFilter() {
+      const childId = parseFloat(document.getElementById('recordChildSelect').value);
+      const child = data.children.find(c => c.id === childId);
+      currentFilterLevel = child ? child.level : null;
+      document.getElementById('bookSearch').value = '';
+      filterBooks();
+    }
+
+    function filterBooks() {
+      const search = document.getElementById('bookSearch').value.toLowerCase();
+      const dropdown = document.getElementById('bookDropdown');
+      const filtered = BOOKS.filter(b => {
+        const matchLevel = !currentFilterLevel || b.l === currentFilterLevel;
+        const matchSearch = !search || b.zh.toLowerCase().includes(search) || b.id.toLowerCase().includes(search);
+        return matchLevel && matchSearch;
+      });
+      dropdown.innerHTML = filtered.slice(0, 15).map(b => `
+        <div class="book-item" onclick="selectBook('${b.id}', '${b.zh}', event)">
+          <div class="book-cover">${b.n}</div>
+          <div class="book-info">
+            <div class="book-title">${b.zh}</div>
+            <div class="book-meta">${b.id} - ${b.en}</div>
+          </div>
+        </div>
+      `).join('');
+      dropdown.classList.add('show');
+      document.getElementById('bookSearch').addEventListener('blur', () => setTimeout(() => dropdown.classList.remove('show'), 200));
+    }
+
+    function selectBook(bookId, bookTitle, e) {
+      e.stopPropagation();
+      document.getElementById('recordBookId').value = bookId;
+      document.getElementById('bookSearch').value = bookTitle;
+      document.getElementById('bookDropdown').classList.remove('show');
+    }
+
+    function updateDurationDisplay() {
+      const duration = document.getElementById('recordDuration').value;
+      document.getElementById('durationDisplay').textContent = duration + ' 分鐘';
+    }
+
+    function saveRecord() {
+      const childId = parseFloat(document.getElementById('recordChildSelect').value);
+      const bookId = document.getElementById('recordBookId').value;
+      const date = document.getElementById('recordDate').value;
+      const duration = parseInt(document.getElementById('recordDuration').value);
+      const note = document.getElementById('recordNote').value;
+      const reactions = ['reaction1', 'reaction2', 'reaction3', 'reaction4', 'reaction5', 'reaction6']
+        .filter(id => document.getElementById(id).checked)
+        .map(id => document.getElementById(id).value);
+
+      if (!childId || !bookId || !date) { alert('請填寫孩子、書籍和日期'); return; }
+
+      if (recordEditId) {
+        const record = data.records.find(r => r.id === recordEditId);
+        if (record) {
+          record.date = date;
+          record.duration = duration;
+          record.reactions = reactions;
+          record.note = note;
+          record.stars = selectedStars;
+        }
+        recordEditId = null;
+      } else {
+        const record = { id: Date.now() + Math.random(), childId, bookId, date, duration, reactions, note, stars: selectedStars, createdAt: new Date().toISOString() };
+        data.records.push(record);
+      }
+      saveData();
+      clearRecordForm();
+      renderRecords();
+      alert('✨ 記錄已保存！');
+    }
+
+    function clearRecordForm() {
+      document.getElementById('recordChildSelect').value = '';
+      document.getElementById('recordBookId').value = '';
+      document.getElementById('bookSearch').value = '';
+      document.getElementById('recordDate').value = new Date().toISOString().split('T')[0];
+      document.getElementById('recordDuration').value = 15;
+      updateDurationDisplay();
+      document.getElementById('recordNote').value = '';
+      document.querySelectorAll('input[type="checkbox"]').forEach(c => c.checked = false);
+      selectedStars = 0;
+      document.querySelectorAll('.star').forEach(s => s.classList.remove('active'));
+      recordEditId = null;
+    }
+
+    function renderRecords() {
+      const childId = parseFloat(document.getElementById('recordChildSelect').value);
+      const list = document.getElementById('recordsList');
+      const records = childId ? data.records.filter(r => r.childId === childId).sort((a, b) => new Date(b.date) - new Date(a.date)) : [];
+      if (records.length === 0) {
+        list.innerHTML = '<div class="empty-state"><div class="empty-state-emoji">📚</div><div class="empty-state-title">還沒有記錄</div><div class="empty-state-text">選擇孩子後，開始記錄第一次閱讀吧</div></div>';
+        return;
+      }
+      list.innerHTML = records.map(r => {
+        const book = BOOKS.find(b => b.id === r.bookId);
+        const bookTitle = book ? book.zh : r.bookId;
+        return `
+          <div class="record-item">
+            <div class="record-date">${r.date}</div>
+            <div class="record-book">📖 ${bookTitle}</div>
+            <div class="record-details">⏱️ ${r.duration} 分鐘 | 星級: ${'★'.repeat(r.stars)}${'☆'.repeat(3-r.stars)}</div>
+            ${r.reactions.length > 0 ? '<div class="record-details">反應: ' + r.reactions.join(' • ') + '</div>' : ''}
+            ${r.note ? '<div class="record-note">' + r.note + '</div>' : ''}
+            <div class="record-actions">
+              <button class="btn-small btn-edit" onclick="editRecord(${r.id})">編輯</button>
+              <button class="btn-small btn-delete" onclick="deleteRecord(${r.id})">刪除</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function editRecord(id) {
+      const record = data.records.find(r => r.id === id);
+      if (!record) return;
+      recordEditId = id;
+      document.getElementById('recordChildSelect').value = record.childId;
+      updateBookFilter();
+      document.getElementById('recordBookId').value = record.bookId;
+      const book = BOOKS.find(b => b.id === record.bookId);
+      document.getElementById('bookSearch').value = book ? book.zh : '';
+      document.getElementById('recordDate').value = record.date;
+      document.getElementById('recordDuration').value = record.duration;
+      updateDurationDisplay();
+      document.getElementById('recordNote').value = record.note;
+      record.reactions.forEach(reaction => {
+        ['reaction1', 'reaction2', 'reaction3', 'reaction4', 'reaction5', 'reaction6'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el.value === reaction) el.checked = true;
+        });
+      });
+      selectedStars = record.stars;
+      document.querySelectorAll('.star').forEach((s, i) => {
+        s.classList.toggle('active', i < selectedStars);
+      });
+      window.scrollTo(0, 0);
+    }
+
+    function deleteRecord(id) {
+      if (!confirm('確定要刪除這筆記錄嗎？')) return;
+      data.records = data.records.filter(r => r.id !== id);
+      saveData();
+      renderRecords();
+    }
+
+    function updateProgress() {
+      const childId = parseFloat(document.getElementById('progressChildSelect').value);
+      const content = document.getElementById('progressContent');
+      if (!childId) {
+        content.innerHTML = '<div class="empty-state"><div class="empty-state-emoji">📊</div><div class="empty-state-title">請選擇孩子</div></div>';
+        return;
+      }
+      const child = data.children.find(c => c.id === childId);
+      const records = data.records.filter(r => r.childId === childId);
+      const bookIds = new Set(records.map(r => r.bookId));
+      const readBooks = { RED: 0, YELLOW: 0, GREEN: 0 };
+      bookIds.forEach(bid => {
+        const book = BOOKS.find(b => b.id === bid);
+        if (book) readBooks[book.l]++;
+      });
+      const totalRead = readBooks.RED + readBooks.YELLOW + readBooks.GREEN;
+      const totalMinutes = records.reduce((sum, r) => sum + (r.duration || 0), 0);
+      const thisWeekRecords = records.filter(r => {
+        const recordDate = new Date(r.date);
+        const weekAgo = new Date();
+        weekAgo.setDate(weekAgo.getDate() - 7);
+        return recordDate >= weekAgo;
+      });
+      const thisWeekBooks = new Set(thisWeekRecords.map(r => r.bookId)).size;
+      const thisWeekMinutes = thisWeekRecords.reduce((sum, r) => sum + (r.duration || 0), 0);
+      const recentRecords = records.slice(0, 10);
+      let html = `
+        <div class="card">
+          <h3 style="margin-bottom: 16px;">📈 ${child.name} 的進度</h3>
+          <div style="margin-bottom: 20px;">
+            <div class="progress-title">🔴 RED (初階) 進度</div>
+            <div class="progress-bar-container">
+              <div class="progress-bar red" style="width: ${Math.min(100, (readBooks.RED / 100) * 100)}%">${readBooks.RED}/100</div>
+            </div>
+            <div class="progress-text">已讀 ${readBooks.RED} / 100 本</div>
+          </div>
+          <div style="margin-bottom: 20px;">
+            <div class="progress-title">🟡 YELLOW (中階) 進度</div>
+            <div class="progress-bar-container">
+              <div class="progress-bar yellow" style="width: ${Math.min(100, (readBooks.YELLOW / 100) * 100)}%">${readBooks.YELLOW}/100</div>
+            </div>
+            <div class="progress-text">已讀 ${readBooks.YELLOW} / 100 本</div>
+          </div>
+          <div style="margin-bottom: 20px;">
+            <div class="progress-title">🟢 GREEN (高階) 進度</div>
+            <div class="progress-bar-container">
+              <div class="progress-bar green" style="width: ${Math.min(100, (readBooks.GREEN / 100) * 100)}%">${readBooks.GREEN}/100</div>
+            </div>
+            <div class="progress-text">已讀 ${readBooks.GREEN} / 100 本</div>
+          </div>
+          <div style="padding-top: 16px; border-top: 1px solid #e8dfd7;">
+            <div style="margin-bottom: 12px;">
+              <span style="font-weight: 600;">📚 總計</span>: <span style="color: #D4A843; font-weight: 600;">${totalRead}</span> 本書
+            </div>
+            <div style="margin-bottom: 12px;">
+              <span style="font-weight: 600;">⏱️ 累計</span>: <span style="color: #D4A843; font-weight: 600;">${totalMinutes}</span> 分鐘
+            </div>
+            <div style="margin-bottom: 12px;">
+              <span style="font-weight: 600;">本週</span>: <span style="color: #27AE60; font-weight: 600;">${thisWeekBooks}</span> 本書, <span style="color: #27AE60; font-weight: 600;">${thisWeekMinutes}</span> 分鐘
+            </div>
+          </div>
+        </div>
+      `;
+      if (child.level === 'RED' && readBooks.RED >= 80) {
+        html += '<div class="encouragement"><div class="encouragement-emoji">🌟</div><div class="encouragement-text">好棒！已讀完 RED 級別 80% 的書籍，即將升級到 YELLOW！繼續加油！</div></div>';
+      } else if (child.level === 'YELLOW' && readBooks.YELLOW >= 80) {
+        html += '<div class="encouragement"><div class="encouragement-emoji">🌟</div><div class="encouragement-text">好棒！已讀完 YELLOW 級別 80% 的書籍，即將升級到 GREEN！繼續加油！</div></div>';
+      } else if (child.level === 'GREEN' && readBooks.GREEN >= 80) {
+        html += '<div class="encouragement"><div class="encouragement-emoji">🎉</div><div class="encouragement-text">超棒！已讀完 GREEN 級別 80% 的書籍，你是閱讀小達人！</div></div>';
+      }
+      html += '<div class="card"><h3 style="margin-bottom: 16px;">📅 最近的閱讀</h3><div class="timeline">' + recentRecords.map(r => {
+        const book = BOOKS.find(b => b.id === r.bookId);
+        return `
+          <div class="timeline-item">
+            <div class="timeline-content">
+              <div class="timeline-date">${r.date}</div>
+              <div class="timeline-book">📖 ${book ? book.zh : r.bookId}</div>
+              <div class="timeline-child">⏱️ ${r.duration} 分鐘</div>
+            </div>
+          </div>
+        `;
+      }).join('') + '</div></div>';
+      content.innerHTML = html;
+    }
+
+    function updateRecommendations() {
+      const childId = parseFloat(document.getElementById('recommendChildSelect').value);
+      const content = document.getElementById('recommendContent');
+      if (!childId) {
+        content.innerHTML = '<div class="empty-state"><div class="empty-state-emoji">📚</div><div class="empty-state-title">請選擇孩子</div></div>';
+        return;
+      }
+      const child = data.children.find(c => c.id === childId);
+      const readBookIds = new Set(data.records.filter(r => r.childId === childId).map(r => r.bookId));
+      const unread = BOOKS.filter(b => b.l === child.level && !readBookIds.has(b.id));
+      const recommended = unread.sort(() => Math.random() - 0.5).slice(0, 3);
+      let html = '';
+      if (recommended.length === 0) {
+        html = '<div class="empty-state"><div class="empty-state-emoji">🎉</div><div class="empty-state-title">太棒了！</div><div class="empty-state-text">這個級別的所有書籍都讀過了！升級到下一個級別吧！</div></div>';
+      } else {
+        html = '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">' + recommended.map(book => `
+          <div class="recommendation-card">
+            <div class="rec-cover">${book.n}</div>
+            <div class="rec-title">${book.zh}</div>
+            <div class="rec-info">${book.en}</div>
+            <div class="rec-level ${book.l === 'RED' ? 'level-red' : book.l === 'YELLOW' ? 'level-yellow' : 'level-green'}">${book.l === 'RED' ? '🔴 RED' : book.l === 'YELLOW' ? '🟡 YELLOW' : '🟢 GREEN'}</div>
+            <div class="rec-actions">
+              <button class="btn btn-primary" onclick="markAsReadQuick('${book.id}', '${book.zh}')">✅ 已讀完</button>
+            </div>
+          </div>
+        `).join('') + '</div>';
+      }
+      const readPercent = Math.round((readBookIds.size / BOOKS.filter(b => b.l === child.level).length) * 100);
+      html = `
+        <div class="card">
+          <div style="margin-bottom: 12px;">
+            <span style="font-weight: 600;">進度: </span><span style="color: #D4A843; font-weight: 600;">${readPercent}%</span> (${readBookIds.size}/${BOOKS.filter(b => b.l === child.level).length})
+          </div>
+          <div style="margin-bottom: 16px;">
+            <div class="progress-bar-container">
+              <div class="progress-bar ${child.level === 'RED' ? 'red' : child.level === 'YELLOW' ? 'yellow' : 'green'}" style="width: ${readPercent}%"></div>
+            </div>
+          </div>
+        </div>
+      ` + html;
+      content.innerHTML = html;
+    }
+
+    function markAsReadQuick(bookId, bookTitle) {
+      const childId = parseFloat(document.getElementById('recommendChildSelect').value);
+      if (!childId) { alert('請先選擇孩子'); return; }
+      const record = { id: Date.now() + Math.random(), childId, bookId, date: new Date().toISOString().split('T')[0], duration: 15, reactions: [], note: '', stars: 0, createdAt: new Date().toISOString() };
+      data.records.push(record);
+      saveData();
+      updateRecommendations();
+      alert('✨ ' + bookTitle + ' 已加入記錄！');
+    }
+
+    function saveData() {
+      localStorage.setItem('lele_reading_data', JSON.stringify(data));
+    }
+
+    // Additional listener for record list update
+    document.getElementById('recordChildSelect')?.addEventListener('change', renderRecords);
+  </script>
+</body>
+</html>

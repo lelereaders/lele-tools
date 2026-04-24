@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>樂樂主題找書 | Le Le Theme Book Finder</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--brand:#D4A843;--brand-light:#FFF8F0;--brand-hover:#C19A3A;--red:#E74C3C;--yellow:#E8A317;--green:#27AE60;--bg:#fff;--text:#1a1a1a;--sub:#888;--card-radius:14px}
+body{font-family:'Noto Sans TC','Noto Sans SC',-apple-system,sans-serif;background:var(--bg);min-height:100vh}
+
+/* Header */
+.hdr{text-align:center;padding:2rem 1rem 1.5rem;background:linear-gradient(180deg,#FFF8F0 0%,#fff 100%)}
+.hdr-title{font-size:28px;font-weight:700;color:var(--text);margin-bottom:6px}
+.hdr-title span{color:var(--brand)}
+.hdr-desc{font-size:15px;color:#666;margin-bottom:16px}
+
+/* Search */
+.search-wrap{max-width:700px;margin:0 auto;padding:0 1rem}
+.search-box{background:#f8f8f8;border:1.5px solid #e0e0e0;border-radius:14px;display:flex;align-items:center;padding:0 20px;transition:border-color .2s}
+.search-box:focus-within{border-color:var(--brand)}
+.search-box .icon{margin-right:10px;color:#ccc;font-size:18px}
+.search-box input{flex:1;border:none;padding:14px 0;font-size:16px;outline:none;background:transparent}
+.search-box .cnt{font-size:13px;color:var(--sub);white-space:nowrap}
+
+/* Filters */
+.filters{max-width:700px;margin:1rem auto;padding:0 1rem;display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.fb{padding:8px 20px;border-radius:20px;border:1.5px solid #ddd;background:#fff;cursor:pointer;font-size:14px;transition:all .15s}
+.fb:hover{border-color:var(--brand)}
+.fb.active{background:var(--brand);color:#fff;border-color:var(--brand)}
+
+/* Theme Grid */
+.theme-section{max-width:1100px;margin:1.5rem auto;padding:0 1rem}
+.section-title{font-size:16px;font-weight:600;color:var(--sub);margin-bottom:12px;padding-left:4px}
+.theme-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.theme-card{background:#fff;border:1.5px solid #eee;border-radius:16px;padding:20px 12px;text-align:center;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.theme-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.1);border-color:var(--brand)}
+.theme-card.active{border-color:var(--brand);background:var(--brand-light);box-shadow:0 4px 16px rgba(212,168,67,.2)}
+.theme-card .emoji{font-size:36px;display:block;margin-bottom:8px}
+.theme-card .name{font-size:15px;font-weight:600;color:var(--text)}
+.theme-card .sub{font-size:12px;color:var(--sub);margin-top:4px}
+.theme-card .count{position:absolute;top:8px;right:10px;font-size:11px;color:#fff;background:var(--brand);padding:2px 8px;border-radius:10px;font-weight:500}
+
+/* Active theme detail */
+.theme-detail{max-width:1100px;margin:0 auto;padding:0 1rem;display:none}
+.theme-detail.show{display:block}
+.td-header{background:var(--brand-light);border-radius:16px;padding:1.5rem;margin-bottom:1rem;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.td-emoji{font-size:48px}
+.td-info{flex:1;min-width:200px}
+.td-title{font-size:22px;font-weight:700;color:var(--text)}
+.td-en{font-size:14px;color:var(--sub)}
+.td-close{background:none;border:2px solid #ddd;border-radius:10px;padding:8px 16px;cursor:pointer;font-size:14px;color:#666;transition:all .15s}
+.td-close:hover{border-color:var(--brand);color:var(--brand)}
+
+/* Words */
+.words-section{margin-bottom:1.2rem}
+.words-label{font-size:14px;font-weight:600;color:var(--sub);margin-bottom:8px}
+.words-wrap{display:flex;flex-wrap:wrap;gap:8px}
+.word-tag{padding:6px 14px;background:#fff;border:1.5px solid #e0e0e0;border-radius:20px;font-size:14px;cursor:pointer;transition:all .15s}
+.word-tag:hover{border-color:var(--brand);background:var(--brand-light)}
+.word-tag.active{background:var(--brand);color:#fff;border-color:var(--brand)}
+
+/* Book Grid */
+.book-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;margin-top:1rem}
+.book-card{background:#fff;border-radius:var(--card-radius);overflow:hidden;cursor:pointer;border:1px solid #eee;transition:all .2s}
+.book-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.1)}
+.book-card .cbar{height:4px}
+.book-card .cbar.r{background:var(--red)}.book-card .cbar.y{background:var(--yellow)}.book-card .cbar.g{background:var(--green)}
+.cover-wrap{width:100%;aspect-ratio:1;background:#faf5f2;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.cover-wrap img{width:100%;height:100%;object-fit:cover}
+.cover-placeholder{font-size:48px}
+.book-body{padding:10px 14px 14px}
+.book-badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:10px;font-weight:500;color:#fff}
+.book-badge.r{background:var(--red)}.book-badge.y{background:var(--yellow)}.book-badge.g{background:var(--green)}
+.book-title{font-size:15px;font-weight:600;margin-top:4px;color:var(--text)}
+.book-en{font-size:12px;color:var(--sub);margin-top:2px}
+.book-count{text-align:center;padding:1rem;color:var(--sub);font-size:14px}
+
+/* Empty */
+.empty{text-align:center;padding:3rem;grid-column:1/-1}
+.empty .ico{font-size:48px;margin-bottom:8px}
+
+/* Modal */
+.mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;justify-content:center;align-items:flex-start;padding:2rem 1rem;overflow-y:auto}
+.mo.show{display:flex}
+.modal{background:#fff;border-radius:16px;max-width:480px;width:100%;overflow:hidden;position:relative}
+.modal-close{position:absolute;top:12px;right:16px;font-size:24px;cursor:pointer;color:#aaa;background:none;border:none;z-index:2}
+.modal-bar{height:6px}
+.modal-bar.r{background:var(--red)}.modal-bar.y{background:var(--yellow)}.modal-bar.g{background:var(--green)}
+.modal-cover{width:100%;aspect-ratio:1;background:#faf5f2;overflow:hidden;display:flex;align-items:center;justify-content:center;max-height:300px}
+.modal-cover img{width:100%;height:100%;object-fit:cover}
+.modal-body{padding:1.5rem}
+.modal-badge{display:inline-block;font-size:12px;padding:3px 10px;border-radius:10px;font-weight:500;color:#fff}
+.modal-badge.r{background:var(--red)}.modal-badge.y{background:var(--yellow)}.modal-badge.g{background:var(--green)}
+.modal-title{font-size:20px;font-weight:700;margin:6px 0 2px;color:var(--text)}
+.modal-en{font-size:14px;color:var(--sub)}
+.modal-themes{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px}
+.modal-theme-tag{font-size:12px;padding:3px 10px;background:var(--brand-light);color:var(--brand);border-radius:12px}
+
+/* Footer */
+.footer{background:#1a1a1a;color:#fff;text-align:center;padding:1.2rem 1rem;font-size:14px;margin-top:2rem}
+.footer a{color:#fff;text-decoration:none;margin:0 .6rem;opacity:.8}
+.footer a:hover{opacity:1}
+.sub-footer{font-size:12px;opacity:.6;margin-top:6px}
+
+/* Back to top */
+.back-top{position:fixed;bottom:20px;right:20px;background:var(--brand);color:#fff;border:none;border-radius:50%;width:44px;height:44px;font-size:20px;cursor:pointer;display:none;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,.2);z-index:50;transition:opacity .2s}
+.back-top.show{display:flex}
+
+@media(max-width:768px){
+  .theme-grid{grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
+  .theme-card{padding:14px 8px}
+  .theme-card .emoji{font-size:28px}
+  .theme-card .name{font-size:13px}
+  .book-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+  .hdr-title{font-size:22px}
+  .td-header{flex-direction:column;text-align:center}
+}
+@media(max-width:480px){
+  .theme-grid{grid-template-columns:repeat(3,1fr)}
+  .book-grid{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="hdr">
+  <div class="hdr-title">📚 樂樂<span>主題找書</span>系統</div>
+  <div class="hdr-desc">選擇主題，找到相關的故事書！29 個主題 · 300 本書</div>
+</div>
+
+<!-- Search -->
+<div class="search-wrap">
+  <div class="search-box">
+    <span class="icon">🔍</span>
+    <input id="searchInput" placeholder="搜尋主題或書名…" autocomplete="off">
+    <span class="cnt" id="resultCount"></span>
+  </div>
+</div>
+
+<!-- Level Filters -->
+<div class="filters">
+  <button class="fb active" data-level="ALL" onclick="setLevel('ALL')">全部</button>
+  <button class="fb" data-level="RED" onclick="setLevel('RED')">🔴 紅色 · 入門</button>
+  <button class="fb" data-level="YELLOW" onclick="setLevel('YELLOW')">🟡 黃色 · 中級</button>
+  <button class="fb" data-level="GREEN" onclick="setLevel('GREEN')">🟢 綠色 · 進階</button>
+</div>
+
+<!-- Theme Categories -->
+<div class="theme-section" id="themeSection">
+  <div class="section-title" id="sectionLabel">🏷️ 選擇一個主題</div>
+  <div class="theme-grid" id="themeGrid"></div>
+</div>
+
+<!-- Theme Detail -->
+<div class="theme-detail" id="themeDetail">
+  <div class="td-header">
+    <div class="td-emoji" id="tdEmoji"></div>
+    <div class="td-info">
+      <div class="td-title" id="tdTitle"></div>
+      <div class="td-en" id="tdEn"></div>
+    </div>
+    <button class="td-close" onclick="closeTheme()">✕ 返回全部主題</button>
+  </div>
+  <div class="words-section">
+    <div class="words-label">📝 主題字詞（點擊篩選）</div>
+    <div class="words-wrap" id="wordsWrap"></div>
+  </div>
+  <div class="book-count" id="bookCount"></div>
+  <div class="book-grid" id="bookGrid"></div>
+</div>
+
+<!-- Modal -->
+<div class="mo" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-bar" id="modalBar"></div>
+    <div class="modal-cover" id="modalCover"></div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<!-- Back to top -->
+<button class="back-top" id="backTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<!-- Footer -->
+<div class="footer">
+  <p>
+    <a href="/">🏠 工具箱</a>
+    <a href="/library">📚 找書系統</a>
+    <a href="/translate">🔤 翻譯查找</a>
+    <a href="/characters">🔍 找字系統</a>
+    <a href="/puzzle">🧩 搜字遊戲</a>
+  </p>
+  <p style="margin-top:8px">
+    <a href="https://www.lelechinese.com" target="_blank">官網</a>
+    <a href="https://www.instagram.com/lelechinesetw" target="_blank">Instagram</a>
+    <a href="https://www.facebook.com/lelechinese" target="_blank">Facebook</a>
+    <a href="https://www.youtube.com/@lelechinese" target="_blank">YouTube</a>
+  </p>
+  <p class="sub-footer">© 2026 <a href="https://www.lelechinese.com" target="_blank" style="opacity:1">樂樂文化 Le Le Culture</a></p>
+</div>
+
+<script>
+var THEMES=[{"id": "new-year", "emoji": "🎆", "zh": "西元新年", "en": "Happy New Year", "desc": "新開始、慶祝、願望", "words": ["新年", "新", "開始", "一月", "慶祝", "煙火", "倒數", "願望", "希望"], "bookIds": ["YELLOW92", "YELLOW93", "GREEN50", "GREEN63"]}, {"id": "lunar", "emoji": "🧧", "zh": "農曆新年", "en": "Lunar New Year", "desc": "春節、紅包、年獸、團圓", "words": ["春節", "紅包", "年獸", "舞龍", "舞獅", "鞭炮", "團圓飯", "拜年", "對聯", "燈籠", "元宵", "湯圓", "過年", "恭喜", "福"], "bookIds": ["YELLOW92", "YELLOW93", "GREEN23"]}, {"id": "valentine", "emoji": "💝", "zh": "情人節", "en": "Valentine's Day", "desc": "愛、心、甜蜜、擁抱", "words": ["愛", "心", "甜蜜", "擁抱", "親", "喜歡", "朋友", "愛心", "花", "玫瑰", "禮物", "卡片"], "bookIds": ["RED6", "RED8", "RED54", "RED94", "YELLOW11", "YELLOW16", "YELLOW17", "YELLOW20", "YELLOW33", "YELLOW38", "YELLOW39", "YELLOW40", "YELLOW45", "YELLOW48", "YELLOW52", "YELLOW57", "YELLOW59", "YELLOW68", "GREEN1", "GREEN2", "GREEN4", "GREEN8", "GREEN13", "GREEN25", "GREEN36", "GREEN51", "GREEN60", "GREEN70", "GREEN74", "GREEN83", "GREEN85", "GREEN93", "GREEN96", "GREEN98"]}, {"id": "easter", "emoji": "🐣", "zh": "復活節", "en": "Easter", "desc": "彩蛋、兔子、尋蛋", "words": ["復活節", "蛋", "兔子", "彩蛋", "尋蛋", "巧克力", "春天", "小雞", "籃子"], "bookIds": ["RED31", "RED32", "RED33", "RED74", "RED75", "RED85", "YELLOW15", "YELLOW16", "YELLOW27", "YELLOW41", "YELLOW54", "YELLOW56", "YELLOW58", "YELLOW67", "GREEN6", "GREEN9", "GREEN53", "GREEN79", "GREEN80", "GREEN83", "GREEN89", "GREEN97"]}, {"id": "dragon-boat", "emoji": "🐉", "zh": "端午節", "en": "Dragon Boat", "desc": "粽子、龍舟、屈原", "words": ["端午", "粽子", "龍舟", "賽龍舟", "屈原", "香包", "艾草", "划船"], "bookIds": ["YELLOW92", "YELLOW93"]}, {"id": "moon", "emoji": "🥮", "zh": "中秋節", "en": "Moon Festival", "desc": "月亮、月餅、燈籠、團圓", "words": ["中秋", "月亮", "月餅", "燈籠", "團圓", "嫦娥", "兔子", "賞月", "圓", "柚子"], "bookIds": ["RED84", "YELLOW24", "YELLOW92", "YELLOW93", "GREEN23", "GREEN91"]}, {"id": "christmas", "emoji": "🎄", "zh": "聖誕節", "en": "Christmas", "desc": "聖誕老人、禮物、雪、聖誕樹", "words": ["聖誕", "聖誕老人", "禮物", "聖誕樹", "雪", "鈴鐺", "糖果", "襪子", "雪人", "馴鹿", "星星"], "bookIds": ["RED71", "RED89", "YELLOW7", "YELLOW73"]}, {"id": "halloween", "emoji": "🎃", "zh": "萬聖節", "en": "Halloween", "desc": "鬼、南瓜、糖果、裝扮", "words": ["萬聖節", "鬼", "南瓜", "面具", "糖果", "嚇人", "蜘蛛", "蝙蝠", "巫婆", "骷髏", "裝扮"], "bookIds": ["RED6", "RED91", "YELLOW20", "YELLOW71", "YELLOW90", "YELLOW91", "GREEN13", "GREEN32", "GREEN84"]}, {"id": "thanksgiving", "emoji": "🦃", "zh": "感恩節", "en": "Thanksgiving", "desc": "感恩、謝謝、家人、分享", "words": ["感恩", "謝謝", "家人", "團聚", "火雞", "分享", "感謝", "幫忙"], "bookIds": []}, {"id": "fathers-day", "emoji": "👨", "zh": "父親節", "en": "Father's Day", "desc": "爸爸、父親", "words": ["爸爸", "父親", "爹", "爸", "老爸", "英雄"], "bookIds": ["RED9", "RED23", "RED32", "RED47", "RED55", "RED60", "RED91", "YELLOW2", "YELLOW9", "YELLOW25", "YELLOW45", "YELLOW47", "YELLOW50", "YELLOW70", "YELLOW83", "GREEN5", "GREEN10", "GREEN22", "GREEN29", "GREEN34", "GREEN39", "GREEN41", "GREEN47", "GREEN49", "GREEN53", "GREEN55", "GREEN56", "GREEN59", "GREEN64", "GREEN66", "GREEN73", "GREEN80", "GREEN86", "GREEN88"]}, {"id": "mothers-day", "emoji": "👩", "zh": "母親節", "en": "Mother's Day", "desc": "媽媽、母親", "words": ["媽媽", "母親", "娘", "媽", "老媽", "感謝"], "bookIds": ["RED9", "RED17", "RED19", "RED32", "RED47", "RED52", "RED55", "RED59", "RED60", "YELLOW1", "YELLOW3", "YELLOW4", "YELLOW7", "YELLOW12", "YELLOW13", "YELLOW15", "YELLOW24", "YELLOW25", "YELLOW27", "YELLOW35", "YELLOW37", "YELLOW45", "YELLOW50", "YELLOW59", "YELLOW83", "YELLOW87", "YELLOW89", "YELLOW90", "GREEN10", "GREEN17", "GREEN21", "GREEN22", "GREEN26", "GREEN27", "GREEN29", "GREEN30", "GREEN34", "GREEN39", "GREEN44", "GREEN46", "GREEN49", "GREEN50", "GREEN51", "GREEN53", "GREEN54", "GREEN55", "GREEN56", "GREEN63", "GREEN65", "GREEN68", "GREEN73", "GREEN81", "GREEN87", "GREEN88", "GREEN89", "GREEN94", "GREEN95", "GREEN98"]}, {"id": "spring", "emoji": "🌸", "zh": "春天", "en": "Spring", "desc": "花、發芽、蝴蝶、溫暖", "words": ["春天", "花", "開花", "種子", "發芽", "蝴蝶", "蜜蜂", "櫻花", "草", "綠色", "下雨", "彩虹", "小鳥", "花園", "毛毛蟲", "溫暖"], "bookIds": ["RED22", "RED33", "RED54", "RED77", "RED84", "YELLOW15", "YELLOW16", "YELLOW19", "YELLOW23", "YELLOW27", "YELLOW64", "YELLOW65", "YELLOW68", "YELLOW77", "YELLOW79", "YELLOW81", "GREEN14", "GREEN29", "GREEN37", "GREEN53", "GREEN57", "GREEN84", "GREEN94", "GREEN99", "GREEN100"]}, {"id": "summer", "emoji": "☀️", "zh": "夏天", "en": "Summer", "desc": "游泳、海邊、太陽、冰淇淋", "words": ["夏天", "游泳", "海邊", "太陽", "熱", "西瓜", "冰淇淋", "沖浪", "防曬", "沙灘", "冰", "涼", "汗"], "bookIds": ["RED10", "RED12", "RED24", "RED38", "RED39", "RED47", "RED81", "RED84", "RED88", "RED90", "RED92", "RED99", "YELLOW6", "YELLOW16", "YELLOW22", "YELLOW40", "YELLOW43", "YELLOW49", "YELLOW51", "YELLOW57", "YELLOW60", "YELLOW66", "YELLOW77", "YELLOW78", "YELLOW81", "YELLOW94", "YELLOW95", "GREEN5", "GREEN10", "GREEN16", "GREEN42", "GREEN50", "GREEN57", "GREEN66", "GREEN73", "GREEN76", "GREEN81", "GREEN86", "GREEN90", "GREEN93", "GREEN95", "GREEN97", "GREEN98", "GREEN99", "GREEN100"]}, {"id": "autumn", "emoji": "🍂", "zh": "秋天", "en": "Autumn", "desc": "落葉、堅果、豐收", "words": ["秋天", "落葉", "楓葉", "涼", "堅果", "松鼠", "豐收", "稻草人", "南瓜", "蘋果", "風", "月亮"], "bookIds": ["RED3", "RED19", "RED27", "RED43", "RED50", "RED60", "RED65", "RED69", "RED80", "YELLOW23", "YELLOW65", "YELLOW68", "YELLOW70", "YELLOW77", "YELLOW79", "YELLOW80", "YELLOW84", "GREEN28", "GREEN50", "GREEN51", "GREEN83", "GREEN99"]}, {"id": "winter", "emoji": "❄️", "zh": "冬天", "en": "Winter", "desc": "雪、冷、冬眠、圍巾", "words": ["冬天", "雪", "冷", "冰", "下雪", "雪人", "圍巾", "手套", "外套", "冬眠", "火爐", "熱可可", "溜冰"], "bookIds": ["RED1", "RED5", "RED45", "RED51", "RED54", "RED68", "RED72", "RED73", "RED74", "RED77", "RED89", "RED94", "RED97", "RED98", "YELLOW2", "YELLOW6", "YELLOW8", "YELLOW19", "YELLOW28", "YELLOW56", "YELLOW57", "YELLOW60", "YELLOW61", "YELLOW64", "YELLOW65", "YELLOW66", "YELLOW77", "YELLOW79", "YELLOW88", "YELLOW93", "YELLOW96", "GREEN7", "GREEN21", "GREEN25", "GREEN29", "GREEN60", "GREEN65", "GREEN81", "GREEN82", "GREEN88", "GREEN89", "GREEN99"]}, {"id": "school", "emoji": "🏫", "zh": "上學", "en": "School", "desc": "學校、老師、書包、功課", "words": ["學校", "老師", "學生", "教室", "功課", "書", "鉛筆", "橡皮", "書包", "上學", "讀書", "寫字", "考試", "同學", "校車", "操場", "午餐盒"], "bookIds": ["RED5", "RED35", "RED36", "RED37", "RED38", "RED39", "RED40", "RED59", "YELLOW4", "YELLOW7", "YELLOW30", "YELLOW34", "YELLOW35", "YELLOW46", "YELLOW50", "YELLOW77", "YELLOW89", "YELLOW96", "YELLOW97", "GREEN1", "GREEN2", "GREEN3", "GREEN5", "GREEN10", "GREEN20", "GREEN56", "GREEN59", "GREEN60", "GREEN62", "GREEN87", "GREEN88", "GREEN94"]}, {"id": "animals", "emoji": "🐾", "zh": "動物", "en": "Animals", "desc": "狗、貓、魚、鳥、熊…", "words": ["狗", "貓", "魚", "鳥", "熊", "猴子", "大象", "老虎", "獅子", "兔子", "青蛙", "鴨子", "豬", "馬", "牛", "羊", "蜘蛛", "企鵝", "樹熊", "松鼠", "螃蟹", "刺蝟", "瓢蟲", "鱷魚", "鷹", "烏鴉", "鯨魚", "鯊魚", "恐龍", "長頸鹿", "斑馬", "河馬", "豹", "蝸牛", "蜜蜂", "螢火蟲", "海獺", "蝴蝶", "毛毛蟲"], "bookIds": ["RED4", "RED9", "RED18", "RED19", "RED20", "RED21", "RED22", "RED23", "RED24", "RED25", "RED26", "RED27", "RED28", "RED29", "RED30", "RED31", "RED32", "RED33", "RED45", "RED49", "RED54", "RED61", "RED69", "RED71", "RED73", "RED78", "RED83", "RED85", "RED86", "RED98", "YELLOW6", "YELLOW7", "YELLOW8", "YELLOW12", "YELLOW14", "YELLOW15", "YELLOW16", "YELLOW17", "YELLOW18", "YELLOW19", "YELLOW20", "YELLOW21", "YELLOW22", "YELLOW23", "YELLOW24", "YELLOW25", "YELLOW26", "YELLOW27", "YELLOW29", "YELLOW31", "YELLOW33", "YELLOW34", "YELLOW38", "YELLOW39", "YELLOW42", "YELLOW43", "YELLOW44", "YELLOW48", "YELLOW49", "YELLOW51", "YELLOW52", "YELLOW53", "YELLOW54", "YELLOW55", "YELLOW56", "YELLOW57", "YELLOW63", "YELLOW65", "YELLOW66", "YELLOW67", "YELLOW71", "YELLOW75", "YELLOW76", "YELLOW79", "YELLOW91", "YELLOW95", "GREEN1", "GREEN2", "GREEN3", "GREEN6", "GREEN7", "GREEN10", "GREEN11", "GREEN15", "GREEN18", "GREEN21", "GREEN22", "GREEN23", "GREEN24", "GREEN25", "GREEN26", "GREEN27", "GREEN28", "GREEN29", "GREEN30", "GREEN31", "GREEN32", "GREEN33", "GREEN34", "GREEN35", "GREEN36", "GREEN37", "GREEN38", "GREEN39", "GREEN40", "GREEN41", "GREEN42", "GREEN43", "GREEN44", "GREEN45", "GREEN49", "GREEN52", "GREEN53", "GREEN54", "GREEN55", "GREEN60", "GREEN62", "GREEN63", "GREEN65", "GREEN66", "GREEN67", "GREEN68", "GREEN70", "GREEN71", "GREEN74", "GREEN75", "GREEN76", "GREEN80", "GREEN82", "GREEN90", "GREEN93", "GREEN94", "GREEN95", "GREEN97", "GREEN99"]}, {"id": "daily", "emoji": "🎯", "zh": "日常活動", "en": "Daily Activities", "desc": "玩、跑、跳、畫畫、煮飯", "words": ["玩", "跑", "跳", "唱歌", "跳舞", "畫畫", "煮飯", "吃飯", "睡覺", "看書", "散步", "騎車", "盪鞦韆", "溜滑梯", "拼圖", "放風箏", "摺紙", "剪紙", "看電視", "運動", "洗澡", "刷牙", "穿衣服", "起床"], "bookIds": ["RED1", "RED2", "RED6", "RED7", "RED8", "RED9", "RED10", "RED11", "RED14", "RED17", "RED18", "RED20", "RED30", "RED35", "RED38", "RED43", "RED56", "RED60", "RED61", "RED63", "RED69", "RED70", "RED78", "RED79", "RED80", "RED92", "YELLOW2", "YELLOW3", "YELLOW4", "YELLOW6", "YELLOW8", "YELLOW10", "YELLOW12", "YELLOW13", "YELLOW14", "YELLOW15", "YELLOW16", "YELLOW17", "YELLOW20", "YELLOW21", "YELLOW23", "YELLOW25", "YELLOW28", "YELLOW29", "YELLOW31", "YELLOW32", "YELLOW33", "YELLOW34", "YELLOW35", "YELLOW39", "YELLOW45", "YELLOW49", "YELLOW50", "YELLOW52", "YELLOW53", "YELLOW54", "YELLOW55", "YELLOW57", "YELLOW58", "YELLOW59", "YELLOW61", "YELLOW68", "YELLOW77", "YELLOW81", "YELLOW82", "YELLOW85", "YELLOW87", "YELLOW90", "YELLOW97", "YELLOW100", "GREEN3", "GREEN4", "GREEN6", "GREEN8", "GREEN9", "GREEN12", "GREEN13", "GREEN15", "GREEN16", "GREEN18", "GREEN19", "GREEN20", "GREEN23", "GREEN24", "GREEN25", "GREEN27", "GREEN30", "GREEN32", "GREEN33", "GREEN35", "GREEN36", "GREEN41", "GREEN42", "GREEN45", "GREEN49", "GREEN52", "GREEN55", "GREEN56", "GREEN58", "GREEN60", "GREEN61", "GREEN63", "GREEN64", "GREEN65", "GREEN66", "GREEN68", "GREEN70", "GREEN71", "GREEN74", "GREEN78", "GREEN89", "GREEN93", "GREEN96", "GREEN98"]}, {"id": "family", "emoji": "👨‍👩‍👧‍👦", "zh": "家人", "en": "Family", "desc": "爸爸、媽媽、兄弟姐妹、祖父母", "words": ["家", "爸爸", "媽媽", "哥哥", "姐姐", "弟弟", "妹妹", "爺爺", "奶奶", "寶寶", "家人", "全家", "雙胞胎", "叔叔", "阿姨", "外婆", "外公"], "bookIds": ["RED4", "RED5", "RED51", "RED55", "RED56", "RED57", "RED58", "RED60", "RED61", "RED78", "RED91", "RED92", "YELLOW1", "YELLOW4", "YELLOW5", "YELLOW9", "YELLOW10", "YELLOW11", "YELLOW12", "YELLOW15", "YELLOW22", "YELLOW25", "YELLOW30", "YELLOW34", "YELLOW35", "YELLOW37", "YELLOW45", "YELLOW46", "YELLOW47", "YELLOW48", "YELLOW49", "YELLOW50", "YELLOW51", "YELLOW59", "YELLOW63", "YELLOW70", "YELLOW81", "YELLOW83", "YELLOW86", "YELLOW87", "YELLOW89", "YELLOW90", "YELLOW91", "GREEN3", "GREEN5", "GREEN6", "GREEN8", "GREEN9", "GREEN17", "GREEN23", "GREEN24", "GREEN25", "GREEN29", "GREEN30", "GREEN31", "GREEN34", "GREEN35", "GREEN39", "GREEN40", "GREEN41", "GREEN46", "GREEN47", "GREEN48", "GREEN49", "GREEN50", "GREEN51", "GREEN53", "GREEN54", "GREEN55", "GREEN56", "GREEN57", "GREEN58", "GREEN59", "GREEN60", "GREEN61", "GREEN62", "GREEN64", "GREEN65", "GREEN72", "GREEN73", "GREEN75", "GREEN80", "GREEN81", "GREEN83", "GREEN85", "GREEN87", "GREEN88", "GREEN89", "GREEN96", "GREEN98", "GREEN99"]}, {"id": "body", "emoji": "🦴", "zh": "身體", "en": "Body", "desc": "頭、手、腳、眼睛、牙齒", "words": ["頭", "手", "腳", "眼睛", "鼻子", "嘴巴", "耳朵", "頭髮", "臉", "牙齒", "手指", "肚子", "身體", "尾巴", "翅膀", "羽毛", "腿", "背", "膝蓋", "脖子"], "bookIds": ["RED1", "RED3", "RED8", "RED12", "RED15", "RED16", "RED18", "RED19", "RED24", "RED28", "RED31", "RED35", "RED40", "RED45", "RED46", "RED49", "RED51", "RED53", "RED54", "RED62", "RED63", "RED64", "RED66", "RED67", "RED76", "RED77", "RED78", "RED84", "RED85", "RED89", "RED97", "RED99", "RED100", "YELLOW3", "YELLOW6", "YELLOW7", "YELLOW8", "YELLOW23", "YELLOW25", "YELLOW26", "YELLOW27", "YELLOW30", "YELLOW31", "YELLOW32", "YELLOW33", "YELLOW37", "YELLOW40", "YELLOW43", "YELLOW46", "YELLOW47", "YELLOW48", "YELLOW51", "YELLOW52", "YELLOW53", "YELLOW54", "YELLOW55", "YELLOW62", "YELLOW64", "YELLOW65", "YELLOW69", "YELLOW70", "YELLOW72", "YELLOW73", "YELLOW76", "YELLOW77", "YELLOW80", "YELLOW81", "YELLOW82", "YELLOW84", "YELLOW85", "YELLOW88", "YELLOW91", "YELLOW92", "YELLOW93", "YELLOW94", "YELLOW96", "GREEN1", "GREEN2", "GREEN3", "GREEN5", "GREEN7", "GREEN9", "GREEN10", "GREEN11", "GREEN12", "GREEN13", "GREEN14", "GREEN18", "GREEN21", "GREEN23", "GREEN24", "GREEN28", "GREEN29", "GREEN30", "GREEN33", "GREEN35", "GREEN37", "GREEN38", "GREEN39", "GREEN40", "GREEN43", "GREEN45", "GREEN51", "GREEN52", "GREEN53", "GREEN55", "GREEN57", "GREEN60", "GREEN62", "GREEN66", "GREEN67", "GREEN68", "GREEN69", "GREEN70", "GREEN71", "GREEN72", "GREEN73", "GREEN74", "GREEN75", "GREEN76", "GREEN77", "GREEN79", "GREEN81", "GREEN82", "GREEN90", "GREEN97", "GREEN98", "GREEN100"]}, {"id": "food", "emoji": "🍱", "zh": "食物", "en": "Food", "desc": "蛋糕、水果、蔬菜、點心", "words": ["蛋糕", "蘋果", "香蕉", "雞蛋", "米飯", "湯", "餅乾", "巧克力", "糖果", "薯片", "漢堡", "果汁", "牛奶", "蔬菜", "蘿蔔", "水果", "西瓜", "冰淇淋", "烤鴨", "蛋炒飯", "零食", "麵包", "葡萄", "草莓", "鳳梨", "芒果", "點心", "蔥油餅"], "bookIds": ["RED8", "RED32", "RED33", "RED47", "RED57", "RED68", "RED69", "RED70", "RED71", "RED72", "RED73", "RED74", "RED75", "RED76", "RED85", "RED94", "YELLOW13", "YELLOW41", "YELLOW56", "YELLOW57", "YELLOW58", "YELLOW59", "YELLOW60", "YELLOW61", "YELLOW62", "YELLOW64", "YELLOW67", "YELLOW73", "YELLOW75", "YELLOW84", "YELLOW85", "YELLOW93", "GREEN3", "GREEN9", "GREEN17", "GREEN27", "GREEN37", "GREEN43", "GREEN65", "GREEN73", "GREEN78", "GREEN79", "GREEN80", "GREEN81", "GREEN83", "GREEN85", "GREEN86", "GREEN87", "GREEN88", "GREEN89", "GREEN90"]}, {"id": "nature", "emoji": "🌿", "zh": "自然", "en": "Nature", "desc": "樹、花、森林、山、海", "words": ["樹", "花", "森林", "山", "河", "海", "石頭", "草", "泥土", "星球", "星星", "大自然", "花園", "種子", "葉子", "根", "太陽", "雲"], "bookIds": ["RED13", "RED18", "RED21", "RED22", "RED25", "RED26", "RED30", "RED41", "RED43", "RED45", "RED46", "RED54", "RED64", "RED77", "RED78", "RED80", "RED81", "RED82", "RED83", "RED84", "YELLOW6", "YELLOW11", "YELLOW14", "YELLOW15", "YELLOW16", "YELLOW19", "YELLOW21", "YELLOW23", "YELLOW24", "YELLOW25", "YELLOW26", "YELLOW28", "YELLOW40", "YELLOW41", "YELLOW42", "YELLOW43", "YELLOW48", "YELLOW63", "YELLOW64", "YELLOW65", "YELLOW66", "YELLOW67", "YELLOW68", "YELLOW69", "YELLOW76", "YELLOW77", "YELLOW79", "YELLOW80", "YELLOW84", "YELLOW85", "YELLOW98", "YELLOW99", "YELLOW100", "GREEN8", "GREEN9", "GREEN10", "GREEN11", "GREEN23", "GREEN28", "GREEN30", "GREEN32", "GREEN33", "GREEN37", "GREEN45", "GREEN53", "GREEN57", "GREEN71", "GREEN74", "GREEN78", "GREEN83", "GREEN84", "GREEN90", "GREEN91", "GREEN92", "GREEN93", "GREEN94", "GREEN96", "GREEN97", "GREEN99", "GREEN100"]}, {"id": "numbers", "emoji": "🔢", "zh": "數字", "en": "Numbers", "desc": "一二三、多少、第幾", "words": ["一", "二", "三", "四", "五", "六", "七", "八", "九", "十", "百", "千", "萬", "第一", "第二", "第三", "一半", "多少", "幾", "數", "錢", "幾隻", "幾個"], "bookIds": ["RED14", "RED47", "RED52", "RED85", "RED87", "YELLOW28", "YELLOW29", "YELLOW31", "YELLOW43", "YELLOW47", "YELLOW55", "YELLOW71", "YELLOW73", "YELLOW74", "YELLOW75", "YELLOW99", "GREEN3", "GREEN8", "GREEN15", "GREEN23", "GREEN32", "GREEN34", "GREEN48", "GREEN54", "GREEN79", "GREEN82", "GREEN83", "GREEN91", "GREEN92"]}, {"id": "weather", "emoji": "🌦️", "zh": "天氣", "en": "Weather", "desc": "下雨、晴天、風、閃電", "words": ["天氣", "下雨", "晴天", "雲", "風", "雷", "閃電", "颱風", "暴風雨", "下雪", "冰雹", "彩虹", "大浪", "陰天"], "bookIds": ["RED12", "RED13", "RED45", "RED46", "RED51", "RED58", "RED75", "RED77", "RED79", "RED81", "RED82", "RED84", "RED89", "RED90", "RED91", "RED92", "RED99", "YELLOW8", "YELLOW9", "YELLOW28", "YELLOW32", "YELLOW40", "YELLOW48", "YELLOW64", "YELLOW66", "YELLOW70", "YELLOW75", "YELLOW78", "YELLOW80", "YELLOW81", "YELLOW83", "YELLOW88", "YELLOW100", "GREEN10", "GREEN47", "GREEN49", "GREEN67", "GREEN93", "GREEN94", "GREEN97", "GREEN98", "GREEN100"]}, {"id": "colors", "emoji": "🌈", "zh": "顏色", "en": "Colors", "desc": "紅、藍、綠、黃、彩虹", "words": ["紅色", "藍色", "綠色", "黃色", "橙色", "紫色", "黑色", "白色", "粉紅色", "彩虹", "彩色", "顏色", "金色", "銀色", "咖啡色", "灰色"], "bookIds": ["RED22", "RED24", "RED36", "RED49", "RED69", "RED70", "RED71", "RED76", "RED77", "RED90", "RED93", "RED94", "RED95", "RED96", "YELLOW9", "YELLOW16", "YELLOW19", "YELLOW28", "YELLOW33", "YELLOW35", "YELLOW37", "YELLOW38", "YELLOW40", "YELLOW44", "YELLOW62", "YELLOW64", "YELLOW65", "YELLOW66", "YELLOW70", "YELLOW79", "YELLOW82", "YELLOW83", "YELLOW84", "YELLOW85", "YELLOW89", "YELLOW92", "GREEN4", "GREEN10", "GREEN15", "GREEN16", "GREEN17", "GREEN20", "GREEN24", "GREEN30", "GREEN32", "GREEN35", "GREEN45", "GREEN53", "GREEN60", "GREEN63", "GREEN69", "GREEN73", "GREEN80", "GREEN82", "GREEN86", "GREEN87", "GREEN95", "GREEN97", "GREEN99", "GREEN100"]}, {"id": "clothes", "emoji": "👗", "zh": "衣物", "en": "Clothes", "desc": "衣服、鞋子、帽子", "words": ["衣服", "鞋子", "帽子", "上衣", "裙子", "褲子", "襪子", "外套", "洋裝", "校服", "靴子", "拖鞋", "夾克", "內衣", "圍巾", "手套", "雨衣", "毛衣", "毛線"], "bookIds": ["RED5", "RED6", "RED11", "RED12", "RED13", "RED16", "RED20", "RED40", "RED45", "RED53", "RED93", "RED97", "RED98", "RED99", "RED100", "YELLOW1", "YELLOW3", "YELLOW8", "YELLOW9", "YELLOW13", "YELLOW22", "YELLOW25", "YELLOW26", "YELLOW27", "YELLOW32", "YELLOW37", "YELLOW41", "YELLOW44", "YELLOW46", "YELLOW47", "YELLOW49", "YELLOW59", "YELLOW70", "YELLOW82", "YELLOW83", "YELLOW85", "YELLOW86", "YELLOW87", "YELLOW88", "YELLOW89", "YELLOW96", "YELLOW97", "GREEN4", "GREEN5", "GREEN9", "GREEN10", "GREEN14", "GREEN20", "GREEN24", "GREEN26", "GREEN27", "GREEN28", "GREEN29", "GREEN30", "GREEN34", "GREEN36", "GREEN37", "GREEN39", "GREEN40", "GREEN41", "GREEN43", "GREEN44", "GREEN46", "GREEN47", "GREEN48", "GREEN50", "GREEN51", "GREEN54", "GREEN56", "GREEN57", "GREEN60", "GREEN62", "GREEN63", "GREEN64", "GREEN66", "GREEN70", "GREEN71", "GREEN74", "GREEN76", "GREEN77", "GREEN78", "GREEN79", "GREEN81", "GREEN84", "GREEN85", "GREEN89", "GREEN93", "GREEN98"]}, {"id": "emotions", "emoji": "😊", "zh": "情感", "en": "Emotions", "desc": "開心、難過、生氣、害怕", "words": ["開心", "難過", "生氣", "害怕", "哭", "笑", "愛", "討厭", "無聊", "擔心", "驚訝", "對不起", "想念", "孤單", "傷心", "緊張", "感動", "勇敢"], "bookIds": ["RED4", "RED16", "RED44", "RED56", "RED57", "RED60", "YELLOW1", "YELLOW9", "YELLOW11", "YELLOW13", "YELLOW38", "YELLOW44", "YELLOW45", "YELLOW52", "YELLOW59", "YELLOW68", "YELLOW90", "YELLOW91", "GREEN4", "GREEN13", "GREEN15", "GREEN25", "GREEN26", "GREEN31", "GREEN32", "GREEN36", "GREEN37", "GREEN40", "GREEN43", "GREEN48", "GREEN49", "GREEN51", "GREEN52", "GREEN54", "GREEN60", "GREEN63", "GREEN64", "GREEN71", "GREEN75", "GREEN77", "GREEN80", "GREEN83", "GREEN84", "GREEN85", "GREEN93", "GREEN96", "GREEN98"]}, {"id": "jobs", "emoji": "👨‍⚕️", "zh": "職業", "en": "Occupations", "desc": "醫生、老師、消防員", "words": ["醫生", "老師", "農夫", "消防員", "獸醫", "廚師", "小丑", "舞者", "警察", "飛行員", "司機", "護士", "工人", "管理員", "海盜", "太空人"], "bookIds": ["RED7", "RED27", "RED35", "YELLOW22", "YELLOW34", "YELLOW76", "YELLOW94", "YELLOW95", "YELLOW96", "YELLOW97", "GREEN20", "GREEN31", "GREEN39", "GREEN54", "GREEN60", "GREEN68", "GREEN73", "GREEN76", "GREEN82", "GREEN88", "GREEN94"]}, {"id": "transport", "emoji": "🚗", "zh": "交通工具", "en": "Transport", "desc": "車、飛機、船、腳踏車", "words": ["車", "巴士", "火車", "飛機", "船", "腳踏車", "計程車", "直升機", "地鐵", "電車", "卡車", "校車", "消防車", "過山車", "滑板", "摩托車"], "bookIds": ["RED3", "RED4", "RED7", "RED9", "RED11", "RED13", "RED27", "RED35", "RED38", "RED40", "RED42", "RED44", "RED68", "RED70", "RED71", "RED72", "RED81", "RED82", "RED91", "RED98", "YELLOW1", "YELLOW2", "YELLOW9", "YELLOW10", "YELLOW11", "YELLOW14", "YELLOW20", "YELLOW32", "YELLOW42", "YELLOW44", "YELLOW46", "YELLOW47", "YELLOW56", "YELLOW69", "YELLOW74", "YELLOW76", "YELLOW80", "YELLOW82", "YELLOW87", "YELLOW92", "YELLOW93", "YELLOW98", "YELLOW99", "YELLOW100", "GREEN10", "GREEN13", "GREEN15", "GREEN18", "GREEN21", "GREEN31", "GREEN32", "GREEN50", "GREEN53", "GREEN56", "GREEN57", "GREEN63", "GREEN68", "GREEN80", "GREEN90", "GREEN94", "GREEN95"]}];
+var BOOKS=[{"id": "RED1", "l": "RED", "n": 1, "zh": "溜冰", "en": "Ice skating", "c": "/covers/RED1.png"}, {"id": "RED2", "l": "RED", "n": 2, "zh": "坐過山車", "en": "Roller coaster ride", "c": "/covers/RED2.png"}, {"id": "RED3", "l": "RED", "n": 3, "zh": "玩滑板", "en": "Skateboarding", "c": "/covers/RED3.png"}, {"id": "RED4", "l": "RED", "n": 4, "zh": "收玩具", "en": "Putting away the toys", "c": "/covers/RED4.png"}, {"id": "RED5", "l": "RED", "n": 5, "zh": "機器人幫我", "en": "A robot helps me", "c": "/covers/RED5.png"}, {"id": "RED6", "l": "RED", "n": 6, "zh": "玩什麼", "en": "What to play?", "c": "/covers/RED6.png"}, {"id": "RED7", "l": "RED", "n": 7, "zh": "救火", "en": "Fire fighting", "c": "/covers/RED7.png"}, {"id": "RED8", "l": "RED", "n": 8, "zh": "生日", "en": "Birthday", "c": "/covers/RED8.png"}, {"id": "RED9", "l": "RED", "n": 9, "zh": "當媽媽", "en": "Being a mom", "c": "/covers/RED9.png"}, {"id": "RED10", "l": "RED", "n": 10, "zh": "誰在運動", "en": "Who is exercising?", "c": "/covers/RED10.png"}, {"id": "RED11", "l": "RED", "n": 11, "zh": "今天", "en": "Today", "c": "/covers/RED11.png"}, {"id": "RED12", "l": "RED", "n": 12, "zh": "沖浪", "en": "Surfing", "c": "/covers/RED12.png"}, {"id": "RED13", "l": "RED", "n": 13, "zh": "停車", "en": "Stop the car", "c": "/covers/RED13.png"}, {"id": "RED14", "l": "RED", "n": 14, "zh": "比賽", "en": "A race", "c": "/covers/RED14.png"}, {"id": "RED15", "l": "RED", "n": 15, "zh": "藏起來", "en": "Hiding", "c": "/covers/RED15.png"}, {"id": "RED16", "l": "RED", "n": 16, "zh": "怎麼了", "en": "What’s wrong?", "c": "/covers/RED16.png"}, {"id": "RED17", "l": "RED", "n": 17, "zh": "行不行", "en": "Is it OK?", "c": "/covers/RED17.png"}, {"id": "RED18", "l": "RED", "n": 18, "zh": "去公園", "en": "Going to the park", "c": "/covers/RED18.png"}, {"id": "RED19", "l": "RED", "n": 19, "zh": "小熊", "en": "The little bear", "c": "/covers/RED19.png"}, {"id": "RED20", "l": "RED", "n": 20, "zh": "牠是誰", "en": "What is it?", "c": "/covers/RED20.png"}, {"id": "RED21", "l": "RED", "n": 21, "zh": "吃草的動物", "en": "Grass-eating animals", "c": "/covers/RED21.png"}, {"id": "RED22", "l": "RED", "n": 22, "zh": "動物花紋", "en": "Animals with colored markings", "c": "/covers/RED22.png"}, {"id": "RED23", "l": "RED", "n": 23, "zh": "動物和泰山", "en": "Animals and Tarzan", "c": "/covers/RED23.png"}, {"id": "RED24", "l": "RED", "n": 24, "zh": "動物拍照", "en": "Taking photos of animals", "c": "/covers/RED24.png"}, {"id": "RED25", "l": "RED", "n": 25, "zh": "爬樹的動物", "en": "Animals climb a tree", "c": "/covers/RED25.png"}, {"id": "RED26", "l": "RED", "n": 26, "zh": "魚和蝦", "en": "Fish and shrimps", "c": "/covers/RED26.png"}, {"id": "RED27", "l": "RED", "n": 27, "zh": "烏鴉", "en": "The crows", "c": "/covers/RED27.png"}, {"id": "RED28", "l": "RED", "n": 28, "zh": "動物的叫聲", "en": "Animals sounds", "c": "/covers/RED28.png"}, {"id": "RED29", "l": "RED", "n": 29, "zh": "不一樣的動物", "en": "The unique animals", "c": "/covers/RED29.png"}, {"id": "RED30", "l": "RED", "n": 30, "zh": "斑馬過河", "en": "The zebras crossed the river", "c": "/covers/RED30.png"}, {"id": "RED31", "l": "RED", "n": 31, "zh": "動物在哪裏", "en": "Where are the animals?", "c": "/covers/RED31.png"}, {"id": "RED32", "l": "RED", "n": 32, "zh": "動物變變變", "en": "Animals change", "c": "/covers/RED32.png"}, {"id": "RED33", "l": "RED", "n": 33, "zh": "動物的蛋", "en": "Animals’ eggs", "c": "/covers/RED33.png"}, {"id": "RED34", "l": "RED", "n": 34, "zh": "書", "en": "Books", "c": "/covers/RED34.png"}, {"id": "RED35", "l": "RED", "n": 35, "zh": "老師", "en": "The teacher", "c": "/covers/RED35.png"}, {"id": "RED36", "l": "RED", "n": 36, "zh": "筆盒", "en": "The pencil box", "c": "/covers/RED36.png"}, {"id": "RED37", "l": "RED", "n": 37, "zh": "長方形", "en": "Rectangle shapes", "c": "/covers/RED37.png"}, {"id": "RED38", "l": "RED", "n": 38, "zh": "學校活動", "en": "School activities", "c": "/covers/RED38.png"}, {"id": "RED39", "l": "RED", "n": 39, "zh": "學校", "en": "A school", "c": "/covers/RED39.png"}, {"id": "RED40", "l": "RED", "n": 40, "zh": "去學校", "en": "Going to school", "c": "/covers/RED40.png"}, {"id": "RED41", "l": "RED", "n": 41, "zh": "我你他", "en": "I / you / (s)he", "c": "/covers/RED41.png"}, {"id": "RED42", "l": "RED", "n": 42, "zh": "誰的錯", "en": "Whose fault?", "c": "/covers/RED42.png"}, {"id": "RED43", "l": "RED", "n": 43, "zh": "秘密 The secret", "en": "The secret", "c": "/covers/RED43.png"}, {"id": "RED44", "l": "RED", "n": 44, "zh": "對不起", "en": "Sorry", "c": "/covers/RED44.png"}, {"id": "RED45", "l": "RED", "n": 45, "zh": "像什麼", "en": "What does it look like?", "c": "/covers/RED45.png"}, {"id": "RED46", "l": "RED", "n": 46, "zh": "一片沙漠", "en": "A stretch of dessert", "c": "/covers/RED46.png"}, {"id": "RED47", "l": "RED", "n": 47, "zh": "一半", "en": "Half of it", "c": "/covers/RED47.png"}, {"id": "RED48", "l": "RED", "n": 48, "zh": "上下", "en": "Up and down", "c": "/covers/RED48.png"}, {"id": "RED49", "l": "RED", "n": 49, "zh": "長短", "en": "Long and short", "c": "/covers/RED49.png"}, {"id": "RED50", "l": "RED", "n": 50, "zh": "厚薄", "en": "Thick and thin", "c": "/covers/RED50.png"}, {"id": "RED51", "l": "RED", "n": 51, "zh": "好大好大", "en": "It’s so big", "c": "/covers/RED51.png"}, {"id": "RED52", "l": "RED", "n": 52, "zh": "我是老五", "en": "I am the fifth child", "c": "/covers/RED52.png"}, {"id": "RED53", "l": "RED", "n": 53, "zh": "不大不小", "en": "It’s not too big and not too small", "c": "/covers/RED53.png"}, {"id": "RED54", "l": "RED", "n": 54, "zh": "一顆心", "en": "One heart", "c": "/covers/RED54.png"}, {"id": "RED55", "l": "RED", "n": 55, "zh": "我在家嗎", "en": "Am I at home", "c": "/covers/RED55.png"}, {"id": "RED56", "l": "RED", "n": 56, "zh": "姐姐和妹妹", "en": "Sisters", "c": "/covers/RED56.png"}, {"id": "RED57", "l": "RED", "n": 57, "zh": "小寶寶", "en": "The little baby", "c": "/covers/RED57.png"}, {"id": "RED58", "l": "RED", "n": 58, "zh": "家", "en": "Home", "c": "/covers/RED58.png"}, {"id": "RED59", "l": "RED", "n": 59, "zh": "媽媽", "en": "Mom", "c": "/covers/RED59.png"}, {"id": "RED60", "l": "RED", "n": 60, "zh": "大家", "en": "All of us", "c": "/covers/RED60.png"}, {"id": "RED61", "l": "RED", "n": 61, "zh": "弟弟", "en": "The younger brother", "c": "/covers/RED61.png"}, {"id": "RED62", "l": "RED", "n": 62, "zh": "哪個好看", "en": "Which one is prettier?", "c": "/covers/RED62.png"}, {"id": "RED63", "l": "RED", "n": 63, "zh": "不癢了", "en": "It’s not itchy any more", "c": "/covers/RED63.png"}, {"id": "RED64", "l": "RED", "n": 64, "zh": "臉", "en": "The face", "c": "/covers/RED64.png"}, {"id": "RED65", "l": "RED", "n": 65, "zh": "疤", "en": "The scab", "c": "/covers/RED65.png"}, {"id": "RED66", "l": "RED", "n": 66, "zh": "翅膀", "en": "The wings", "c": "/covers/RED66.png"}, {"id": "RED67", "l": "RED", "n": 67, "zh": "癢", "en": "Feeling itchy", "c": "/covers/RED67.png"}, {"id": "RED68", "l": "RED", "n": 68, "zh": "蛋糕", "en": "The cakes", "c": "/covers/RED68.png"}, {"id": "RED69", "l": "RED", "n": 69, "zh": "吃東西", "en": "Eat something", "c": "/covers/RED69.png"}, {"id": "RED70", "l": "RED", "n": 70, "zh": "湯", "en": "The soup", "c": "/covers/RED70.png"}, {"id": "RED71", "l": "RED", "n": 71, "zh": "魚", "en": "Fish", "c": "/covers/RED71.png"}, {"id": "RED72", "l": "RED", "n": 72, "zh": "點心", "en": "Snacks", "c": "/covers/RED72.png"}, {"id": "RED73", "l": "RED", "n": 73, "zh": "想吃東西", "en": "Would like to eat something", "c": "/covers/RED73.png"}, {"id": "RED74", "l": "RED", "n": 74, "zh": "蛋炒飯", "en": "The rice fried with eggs", "c": "/covers/RED74.png"}, {"id": "RED75", "l": "RED", "n": 75, "zh": "雞蛋", "en": "The chicken eggs", "c": "/covers/RED75.png"}, {"id": "RED76", "l": "RED", "n": 76, "zh": "水果", "en": "Fruits", "c": "/covers/RED76.png"}, {"id": "RED77", "l": "RED", "n": 77, "zh": "花 Flowers", "en": "Flowers", "c": "/covers/RED77.png"}, {"id": "RED78", "l": "RED", "n": 78, "zh": "櫻桃樹", "en": "A cherry tree", "c": "/covers/RED78.png"}, {"id": "RED79", "l": "RED", "n": 79, "zh": "風", "en": "Wind", "c": "/covers/RED79.png"}, {"id": "RED80", "l": "RED", "n": 80, "zh": "樹", "en": "Trees", "c": "/covers/RED80.png"}, {"id": "RED81", "l": "RED", "n": 81, "zh": "海邊", "en": "The seaside", "c": "/covers/RED81.png"}, {"id": "RED82", "l": "RED", "n": 82, "zh": "大浪", "en": "The big wave", "c": "/covers/RED82.png"}, {"id": "RED83", "l": "RED", "n": 83, "zh": "世界", "en": "The world", "c": "/covers/RED83.png"}, {"id": "RED84", "l": "RED", "n": 84, "zh": "開花了", "en": "The flowers blossom", "c": "/covers/RED84.png"}, {"id": "RED85", "l": "RED", "n": 85, "zh": "幾隻腳", "en": "How many legs?", "c": "/covers/RED85.png"}, {"id": "RED86", "l": "RED", "n": 86, "zh": "十五隻小鳥", "en": "Fifteen little birds", "c": "/covers/RED86.png"}, {"id": "RED87", "l": "RED", "n": 87, "zh": "好多錢", "en": "Lots of money", "c": "/covers/RED87.png"}, {"id": "RED88", "l": "RED", "n": 88, "zh": "一星期", "en": "One week", "c": "/covers/RED88.png"}, {"id": "RED89", "l": "RED", "n": 89, "zh": "下雪", "en": "It’s snowing", "c": "/covers/RED89.png"}, {"id": "RED90", "l": "RED", "n": 90, "zh": "雲", "en": "The clouds", "c": "/covers/RED90.png"}, {"id": "RED91", "l": "RED", "n": 91, "zh": "閃電", "en": "The lightning", "c": "/covers/RED91.png"}, {"id": "RED92", "l": "RED", "n": 92, "zh": "雨天", "en": "The rainy days", "c": "/covers/RED92.png"}, {"id": "RED93", "l": "RED", "n": 93, "zh": "什麼顏色", "en": "What color is it?", "c": "/covers/RED93.png"}, {"id": "RED94", "l": "RED", "n": 94, "zh": "果汁的顏色", "en": "The colored juice", "c": "/covers/RED94.png"}, {"id": "RED95", "l": "RED", "n": 95, "zh": "顏色豆", "en": "The colored beans", "c": "/covers/RED95.png"}, {"id": "RED96", "l": "RED", "n": 96, "zh": "變顏色", "en": "Change colors", "c": "/covers/RED96.png"}, {"id": "RED97", "l": "RED", "n": 97, "zh": "鞋子", "en": "Shoes", "c": "/covers/RED97.png"}, {"id": "RED98", "l": "RED", "n": 98, "zh": "毛線", "en": "Yarns", "c": "/covers/RED98.png"}, {"id": "RED99", "l": "RED", "n": 99, "zh": "雨衣", "en": "The rain coat", "c": "/covers/RED99.png"}, {"id": "RED100", "l": "RED", "n": 100, "zh": "衣服", "en": "The clothes", "c": "/covers/RED100.png"}, {"id": "YELLOW1", "l": "YELLOW", "n": 1, "zh": "忘了", "en": "Forgot", "c": "/covers/YELLOW1.jpg"}, {"id": "YELLOW2", "l": "YELLOW", "n": 2, "zh": "我沒空", "en": "I am not free.", "c": "/covers/YELLOW2.jpg"}, {"id": "YELLOW3", "l": "YELLOW", "n": 3, "zh": "找什麼", "en": "", "c": "/covers/YELLOW3.jpg"}, {"id": "YELLOW4", "l": "YELLOW", "n": 4, "zh": "生病", "en": "", "c": "/covers/YELLOW4.jpg"}, {"id": "YELLOW5", "l": "YELLOW", "n": 5, "zh": "拉吊床", "en": "Pulling the hammock", "c": "/covers/YELLOW5.jpg"}, {"id": "YELLOW6", "l": "YELLOW", "n": 6, "zh": "下不來", "en": "Could not come down", "c": "/covers/YELLOW6.jpg"}, {"id": "YELLOW7", "l": "YELLOW", "n": 7, "zh": "禮物在哪兒", "en": "", "c": "/covers/YELLOW7.jpg"}, {"id": "YELLOW8", "l": "YELLOW", "n": 8, "zh": "夢到什麼", "en": "What did I dream of?", "c": "/covers/YELLOW8.jpg"}, {"id": "YELLOW9", "l": "YELLOW", "n": 9, "zh": "我們很無聊", "en": "We are bored", "c": "/covers/YELLOW9.jpg"}, {"id": "YELLOW10", "l": "YELLOW", "n": 10, "zh": "做拼圖", "en": "Making puzzles", "c": "/covers/YELLOW10.jpg"}, {"id": "YELLOW11", "l": "YELLOW", "n": 11, "zh": "我還是很愛你", "en": "I still love you", "c": "/covers/YELLOW11.jpg"}, {"id": "YELLOW12", "l": "YELLOW", "n": 12, "zh": "照顧寵物", "en": "Looking after a pet", "c": "/covers/YELLOW12.jpg"}, {"id": "YELLOW13", "l": "YELLOW", "n": 13, "zh": "你想住在哪裏", "en": "Where do you want to live?", "c": "/covers/YELLOW13.jpg"}, {"id": "YELLOW14", "l": "YELLOW", "n": 14, "zh": "動物的船沉了", "en": "The animals’ boat was sinking", "c": "/covers/YELLOW14.jpg"}, {"id": "YELLOW15", "l": "YELLOW", "n": 15, "zh": "不是真的動物", "en": "Not real animals", "c": "/covers/YELLOW15.jpg"}, {"id": "YELLOW16", "l": "YELLOW", "n": 16, "zh": "動物的朋友", "en": "Animals’ friends", "c": "/covers/YELLOW16.jpg"}, {"id": "YELLOW17", "l": "YELLOW", "n": 17, "zh": "狗兒", "en": "The dogs", "c": "/covers/YELLOW17.jpg"}, {"id": "YELLOW18", "l": "YELLOW", "n": 18, "zh": "老鷹和兔子", "en": "The eagle and the hare", "c": "/covers/YELLOW18.jpg"}, {"id": "YELLOW19", "l": "YELLOW", "n": 19, "zh": "好看的動物", "en": "Nice looking animals", "c": "/covers/YELLOW19.jpg"}, {"id": "YELLOW20", "l": "YELLOW", "n": 20, "zh": "會飛的動物", "en": "Flying animals", "c": "/covers/YELLOW20.jpg"}, {"id": "YELLOW21", "l": "YELLOW", "n": 21, "zh": "什麼動物最棒", "en": "Who is the most powerful animal?", "c": "/covers/YELLOW21.jpg"}, {"id": "YELLOW22", "l": "YELLOW", "n": 22, "zh": "說話的魚", "en": "The fish that talks", "c": "/covers/YELLOW22.jpg"}, {"id": "YELLOW23", "l": "YELLOW", "n": 23, "zh": "動物的腳印", "en": "Animal Footprints", "c": "/covers/YELLOW23.png"}, {"id": "YELLOW24", "l": "YELLOW", "n": 24, "zh": "貓兒在哪裏", "en": "Where is the cat?", "c": "/covers/YELLOW24.jpg"}, {"id": "YELLOW25", "l": "YELLOW", "n": 25, "zh": "動物寶寶", "en": "Animal babies", "c": "/covers/YELLOW25.jpg"}, {"id": "YELLOW26", "l": "YELLOW", "n": 26, "zh": "魚鷹", "en": "The fish hawk", "c": "/covers/YELLOW26.jpg"}, {"id": "YELLOW27", "l": "YELLOW", "n": 27, "zh": "小鴨", "en": "The duckling", "c": "/covers/YELLOW27.jpg"}, {"id": "YELLOW28", "l": "YELLOW", "n": 28, "zh": "剪紙", "en": "Paper cutting", "c": "/covers/YELLOW28.jpg"}, {"id": "YELLOW29", "l": "YELLOW", "n": 29, "zh": "比賽", "en": "A race", "c": "/covers/YELLOW29.jpg"}, {"id": "YELLOW30", "l": "YELLOW", "n": 30, "zh": "橡皮", "en": "The erasers", "c": "/covers/YELLOW30.jpg"}, {"id": "YELLOW31", "l": "YELLOW", "n": 31, "zh": "摺紙 Paper folding", "en": "Paper folding", "c": "/covers/YELLOW31.jpg"}, {"id": "YELLOW32", "l": "YELLOW", "n": 32, "zh": "少了什麼", "en": "What’s missing?", "c": "/covers/YELLOW32.jpg"}, {"id": "YELLOW33", "l": "YELLOW", "n": 33, "zh": "剪剪貼貼", "en": "Cut and paste", "c": "/covers/YELLOW33.jpg"}, {"id": "YELLOW34", "l": "YELLOW", "n": 34, "zh": "帶寶貝到學校", "en": "Bring your treasure to school", "c": "/covers/YELLOW34.jpg"}, {"id": "YELLOW35", "l": "YELLOW", "n": 35, "zh": "新書包", "en": "A New School Bag", "c": "/covers/YELLOW35.jpg"}, {"id": "YELLOW36", "l": "YELLOW", "n": 36, "zh": "破了", "en": "It’s broken", "c": "/covers/YELLOW36.jpg"}, {"id": "YELLOW37", "l": "YELLOW", "n": 37, "zh": "不一樣", "en": "Different", "c": "/covers/YELLOW37.jpg"}, {"id": "YELLOW38", "l": "YELLOW", "n": 38, "zh": "甜蜜蜜", "en": "So sweet", "c": "/covers/YELLOW38.jpg"}, {"id": "YELLOW39", "l": "YELLOW", "n": 39, "zh": "還是好朋友", "en": "Still close friends", "c": "/covers/YELLOW39.jpg"}, {"id": "YELLOW40", "l": "YELLOW", "n": 40, "zh": "不見了", "en": "Disappeared", "c": "/covers/YELLOW40.jpg"}, {"id": "YELLOW41", "l": "YELLOW", "n": 41, "zh": "一堆什麼", "en": "A pile of what?", "c": "/covers/YELLOW41.jpg"}, {"id": "YELLOW42", "l": "YELLOW", "n": 42, "zh": "撞到了", "en": "Bumped into something", "c": "/covers/YELLOW42.jpg"}, {"id": "YELLOW43", "l": "YELLOW", "n": 43, "zh": "知道和不知道", "en": "Knowing 、not knowing", "c": "/covers/YELLOW43.jpg"}, {"id": "YELLOW44", "l": "YELLOW", "n": 44, "zh": "真假恐龍", "en": "Real and fake dinosaurs", "c": "/covers/YELLOW44.jpg"}, {"id": "YELLOW45", "l": "YELLOW", "n": 45, "zh": "我是美美", "en": "I am Mei Mei", "c": "/covers/YELLOW45.jpg"}, {"id": "YELLOW46", "l": "YELLOW", "n": 46, "zh": "不是雙胞胎", "en": "Not twins", "c": "/covers/YELLOW46.jpg"}, {"id": "YELLOW47", "l": "YELLOW", "n": 47, "zh": "老大老二", "en": "The eldest one and the second eldest one", "c": "/covers/YELLOW47.jpg"}, {"id": "YELLOW48", "l": "YELLOW", "n": 48, "zh": "抱妹妹", "en": "Hugging my younger sister", "c": "/covers/YELLOW48.jpg"}, {"id": "YELLOW49", "l": "YELLOW", "n": 49, "zh": "我也很好", "en": "I am good too", "c": "/covers/YELLOW49.jpg"}, {"id": "YELLOW50", "l": "YELLOW", "n": 50, "zh": "全家人", "en": "The whole family", "c": "/covers/YELLOW50.jpg"}, {"id": "YELLOW51", "l": "YELLOW", "n": 51, "zh": "我的家", "en": "My home", "c": "/covers/YELLOW51.jpg"}, {"id": "YELLOW52", "l": "YELLOW", "n": 52, "zh": "騎在我身上", "en": "Ride on me", "c": "/covers/YELLOW52.jpg"}, {"id": "YELLOW53", "l": "YELLOW", "n": 53, "zh": "畫龍", "en": "To draw a dragon", "c": "/covers/YELLOW53.jpg"}, {"id": "YELLOW54", "l": "YELLOW", "n": 54, "zh": "用耳朵聽", "en": "To listen with your ears", "c": "/covers/YELLOW54.jpg"}, {"id": "YELLOW55", "l": "YELLOW", "n": 55, "zh": "畫小鳥", "en": "To draw a bird", "c": "/covers/YELLOW55.jpg"}, {"id": "YELLOW56", "l": "YELLOW", "n": 56, "zh": "動物們吃東西", "en": "The animals eat food", "c": "/covers/YELLOW56.jpg"}, {"id": "YELLOW57", "l": "YELLOW", "n": 57, "zh": "小鱷魚吃東西", "en": "The Little crocodile eats food", "c": "/covers/YELLOW57.jpg"}, {"id": "YELLOW58", "l": "YELLOW", "n": 58, "zh": "做餅乾", "en": "To make cookies", "c": "/covers/YELLOW58.jpg"}, {"id": "YELLOW59", "l": "YELLOW", "n": 59, "zh": "甜餅乾", "en": "Cookies", "c": "/covers/YELLOW59.jpg"}, {"id": "YELLOW60", "l": "YELLOW", "n": 60, "zh": "新鮮的水果", "en": "Fresh fruits", "c": "/covers/YELLOW60.jpg"}, {"id": "YELLOW61", "l": "YELLOW", "n": 61, "zh": "剩下的食物", "en": "Leftovers", "c": "/covers/YELLOW61.jpg"}, {"id": "YELLOW62", "l": "YELLOW", "n": 62, "zh": "蔥油餅", "en": "Green onion pancakes", "c": "/covers/YELLOW62.jpg"}, {"id": "YELLOW63", "l": "YELLOW", "n": 63, "zh": "大水", "en": "The flood", "c": "/covers/YELLOW63.jpg"}, {"id": "YELLOW64", "l": "YELLOW", "n": 64, "zh": "沒有下雨", "en": "No rain", "c": "/covers/YELLOW64.jpg"}, {"id": "YELLOW65", "l": "YELLOW", "n": 65, "zh": "堅果", "en": "A nut", "c": "/covers/YELLOW65.jpg"}, {"id": "YELLOW66", "l": "YELLOW", "n": 66, "zh": "寶石", "en": "A diamond", "c": "/covers/YELLOW66.jpg"}, {"id": "YELLOW67", "l": "YELLOW", "n": 67, "zh": "鳥蛋", "en": "The bird’s eggs", "c": "/covers/YELLOW67.jpg"}, {"id": "YELLOW68", "l": "YELLOW", "n": 68, "zh": "植物", "en": "A plant", "c": "/covers/YELLOW68.jpg"}, {"id": "YELLOW69", "l": "YELLOW", "n": 69, "zh": "星球", "en": "The planets", "c": "/covers/YELLOW69.jpg"}, {"id": "YELLOW70", "l": "YELLOW", "n": 70, "zh": "彩虹", "en": "The rainbows", "c": "/covers/YELLOW70.jpg"}, {"id": "YELLOW71", "l": "YELLOW", "n": 71, "zh": "數數看", "en": "Let’s count", "c": "/covers/YELLOW71.jpg"}, {"id": "YELLOW72", "l": "YELLOW", "n": 72, "zh": "二四六八十", "en": "Two four six eight ten", "c": "/covers/YELLOW72.jpg"}, {"id": "YELLOW73", "l": "YELLOW", "n": 73, "zh": "多少", "en": "How many?", "c": "/covers/YELLOW73.jpg"}, {"id": "YELLOW74", "l": "YELLOW", "n": 74, "zh": "第一第二第三", "en": "The first, second and third", "c": "/covers/YELLOW74.jpg"}, {"id": "YELLOW75", "l": "YELLOW", "n": 75, "zh": "第四", "en": "The fourth one", "c": "/covers/YELLOW75.jpg"}, {"id": "YELLOW76", "l": "YELLOW", "n": 76, "zh": "一二三四五六七", "en": "1234567", "c": "/covers/YELLOW76.jpg"}, {"id": "YELLOW77", "l": "YELLOW", "n": 77, "zh": "四季", "en": "The four seasons", "c": "/covers/YELLOW77.jpg"}, {"id": "YELLOW78", "l": "YELLOW", "n": 78, "zh": "天氣", "en": "The weather", "c": "/covers/YELLOW78.jpg"}, {"id": "YELLOW79", "l": "YELLOW", "n": 79, "zh": "冬天和春天", "en": "Winter and spring", "c": "/covers/YELLOW79.jpg"}, {"id": "YELLOW80", "l": "YELLOW", "n": 80, "zh": "颱風", "en": "Typhoon", "c": "/covers/YELLOW80.jpg"}, {"id": "YELLOW81", "l": "YELLOW", "n": 81, "zh": "晴天", "en": "Sunny day", "c": "/covers/YELLOW81.jpg"}, {"id": "YELLOW82", "l": "YELLOW", "n": 82, "zh": "很酷的顏色", "en": "Cool colors", "c": "/covers/YELLOW82.jpg"}, {"id": "YELLOW83", "l": "YELLOW", "n": 83, "zh": "彩虹衣", "en": "The rainbow clothes", "c": "/covers/YELLOW83.jpg"}, {"id": "YELLOW84", "l": "YELLOW", "n": 84, "zh": "顏色變了", "en": "Changing colors", "c": "/covers/YELLOW84.jpg"}, {"id": "YELLOW85", "l": "YELLOW", "n": 85, "zh": "彩虹糖果屋", "en": "The colorful candy house", "c": "/covers/YELLOW85.jpg"}, {"id": "YELLOW86", "l": "YELLOW", "n": 86, "zh": "拐杖和帽子", "en": "The cane and the hat", "c": "/covers/YELLOW86.jpg"}, {"id": "YELLOW87", "l": "YELLOW", "n": 87, "zh": "女孩子的衣物", "en": "Girls’ clothes", "c": "/covers/YELLOW87.jpg"}, {"id": "YELLOW88", "l": "YELLOW", "n": 88, "zh": "一層一層衣服", "en": "Layers of clothes", "c": "/covers/YELLOW88.jpg"}, {"id": "YELLOW89", "l": "YELLOW", "n": 89, "zh": "姐姐穿衣服", "en": "Elder sister gets dressed", "c": "/covers/YELLOW89.jpg"}, {"id": "YELLOW90", "l": "YELLOW", "n": 90, "zh": "害怕", "en": "Frightened", "c": "/covers/YELLOW90.jpg"}, {"id": "YELLOW91", "l": "YELLOW", "n": 91, "zh": "笑臉", "en": "A happy face", "c": "/covers/YELLOW91.jpg"}, {"id": "YELLOW92", "l": "YELLOW", "n": 92, "zh": "節日", "en": "Festivals (1)", "c": "/covers/YELLOW92.jpg"}, {"id": "YELLOW93", "l": "YELLOW", "n": 93, "zh": "節日 (2)", "en": "Festivals (2)", "c": "/covers/YELLOW93.jpg"}, {"id": "YELLOW94", "l": "YELLOW", "n": 94, "zh": "醫生", "en": "Doctor", "c": "/covers/YELLOW94.jpg"}, {"id": "YELLOW95", "l": "YELLOW", "n": 95, "zh": "醫院", "en": "The hospital", "c": "/covers/YELLOW95.jpg"}, {"id": "YELLOW96", "l": "YELLOW", "n": 96, "zh": "是學生", "en": "A student", "c": "/covers/YELLOW96.jpg"}, {"id": "YELLOW97", "l": "YELLOW", "n": 97, "zh": "長大要做什麼", "en": "What do you want to be when you grow up?", "c": "/covers/YELLOW97.jpg"}, {"id": "YELLOW98", "l": "YELLOW", "n": 98, "zh": "坐直升機", "en": "Take a helicopter", "c": "/covers/YELLOW98.jpg"}, {"id": "YELLOW99", "l": "YELLOW", "n": 99, "zh": "不同的車", "en": "Different vehicles", "c": "/covers/YELLOW99.jpg"}, {"id": "YELLOW100", "l": "YELLOW", "n": 100, "zh": "坐什麼車快", "en": "Which vehicle is faster?", "c": "/covers/YELLOW100.jpg"}, {"id": "GREEN1", "l": "GREEN", "n": 1, "zh": "說秘密", "en": "Going to school", "c": "/covers/GREEN1.jpg"}, {"id": "GREEN2", "l": "GREEN", "n": 2, "zh": "上學", "en": "Going to school", "c": "/covers/GREEN2.jpg"}, {"id": "GREEN3", "l": "GREEN", "n": 3, "zh": "數一數", "en": "Counting", "c": "/covers/GREEN3.jpg"}, {"id": "GREEN4", "l": "GREEN", "n": 4, "zh": "誰是書蟲", "en": "Who is the bookworm?", "c": "/covers/GREEN4.jpg"}, {"id": "GREEN5", "l": "GREEN", "n": 5, "zh": "做我喜歡的事", "en": "Doing things that I like to do", "c": "/covers/GREEN5.jpg"}, {"id": "GREEN6", "l": "GREEN", "n": 6, "zh": "捉迷藏", "en": "Hide and seek", "c": "/covers/GREEN6.jpg"}, {"id": "GREEN7", "l": "GREEN", "n": 7, "zh": "練習", "en": "Practice", "c": "/covers/GREEN7.jpg"}, {"id": "GREEN8", "l": "GREEN", "n": 8, "zh": "玩接龍遊戲", "en": "Play a Word Chain game", "c": "/covers/GREEN8.jpg"}, {"id": "GREEN9", "l": "GREEN", "n": 9, "zh": "找蛋遊戲", "en": "Egg Hunt game", "c": "/covers/GREEN9.jpg"}, {"id": "GREEN10", "l": "GREEN", "n": 10, "zh": "學游泳", "en": "Learning to swim", "c": "/covers/GREEN10.jpg"}, {"id": "GREEN11", "l": "GREEN", "n": 11, "zh": "躲貓貓", "en": "Duo mao mao(colloquial Chinese for hide-and-seek)", "c": "/covers/GREEN11.jpg"}, {"id": "GREEN12", "l": "GREEN", "n": 12, "zh": "燙鞦韆", "en": "To swing", "c": "/covers/GREEN12.jpg"}, {"id": "GREEN13", "l": "GREEN", "n": 13, "zh": "怕鬼", "en": "Being afraid of ghosts", "c": "/covers/GREEN13.jpg"}, {"id": "GREEN14", "l": "GREEN", "n": 14, "zh": "想要有一雙鞋", "en": "Imagine that I have a pair of shoes", "c": "/covers/GREEN14.jpg"}, {"id": "GREEN15", "l": "GREEN", "n": 15, "zh": "滑滑梯", "en": "Sliding down a slide", "c": "/covers/GREEN15.jpg"}, {"id": "GREEN16", "l": "GREEN", "n": 16, "zh": "當一把傘", "en": "Being an umbrella", "c": "/covers/GREEN16.jpg"}, {"id": "GREEN17", "l": "GREEN", "n": 17, "zh": "幫忙", "en": "Being helpful", "c": "/covers/GREEN17.jpg"}, {"id": "GREEN18", "l": "GREEN", "n": 18, "zh": "騎車", "en": "Riding a bike", "c": "/covers/GREEN18.jpg"}, {"id": "GREEN19", "l": "GREEN", "n": 19, "zh": "放風箏", "en": "Flying a kite", "c": "/covers/GREEN19.jpg"}, {"id": "GREEN20", "l": "GREEN", "n": 20, "zh": "寫兒歌", "en": "Writing nursery rhymes", "c": "/covers/GREEN20.jpg"}, {"id": "GREEN21", "l": "GREEN", "n": 21, "zh": "樹熊", "en": "Koalas", "c": "/covers/GREEN21.jpg"}, {"id": "GREEN22", "l": "GREEN", "n": 22, "zh": "兩隻豬", "en": "Two pigs", "c": "/covers/GREEN22.jpg"}, {"id": "GREEN23", "l": "GREEN", "n": 23, "zh": "螢火蟲", "en": "Fireflies", "c": "/covers/GREEN23.jpg"}, {"id": "GREEN24", "l": "GREEN", "n": 24, "zh": "烏鴉", "en": "Crows", "c": "/covers/GREEN24.jpg"}, {"id": "GREEN25", "l": "GREEN", "n": 25, "zh": "老鼠和貓兒", "en": "The rat and the cat", "c": "/covers/GREEN25.jpg"}, {"id": "GREEN26", "l": "GREEN", "n": 26, "zh": "小鴨找媽媽", "en": "A duckling looking for his mom", "c": "/covers/GREEN26.jpg"}, {"id": "GREEN27", "l": "GREEN", "n": 27, "zh": "小豬不笨", "en": "The little pig is not stupid", "c": "/covers/GREEN27.jpg"}, {"id": "GREEN28", "l": "GREEN", "n": 28, "zh": "動物的叫聲", "en": "Animal calls", "c": "/covers/GREEN28.jpg"}, {"id": "GREEN29", "l": "GREEN", "n": 29, "zh": "北極熊", "en": "Polar bears", "c": "/covers/GREEN29.jpg"}, {"id": "GREEN30", "l": "GREEN", "n": 30, "zh": "黑熊媽媽說話", "en": "Mommy black bear was talking", "c": "/covers/GREEN30.jpg"}, {"id": "GREEN31", "l": "GREEN", "n": 31, "zh": "動物幫手", "en": "Animal helper", "c": "/covers/GREEN31.jpg"}, {"id": "GREEN32", "l": "GREEN", "n": 32, "zh": "蜘蛛", "en": "A spider", "c": "/covers/GREEN32.jpg"}, {"id": "GREEN33", "l": "GREEN", "n": 33, "zh": "海獺", "en": "Sea otters", "c": "/covers/GREEN33.jpg"}, {"id": "GREEN34", "l": "GREEN", "n": 34, "zh": "狗兒一家", "en": "The dog family", "c": "/covers/GREEN34.jpg"}, {"id": "GREEN35", "l": "GREEN", "n": 35, "zh": "小藍企鵝", "en": "The small blue penguins", "c": "/covers/GREEN35.jpg"}, {"id": "GREEN36", "l": "GREEN", "n": 36, "zh": "小動物", "en": "Small animals", "c": "/covers/GREEN36.jpg"}, {"id": "GREEN37", "l": "GREEN", "n": 37, "zh": "瓢蟲", "en": "Ladybugs", "c": "/covers/GREEN37.jpg"}, {"id": "GREEN38", "l": "GREEN", "n": 38, "zh": "松鼠", "en": "Squirrels", "c": "/covers/GREEN38.jpg"}, {"id": "GREEN39", "l": "GREEN", "n": 39, "zh": "綿羊", "en": "Sheep", "c": "/covers/GREEN39.jpg"}, {"id": "GREEN40", "l": "GREEN", "n": 40, "zh": "動物玩偶", "en": "Stuffed toys", "c": "/covers/GREEN40.jpg"}, {"id": "GREEN41", "l": "GREEN", "n": 41, "zh": "動物會保護自己", "en": "Animals know how to protect themselves", "c": "/covers/GREEN41.jpg"}, {"id": "GREEN42", "l": "GREEN", "n": 42, "zh": "螃蟹", "en": "Crabs", "c": "/covers/GREEN42.jpg"}, {"id": "GREEN43", "l": "GREEN", "n": 43, "zh": "刺蝟", "en": "Hedgehogs", "c": "/covers/GREEN43.jpg"}, {"id": "GREEN44", "l": "GREEN", "n": 44, "zh": "小河馬和大烏龜", "en": "The small hippo and the big turtle", "c": "/covers/GREEN44.jpg"}, {"id": "GREEN45", "l": "GREEN", "n": 45, "zh": "松鼠玩偶", "en": "Stuffed toy squirrel", "c": "/covers/GREEN45.jpg"}, {"id": "GREEN46", "l": "GREEN", "n": 46, "zh": "噴水的龍", "en": "The dragon that puffs water", "c": "/covers/GREEN46.jpg"}, {"id": "GREEN47", "l": "GREEN", "n": 47, "zh": "蓋房子", "en": "Building a house", "c": "/covers/GREEN47.jpg"}, {"id": "GREEN48", "l": "GREEN", "n": 48, "zh": "奶奶", "en": "Grandma", "c": "/covers/GREEN48.jpg"}, {"id": "GREEN49", "l": "GREEN", "n": 49, "zh": "爸爸沒回家", "en": "Dad did not come home", "c": "/covers/GREEN49.jpg"}, {"id": "GREEN50", "l": "GREEN", "n": 50, "zh": "會飛的房子", "en": "Flying house", "c": "/covers/GREEN50.jpg"}, {"id": "GREEN51", "l": "GREEN", "n": 51, "zh": "媽媽愛誰多一點", "en": "Mom loves whom a bit more?", "c": "/covers/GREEN51.jpg"}, {"id": "GREEN52", "l": "GREEN", "n": 52, "zh": "狗狗和我", "en": "The doggy and I", "c": "/covers/GREEN52.jpg"}, {"id": "GREEN53", "l": "GREEN", "n": 53, "zh": "家人聽對了嗎", "en": "Did my family hear it correctly?", "c": "/covers/GREEN53.jpg"}, {"id": "GREEN54", "l": "GREEN", "n": 54, "zh": "海盜弟弟", "en": "My younger brother being a pirate", "c": "/covers/GREEN54.jpg"}, {"id": "GREEN55", "l": "GREEN", "n": 55, "zh": "家裏有聲音", "en": "A sound in the house", "c": "/covers/GREEN55.jpg"}, {"id": "GREEN56", "l": "GREEN", "n": 56, "zh": "媽媽出差", "en": "Mom on a business trip", "c": "/covers/GREEN56.jpg"}, {"id": "GREEN57", "l": "GREEN", "n": 57, "zh": "花園房子", "en": "House with a garden", "c": "/covers/GREEN57.jpg"}, {"id": "GREEN58", "l": "GREEN", "n": 58, "zh": "把弟弟送給你", "en": "Giving away my younger brother", "c": "/covers/GREEN58.jpg"}, {"id": "GREEN59", "l": "GREEN", "n": 59, "zh": "我不貪心", "en": "I am not greedy", "c": "/covers/GREEN59.jpg"}, {"id": "GREEN60", "l": "GREEN", "n": 60, "zh": "我的好朋友", "en": "My best friend", "c": "/covers/GREEN60.jpg"}, {"id": "GREEN61", "l": "GREEN", "n": 61, "zh": "家裏的好人和壞人", "en": "Good guys and bad guys at home", "c": "/covers/GREEN61.jpg"}, {"id": "GREEN62", "l": "GREEN", "n": 62, "zh": "妹妹", "en": "Younger sister", "c": "/covers/GREEN62.jpg"}, {"id": "GREEN63", "l": "GREEN", "n": 63, "zh": "媽媽像什麼", "en": "What is Mom like?", "c": "/covers/GREEN63.jpg"}, {"id": "GREEN64", "l": "GREEN", "n": 64, "zh": "我討厭的事", "en": "The things that I hate", "c": "/covers/GREEN64.jpg"}, {"id": "GREEN65", "l": "GREEN", "n": 65, "zh": "冬眠的弟弟", "en": "Younger brother hibernated", "c": "/covers/GREEN65.jpg"}, {"id": "GREEN66", "l": "GREEN", "n": 66, "zh": "尾巴", "en": "Tails", "c": "/covers/GREEN66.jpg"}, {"id": "GREEN67", "l": "GREEN", "n": 67, "zh": "角、鬍鬚和尾巴", "en": "Horns, whiskers, and a tail", "c": "/covers/GREEN67.jpg"}, {"id": "GREEN68", "l": "GREEN", "n": 68, "zh": "腿斷了", "en": "Broken leg", "c": "/covers/GREEN68.jpg"}, {"id": "GREEN69", "l": "GREEN", "n": 69, "zh": "熊貓的毛", "en": "The panda’s fur", "c": "/covers/GREEN69.jpg"}, {"id": "GREEN70", "l": "GREEN", "n": 70, "zh": "大熊的背", "en": "The big bear’s back", "c": "/covers/GREEN70.jpg"}, {"id": "GREEN71", "l": "GREEN", "n": 71, "zh": "羽毛", "en": "Feathers", "c": "/covers/GREEN71.jpg"}, {"id": "GREEN72", "l": "GREEN", "n": 72, "zh": "牙齒", "en": "Teeth", "c": "/covers/GREEN72.jpg"}, {"id": "GREEN73", "l": "GREEN", "n": 73, "zh": "頭上的大包", "en": "A lump on the forehead", "c": "/covers/GREEN73.jpg"}, {"id": "GREEN74", "l": "GREEN", "n": 74, "zh": "腳受傷了", "en": "The wounded leg", "c": "/covers/GREEN74.jpg"}, {"id": "GREEN75", "l": "GREEN", "n": 75, "zh": "熊熊生病了", "en": "The bear got sick", "c": "/covers/GREEN75.jpg"}, {"id": "GREEN76", "l": "GREEN", "n": 76, "zh": "生病的公雞", "en": "The sick rooster", "c": "/covers/GREEN76.jpg"}, {"id": "GREEN77", "l": "GREEN", "n": 77, "zh": "長毛巴", "en": "Regrowing a tail", "c": "/covers/GREEN77.jpg"}, {"id": "GREEN78", "l": "GREEN", "n": 78, "zh": "薯片 Chips", "en": "Chips", "c": "/covers/GREEN78.jpg"}, {"id": "GREEN79", "l": "GREEN", "n": 79, "zh": "水果", "en": "Fruit", "c": "/covers/GREEN79.jpg"}, {"id": "GREEN80", "l": "GREEN", "n": 80, "zh": "青菜和蘿蔔", "en": "Vegetables and carrots", "c": "/covers/GREEN80.jpg"}, {"id": "GREEN81", "l": "GREEN", "n": 81, "zh": "冰淇淋", "en": "Ice cream", "c": "/covers/GREEN81.jpg"}, {"id": "GREEN82", "l": "GREEN", "n": 82, "zh": "烤鴨", "en": "Roast duck", "c": "/covers/GREEN82.jpg"}, {"id": "GREEN83", "l": "GREEN", "n": 83, "zh": "巧克力蛋糕", "en": "Chocolate cake", "c": "/covers/GREEN83.jpg"}, {"id": "GREEN84", "l": "GREEN", "n": 84, "zh": "花蜜和花粉", "en": "Honey and pollen", "c": "/covers/GREEN84.jpg"}, {"id": "GREEN85", "l": "GREEN", "n": 85, "zh": "零食", "en": "Snacks", "c": "/covers/GREEN85.jpg"}, {"id": "GREEN86", "l": "GREEN", "n": 86, "zh": "西瓜和番茄", "en": "Watermelons and tomatoes", "c": "/covers/GREEN86.jpg"}, {"id": "GREEN87", "l": "GREEN", "n": 87, "zh": "香味", "en": "Fragrance", "c": "/covers/GREEN87.jpg"}, {"id": "GREEN88", "l": "GREEN", "n": 88, "zh": "好吃的東西", "en": "Yummy stuff", "c": "/covers/GREEN88.jpg"}, {"id": "GREEN89", "l": "GREEN", "n": 89, "zh": "先吃再付錢", "en": "Pay after eating", "c": "/covers/GREEN89.jpg"}, {"id": "GREEN90", "l": "GREEN", "n": 90, "zh": "食物夢", "en": "Food dream", "c": "/covers/GREEN90.jpg"}, {"id": "GREEN91", "l": "GREEN", "n": 91, "zh": "星星吃月亮", "en": "The stars ate the moon", "c": "/covers/GREEN91.jpg"}, {"id": "GREEN92", "l": "GREEN", "n": 92, "zh": "找寶藏", "en": "A Treasure Hunt", "c": "/covers/GREEN92.jpg"}, {"id": "GREEN93", "l": "GREEN", "n": 93, "zh": "我喜歡大自然", "en": "I love nature", "c": "/covers/GREEN93.jpg"}, {"id": "GREEN94", "l": "GREEN", "n": 94, "zh": "遊太空", "en": "A space trip", "c": "/covers/GREEN94.jpg"}, {"id": "GREEN95", "l": "GREEN", "n": 95, "zh": "寶石", "en": "Precious stones", "c": "/covers/GREEN95.jpg"}, {"id": "GREEN96", "l": "GREEN", "n": 96, "zh": "老樹 The old tree", "en": "The old tree", "c": "/covers/GREEN96.jpg"}, {"id": "GREEN97", "l": "GREEN", "n": 97, "zh": "美麗的星星", "en": "Beautiful stars", "c": "/covers/GREEN97.jpg"}, {"id": "GREEN98", "l": "GREEN", "n": 98, "zh": "雨天的積水", "en": "Puddles on the rainy days", "c": "/covers/GREEN98.jpg"}, {"id": "GREEN99", "l": "GREEN", "n": 99, "zh": "春夏秋冬", "en": "Spring summer autumn winter", "c": "/covers/GREEN99.jpg"}, {"id": "GREEN100", "l": "GREEN", "n": 100, "zh": "小種子", "en": "The little seed", "c": "/covers/GREEN100.jpg"}];
+
+// Build book lookup
+var bookMap = {};
+BOOKS.forEach(function(b){ bookMap[b.id] = b; });
+
+// State
+var state = {
+  activeTheme: null,
+  activeWord: null,
+  level: 'ALL',
+  query: ''
+};
+
+// Render theme grid
+function renderThemes() {
+  var q = state.query.toLowerCase();
+  var grid = document.getElementById('themeGrid');
+  var html = '';
+  var shown = 0;
+
+  THEMES.forEach(function(t) {
+    // Filter by search
+    if (q) {
+      var match = t.zh.toLowerCase().indexOf(q) >= 0 ||
+                  t.en.toLowerCase().indexOf(q) >= 0 ||
+                  t.desc.indexOf(q) >= 0 ||
+                  t.words.join('').indexOf(q) >= 0;
+      if (!match) return;
+    }
+
+    // Count books matching level filter
+    var count = getFilteredBooks(t).length;
+
+    html += '<div class="theme-card" onclick="selectTheme(\'' + t.id + '\')">' +
+      '<span class="count">' + count + ' 本</span>' +
+      '<span class="emoji">' + t.emoji + '</span>' +
+      '<div class="name">' + t.zh + '</div>' +
+      '<div class="sub">' + t.en + '</div>' +
+      '</div>';
+    shown++;
+  });
+
+  if (!shown) {
+    html = '<div class="empty"><div class="ico">🔍</div><p>找不到符合的主題</p></div>';
+  }
+
+  grid.innerHTML = html;
+  document.getElementById('resultCount').textContent = shown + ' 個主題';
+}
+
+function getFilteredBooks(theme) {
+  return theme.bookIds.filter(function(id) {
+    var b = bookMap[id];
+    if (!b) return false;
+    if (state.level !== 'ALL' && b.l !== state.level) return false;
+    return true;
+  });
+}
+
+function selectTheme(id) {
+  var theme = THEMES.find(function(t){ return t.id === id; });
+  if (!theme) return;
+  state.activeTheme = theme;
+  state.activeWord = null;
+
+  // Hide theme grid, show detail
+  document.getElementById('themeSection').style.display = 'none';
+  var det = document.getElementById('themeDetail');
+  det.classList.add('show');
+
+  document.getElementById('tdEmoji').textContent = theme.emoji;
+  document.getElementById('tdTitle').textContent = theme.zh;
+  document.getElementById('tdEn').textContent = theme.en + ' · ' + theme.desc;
+
+  // Render words
+  var ww = document.getElementById('wordsWrap');
+  ww.innerHTML = '<div class="word-tag active" onclick="filterWord(null)">全部</div>' +
+    theme.words.map(function(w) {
+      return '<div class="word-tag" onclick="filterWord(\'' + w + '\')">' + w + '</div>';
+    }).join('');
+
+  renderBooks();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function filterWord(word) {
+  state.activeWord = word;
+  // Update word tag styles
+  document.querySelectorAll('.word-tag').forEach(function(el) {
+    el.classList.remove('active');
+    if ((!word && el.textContent === '全部') || el.textContent === word) {
+      el.classList.add('active');
+    }
+  });
+  renderBooks();
+}
+
+function renderBooks() {
+  var theme = state.activeTheme;
+  if (!theme) return;
+
+  var filteredIds = getFilteredBooks(theme);
+  var bookGrid = document.getElementById('bookGrid');
+
+  // If a word filter is active, we could further filter (for future use with word-level data)
+  // For now, show all books in theme
+
+  document.getElementById('bookCount').textContent = '共 ' + filteredIds.length + ' 本相關書籍';
+
+  if (!filteredIds.length) {
+    bookGrid.innerHTML = '<div class="empty"><div class="ico">📚</div><p>此主題在目前級別下沒有書籍</p></div>';
+    return;
+  }
+
+  bookGrid.innerHTML = filteredIds.map(function(id) {
+    var b = bookMap[id];
+    if (!b) return '';
+    var lc = b.l.toLowerCase()[0];
+    return '<div class="book-card" onclick="openBook(\'' + b.id + '\')">' +
+      '<div class="cbar ' + lc + '"></div>' +
+      '<div class="cover-wrap">' +
+        '<img src="' + b.c + '" alt="' + b.zh + '" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">' +
+        '<div class="cover-placeholder" style="display:none">📖</div>' +
+      '</div>' +
+      '<div class="book-body">' +
+        '<span class="book-badge ' + lc + '">' + b.l + ' #' + b.n + '</span>' +
+        '<div class="book-title">' + b.zh + '</div>' +
+        '<div class="book-en">' + b.en + '</div>' +
+      '</div></div>';
+  }).join('');
+}
+
+function closeTheme() {
+  state.activeTheme = null;
+  state.activeWord = null;
+  document.getElementById('themeSection').style.display = '';
+  document.getElementById('themeDetail').classList.remove('show');
+  renderThemes();
+}
+
+function openBook(id) {
+  var b = bookMap[id];
+  if (!b) return;
+  var lc = b.l.toLowerCase()[0];
+
+  document.getElementById('modalBar').className = 'modal-bar ' + lc;
+  document.getElementById('modalCover').innerHTML =
+    '<img src="' + b.c + '" alt="' + b.zh + '" onerror="this.style.display=\'none\'">';
+
+  // Find which themes this book belongs to
+  var bookThemes = THEMES.filter(function(t) {
+    return t.bookIds.indexOf(b.id) >= 0;
+  });
+  var themeTags = bookThemes.map(function(t) {
+    return '<span class="modal-theme-tag">' + t.emoji + ' ' + t.zh + '</span>';
+  }).join('');
+
+  document.getElementById('modalBody').innerHTML =
+    '<span class="modal-badge ' + lc + '">' + b.l + ' #' + b.n + '</span>' +
+    '<div class="modal-title">' + b.zh + '</div>' +
+    '<div class="modal-en">' + b.en + '</div>' +
+    '<div class="modal-themes">' + themeTags + '</div>';
+
+  document.getElementById('modal').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+function setLevel(level) {
+  state.level = level;
+  document.querySelectorAll('.fb').forEach(function(btn) {
+    btn.classList.remove('active');
+    if (btn.dataset.level === level) btn.classList.add('active');
+  });
+  if (state.activeTheme) {
+    renderBooks();
+  } else {
+    renderThemes();
+  }
+}
+
+// Search
+document.getElementById('searchInput').addEventListener('input', function(e) {
+  state.query = e.target.value;
+  if (state.activeTheme) {
+    closeTheme();
+  }
+  renderThemes();
+});
+
+// Keyboard
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    if (document.getElementById('modal').classList.contains('show')) {
+      closeModal();
+    } else if (state.activeTheme) {
+      closeTheme();
+    }
+  }
+});
+
+// Back to top
+window.addEventListener('scroll', function() {
+  var btn = document.getElementById('backTop');
+  btn.classList.toggle('show', window.scrollY > 400);
+});
+
+// Init
+renderThemes();
+</script>
+</body>
+</html>

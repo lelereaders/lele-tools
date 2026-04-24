@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>樂樂文化工具箱</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans TC',-apple-system,sans-serif;background:#FFF8F4;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:2rem 1rem}
+.header{text-align:center;margin-bottom:2.5rem}
+h1{font-size:28px;color:#1a1a1a;margin-bottom:8px}
+.header>p{font-size:15px;color:#888}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;max-width:700px;width:100%}
+.card{background:white;border-radius:16px;text-decoration:none;border:1px solid #eee;display:block;overflow:hidden;transition:transform .2s,box-shadow .2s}
+.card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.1)}
+.card-cover{width:100%;aspect-ratio:16/10;background:#F1F2F6;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.card-cover img{width:100%;height:100%;object-fit:cover}
+.card-cover .fallback{font-size:48px}
+.card-body{padding:1.2rem 1.5rem 1.5rem}
+.card h2{font-size:18px;color:#1a1a1a;margin-bottom:6px}
+.card p{font-size:13px;color:#888;margin-bottom:12px;line-height:1.5}
+.badge{display:inline-block;font-size:12px;padding:3px 10px;border-radius:20px;font-weight:500}
+.badge-live{background:#FFF0E6;color:#F8760D}
+.badge-new{background:#E8F5E9;color:#2E7D32}
+.footer{background:#1a1a1a;color:#fff;text-align:center;padding:1.2rem 1rem;margin-top:2.5rem;font-size:13px;width:100vw;margin-left:calc(-50vw + 50%)}
+.footer a{color:#fff;text-decoration:none;margin:0 .5rem}
+.footer a:hover{color:#D4A843}
+.footer .sub-footer{margin-top:.4rem;font-size:12px;color:#aaa}
+.footer .sub-footer a{color:#aaa;font-size:12px}
+/* --- Password Overlay --- */
+.pw-overlay{position:fixed;inset:0;background:rgba(255,248,244,.97);z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;font-family:'Noto Sans TC',sans-serif}
+.pw-box{background:#fff;border-radius:20px;padding:2.5rem 2rem;box-shadow:0 8px 32px rgba(0,0,0,.1);text-align:center;max-width:360px;width:90%}
+.pw-box h2{font-size:22px;color:#1a1a1a;margin-bottom:6px}
+.pw-box .pw-sub{font-size:14px;color:#888;margin-bottom:1.5rem}
+.pw-box input{width:100%;padding:12px 16px;border:2px solid #eee;border-radius:12px;font-size:16px;text-align:center;letter-spacing:2px;outline:none;transition:border-color .2s}
+.pw-box input:focus{border-color:#D4A843}
+.pw-box input.shake{animation:shake .4s}
+.pw-box button{margin-top:1rem;width:100%;padding:12px;border:none;border-radius:12px;background:#D4A843;color:#fff;font-size:16px;font-weight:700;cursor:pointer;transition:background .2s}
+.pw-box button:hover{background:#c19a3a}
+.pw-box .pw-err{color:#e74c3c;font-size:13px;margin-top:.8rem;min-height:1.2em}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+@media(max-width:600px){.grid{grid-template-columns:1fr}h1{font-size:22px}}
+</style>
+</head>
+<body>
+
+<!-- Password Overlay -->
+<div class="pw-overlay" id="pwOverlay">
+  <div class="pw-box">
+    <h2>樂樂文化工具箱</h2>
+    <p class="pw-sub">請輸入密碼進入</p>
+    <input type="password" id="pwInput" placeholder="輸入密碼" autocomplete="off" autofocus>
+    <button id="pwBtn">進入</button>
+    <p class="pw-err" id="pwErr"></p>
+  </div>
+</div>
+
+<script>
+(function(){
+  var KEY='lele_tools_auth';
+  if(sessionStorage.getItem(KEY)==='1'){
+    document.getElementById('pwOverlay').style.display='none';
+    return;
+  }
+  var inp=document.getElementById('pwInput');
+  var btn=document.getElementById('pwBtn');
+  var err=document.getElementById('pwErr');
+  function check(){
+    if(inp.value.trim().toUpperCase()==='AMAZING'){
+      sessionStorage.setItem(KEY,'1');
+      document.getElementById('pwOverlay').style.display='none';
+    }else{
+      err.textContent='密碼錯誤，請再試一次';
+      inp.classList.add('shake');
+      setTimeout(function(){inp.classList.remove('shake')},400);
+      inp.value='';
+      inp.focus();
+    }
+  }
+  btn.addEventListener('click',check);
+  inp.addEventListener('keydown',function(e){if(e.key==='Enter')check()});
+})();
+</script>
+<div class="header">
+  <h1>樂樂文化工具箱</h1>
+  <p>陪孩子一讀再讀、愛上閱讀</p>
+</div>
+<div class="grid">
+
+  <a class="card" href="/reading-level">
+    <div class="card-cover" style="background:#FFF4E0;display:flex;align-items:center;justify-content:center">
+      <div class="fallback" style="font-size:48px">📊</div>
+    </div>
+    <div class="card-body">
+      <h2>樂樂閱讀程度測試器</h2>
+      <p>輸入孩子認識的字數，看看他看得懂哪些故事書，預覽 300 本書的理解度</p>
+      <span class="badge badge-new">新上線</span>
+    </div>
+  </a>
+
+  <a class="card" href="/reading">
+    <div class="card-cover" style="background:#FFF9F3;display:flex;align-items:center;justify-content:center">
+      <div class="fallback" style="font-size:48px">📖</div>
+    </div>
+    <div class="card-body">
+      <h2>樂樂共讀日記</h2>
+      <p>記錄孩子閱讀觀察、追蹤進度、推薦選書，陪伴每一次共讀時光</p>
+      <span class="badge badge-new">新上線</span>
+    </div>
+  </a>
+
+  <a class="card" href="/theme">
+    <div class="card-cover">
+      <img src="/covers/library.png" alt="樂樂主題找書" onerror="this.style.display='none';this.parentElement.innerHTML='<div class=fallback>🏷️</div>'">
+    </div>
+    <div class="card-body">
+      <h2>樂樂主題找書</h2>
+      <p>29 個主題分類，選擇節日、季節或生活主題，找到相關故事書</p>
+      <span class="badge badge-new">新上線</span>
+    </div>
+  </a>
+
+  <a class="card" href="/puzzle">
+    <div class="card-cover">
+      <img src="/covers/word-search-cover.jpg" alt="樂樂搜字遊戲" onerror="this.style.display='none';this.parentElement.innerHTML='<div class=fallback>🧩</div>'">
+    </div>
+    <div class="card-body">
+      <h2>樂樂搜字遊戲</h2>
+      <p>輸入中文詞彙，生成專屬搜字謎題，支援列印與線上玩</p>
+      <span class="badge badge-live">已上線</span>
+    </div>
+  </a>
+
+  <a class="card" href="/maze-v2">
+    <div class="card-cover" style="background:#E8F4FD;display:flex;align-items:center;justify-content:center">
+      <div class="fallback" style="font-size:48px">🗺️</div>
+    </div>
+    <div class="card-body">
+      <h2>認字迷宮 v2 · 主題版</h2>
+      <p>手繪主題迷宮（冰上溜冰、沙灘…）隨機抽路線防死記</p>
+      <span class="badge badge-new">新上線</span>
+    </div>
+  </a>
+
+  <a class="card" href="/maze">
+    <div class="card-cover">
+      <img src="/covers/word-maze-cover.jpg" alt="樂樂認字迷宮" onerror="this.style.display='none';this.parentElement.innerHTML='<div class=fallback>🌀</div>'">
+    </div>
+    <div class="card-body">
+      <h2>樂樂認字迷宮</h2>
+      <p>趣味中文迷宮遊戲</p>
+      <span class="badge badge-live">已上線</span>
+    </div>
+  </a>
+
+  <a class="card" href="/chinese-learning-quiz">
+    <div class="card-cover" style="background:#FFF0E6;display:flex;align-items:center;justify-content:center">
+      <div class="fallback" style="font-size:48px">📝</div>
+    </div>
+    <div class="card-body">
+      <h2>中文學習問答</h2>
+      <p>互動式學習測驗</p>
+      <span class="badge badge-live">已上線</span>
+    </div>
+  </a>
+
+  <a class="card" href="/bingo-project">
+    <div class="card-cover" style="background:#FDECEC;display:flex;align-items:center;justify-content:center">
+      <div class="fallback" style="font-size:48px">🎯</div>
+    </div>
+    <div class="card-body">
+      <h2>復活節閱讀賓果</h2>
+      <p>雙語賓果卡，中英對照</p>
+      <span class="badge badge-live">已上線</span>
+    </div>
+  </a>
+
+  <a class="card" href="/easter-activity-project">
+    <div class="card-cover" style="background:#EEF8EC;display:flex;align-items:center;justify-content:center">
+      <div class="fallback" style="font-size:48px">🥚</div>
+    </div>
+    <div class="card-body">
+      <h2>復活節活動</h2>
+      <p>節慶閱讀活動工具</p>
+      <span class="badge badge-live">已上線</span>
+    </div>
+  </a>
+
+  <a class="card" href="/lele-365-reading-plan">
+    <div class="card-cover" style="background:#F3EEFB;display:flex;align-items:center;justify-content:center">
+      <div class="fallback" style="font-size:48px">📅</div>
+    </div>
+    <div class="card-body">
+      <h2>樂樂 365 閱讀計劃</h2>
+      <p>一年閱讀計劃排程工具</p>
+      <span class="badge badge-live">已上線</span>
+    </div>
+  </a>
+
+  <a class="card" href="/word-grid-maker">
+    <div class="card-cover" style="background:#FFF8DC;display:flex;align-items:center;justify-content:center">
+      <div class="fallback" style="font-size:48px">🔡</div>
+    </div>
+    <div class="card-body">
+      <h2>字格製作器</h2>
+      <p>生成中文字練習格</p>
+      <span class="badge badge-live">已上線</span>
+    </div>
+  </a>
+
+  <a class="card" href="/library">
+    <div class="card-cover">
+      <img src="/covers/library.png" alt="樂樂找書系統" onerror="this.style.display='none';this.parentElement.innerHTML='<div class=fallback>📚</div>'">
+    </div>
+    <div class="card-body">
+      <h2>樂樂找書系統</h2>
+      <p>300 本分級中文故事書，搜尋書名快速找到你要的書（繁體／简体切換）</p>
+      <span class="badge badge-new">新上線</span>
+    </div>
+  </a>
+
+  <a class="card" href="/translate">
+    <div class="card-cover">
+      <img src="/covers/translate.png" alt="樂樂翻譯查找器" onerror="this.style.display='none';this.parentElement.innerHTML='<div class=fallback>🔤</div>'">
+    </div>
+    <div class="card-body">
+      <h2>樂樂翻譯查找器</h2>
+      <p>找不到書的英文翻譯？輸入書名、書號或關鍵字，英文翻譯一鍵查詢</p>
+      <span class="badge badge-new">新上線</span>
+    </div>
+  </a>
+
+  <a class="card" href="/characters">
+    <div class="card-cover">
+      <img src="/covers/characters.png" alt="樂樂找字系統" onerror="this.style.display='none';this.parentElement.innerHTML='<div class=fallback>🔍</div>'">
+    </div>
+    <div class="card-body">
+      <h2>樂樂找字系統</h2>
+      <p>1,160 個字，點擊查看出現在哪些書、出現幾次（繁體／简体切換）</p>
+      <span class="badge badge-new">新上線</span>
+    </div>
+  </a>
+
+</div>
+<div class="footer">
+<p><a href="https://www.lelechinese.com" target="_blank">官網</a> <a href="https://www.instagram.com/lelechinesetw" target="_blank">Instagram</a> <a href="https://www.facebook.com/lelechinese" target="_blank">Facebook</a> <a href="https://www.youtube.com/@lelechinese" target="_blank">YouTube</a></p>
+<p class="sub-footer">© 2026 <a href="https://www.lelechinese.com" target="_blank">樂樂文化 Le Le Culture</a></p>
+</div>
+</body>
+</html>

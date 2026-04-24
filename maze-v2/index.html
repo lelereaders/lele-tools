@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>認字迷宮 v2 · 主題版</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="container">
+  <header class="no-print">
+    <h1>🧩 認字迷宮 <span style="color:var(--primary)">v2</span></h1>
+    <p class="sub">挑主題、輸入詞彙，沿著路徑找出正確的字！</p>
+  </header>
+
+  <div class="card no-print" id="formCard">
+    <div class="row">
+      <div>
+        <label>主題</label>
+        <select id="themeSelect"></select>
+      </div>
+      <div>
+        <label>變體 <span style="color:var(--muted); font-weight:400">（防記路線）</span></label>
+        <select id="variantSelect"></select>
+      </div>
+      <div>
+        <label>字體</label>
+        <select id="fontSelect">
+          <option value="'Noto Sans TC', 'PingFang TC', sans-serif">標楷體 / 黑體</option>
+          <option value="'Noto Serif TC', 'Songti TC', serif">新細明 / 宋體</option>
+          <option value="'Kaiti TC', 'DFKai-SB', serif">楷體</option>
+        </select>
+      </div>
+      <div>
+        <label>語言版本</label>
+        <div class="segmented" id="langSeg">
+          <button type="button" data-val="tc" class="active">繁體中文</button>
+          <button type="button" data-val="sc">简体中文</button>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:16px">
+      <label>輸入詞彙 <span style="color:var(--muted); font-weight:400">（空白或逗號分隔）</span></label>
+      <textarea id="words" placeholder="例如：溜冰 左腳 落地 拍手"></textarea>
+      <div class="chips" id="presetChips">
+        <span class="chip muted" data-preset="ice">🧊 溜冰 左腳 落地 拍手</span>
+        <span class="chip muted" data-preset="beach">🏖️ 沙灘 海浪 貝殼 衝浪</span>
+      </div>
+    </div>
+
+    <div style="margin-top:18px">
+      <button class="btn block" id="generateBtn">✨ 生成迷宮</button>
+    </div>
+    <p class="hint">路徑可在 <a href="author.html">路徑標記工具</a> 調整</p>
+  </div>
+
+  <div id="resultCard" class="card" style="display:none; padding:0">
+    <div class="toolbar no-print">
+      <div class="left">
+        <b>你的迷宮 🎉</b>
+        <span id="variantTag" class="status" style="margin-left:10px"></span>
+      </div>
+      <div class="right">
+        <label style="font-size:13px; margin:0; display:flex; align-items:center; gap:6px">
+          <input type="checkbox" id="showAnswer"> 顯示答案
+        </label>
+        <div class="segmented" id="modeSeg" style="padding:3px">
+          <button type="button" data-val="online" class="active">✏️ 線上玩</button>
+          <button type="button" data-val="print">🖨️ 列印版</button>
+        </div>
+        <button class="btn ghost sm" id="againBtn">🔄 再玩一次</button>
+        <button class="btn sm" id="printBtn">🖨️ 列印</button>
+      </div>
+    </div>
+
+    <div class="title-bar" id="titleBar"></div>
+
+    <div class="maze-stage">
+      <canvas id="mazeCanvas"></canvas>
+    </div>
+
+    <p class="hint no-print" id="playHint">用手指或滑鼠從 <span style="color:#27ae60;font-weight:700">起點</span> 拖曳到 <span style="color:#e74c3c;font-weight:700">終點</span>，依序經過所有字（雙擊清除）</p>
+  </div>
+
+  <div class="footer no-print">樂樂文化 · Le Le Culture</div>
+</div>
+
+<script src="js/paths.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

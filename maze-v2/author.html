@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>迷宮路徑標記工具</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>🛠️ 路徑標記工具</h1>
+    <p class="sub">點圖標記路徑 → 儲存後 <a href="index.html">到主頁</a> 產生迷宮</p>
+  </header>
+
+  <div class="card">
+    <div class="row" style="align-items:flex-end">
+      <div>
+        <label>底圖主題</label>
+        <select id="themeSelect"></select>
+      </div>
+      <div>
+        <label>變體</label>
+        <select id="variantSelect"></select>
+      </div>
+      <div style="flex:2 1 auto">
+        <label>&nbsp;</label>
+        <div style="display:flex; gap:8px; flex-wrap:wrap">
+          <button class="btn ghost sm" id="undoBtn">↶ 上一步</button>
+          <button class="btn ghost sm" id="clearBtn">🗑️ 清除全部</button>
+          <button class="btn sm" id="saveBtn">💾 儲存</button>
+          <button class="btn ghost sm" id="exportBtn">⬇️ 匯出 JSON</button>
+          <span id="status" class="status"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="author-help">
+    <b>操作：</b>
+    <kbd>左鍵點擊</kbd> 新增路徑點（依序為 START → 終點 FINISH）・
+    <kbd>拖曳</kbd> 移動點・
+    <kbd>右鍵</kbd> 或 <kbd>Shift+點擊</kbd> 刪除點・
+    儲存後路徑會套用到主頁迷宮
+  </div>
+
+  <div class="card" style="padding:0">
+    <div class="author-canvas-wrap">
+      <canvas id="authorCanvas"></canvas>
+    </div>
+  </div>
+
+  <p class="hint">點數建議：<b>10–20 個</b>，轉折處多加幾點讓曲線更自然</p>
+</div>
+
+<script src="js/paths.js"></script>
+<script src="js/author.js"></script>
+</body>
+</html>

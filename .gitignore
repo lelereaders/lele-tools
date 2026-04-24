@@ -1,0 +1,37 @@
+# macOS / Windows
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editors
+.vscode/
+.idea/
+*.swp
+
+# Node / dev artifacts (shouldn't be committed in this static-only repo)
+node_modules/
+.env
+.env.local
+.env.*.local
+
+# Zip backups (live outside the repo)
+*.zip
+
+# Lovable source files (this repo is built-only; keep source in lele-tools-source/)
+src/
+package.json
+package-lock.json
+bun.lock
+bun.lockb
+vite.config.ts
+tsconfig*.json
+tailwind.config.*
+postcss.config.*
+eslint.config.*
+components.json
+playwright-fixture.ts
+playwright.config.ts
+
+# Internal source data
+*.xlsx
+build.py

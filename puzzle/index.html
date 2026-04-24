@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>樂樂搜字遊戲 | Le Le Word Search</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary-gold: #D4A843;
+      --primary-dark: #2C3E50;
+      --border-light: #E8E8E8;
+      --text-light: #666;
+      --success-green: #52C41A;
+      --error-red: #F5222D;
+    }
+
+    body {
+      font-family: 'Noto Sans TC', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #FAFAFA;
+      color: var(--primary-dark);
+      line-height: 1.6;
+    }
+
+    /* ===== HEADER ===== */
+    .header {
+      background: white;
+      border-bottom: 2px solid var(--primary-gold);
+    }
+
+    .header-banner {
+      width: 100%;
+      height: 200px;
+      background: linear-gradient(135deg, var(--primary-gold) 0%, #E8B85D 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .header-banner img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .header-banner-fallback {
+      font-size: 48px;
+      font-weight: bold;
+      color: white;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .header-content {
+      padding: 24px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .header-title {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--primary-dark);
+      margin-bottom: 8px;
+    }
+
+    .header-subtitle {
+      font-size: 16px;
+      color: var(--text-light);
+    }
+
+    /* ===== CONTAINER ===== */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 32px 24px;
+    }
+
+    /* ===== CONTROL PANEL ===== */
+    .control-panel {
+      background: white;
+      border-radius: 8px;
+      padding: 24px;
+      margin-bottom: 32px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    .control-section {
+      margin-bottom: 24px;
+    }
+
+    .control-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .section-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--primary-dark);
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: block;
+    }
+
+    .control-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .control-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .toggle-btn {
+      padding: 8px 16px;
+      border: 2px solid var(--border-light);
+      background: white;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.2s;
+      color: var(--primary-dark);
+    }
+
+    .toggle-btn.active {
+      background: var(--primary-gold);
+      border-color: var(--primary-gold);
+      color: white;
+    }
+
+    .toggle-btn:hover:not(.active) {
+      border-color: var(--primary-gold);
+      color: var(--primary-gold);
+    }
+
+    select {
+      padding: 8px 12px;
+      border: 2px solid var(--border-light);
+      border-radius: 6px;
+      font-size: 14px;
+      font-family: inherit;
+      cursor: pointer;
+      background: white;
+      color: var(--primary-dark);
+      transition: border-color 0.2s;
+    }
+
+    select:hover {
+      border-color: var(--primary-gold);
+    }
+
+    select:focus {
+      outline: none;
+      border-color: var(--primary-gold);
+      box-shadow: 0 0 0 3px rgba(212, 168, 67, 0.1);
+    }
+
+    .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .checkbox-item input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+      accent-color: var(--primary-gold);
+    }
+
+    .checkbox-item label {
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    /* ===== WORD INPUT ===== */
+    .word-input-section {
+      margin-bottom: 24px;
+    }
+
+    .word-input-label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: var(--primary-dark);
+    }
+
+    .input-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .input-tab {
+      padding: 8px 16px;
+      background: var(--border-light);
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+
+    .input-tab.active {
+      background: var(--primary-gold);
+      color: white;
+    }
+
+    .input-hint {
+      font-size: 12px;
+      color: var(--text-light);
+      margin-bottom: 8px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 120px;
+      padding: 12px;
+      border: 2px solid var(--border-light);
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 14px;
+      resize: vertical;
+      transition: border-color 0.2s;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: var(--primary-gold);
+      box-shadow: 0 0 0 3px rgba(212, 168, 67, 0.1);
+    }
+
+    /* ===== GRID DISPLAY ===== */
+    .grid-wrapper {
+      background: white;
+      border-radius: 8px;
+      padding: 32px;
+      margin-bottom: 32px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    .grid-info {
+      text-align: center;
+      margin-bottom: 24px;
+      font-size: 14px;
+      color: var(--text-light);
+    }
+
+    .grid-info-primary {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--primary-dark);
+    }
+
+    .puzzle-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      margin-bottom: 32px;
+      padding: 24px;
+      background: #FAFAFA;
+      border-radius: 8px;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .grid-cell {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid var(--border-light);
+      border-radius: 4px;
+      background: white;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.2s;
+      font-weight: 500;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .grid-cell.char-kai {
+      font-family: 'DFKai-SB', 'SimKai', serif;
+    }
+
+    .grid-cell.char-round {
+      font-family: 'DFYuanW5-Regular', 'SimYou', sans-serif;
+    }
+
+    .grid-cell.char-handwrite {
+      font-family: 'DFHsitikuMB-W5', 'SimHei', sans-serif;
+    }
+
+    .grid-cell-char {
+      font-size: 42px;
+      line-height: 1;
+    }
+
+    .grid-cell:hover {
+      background: #F0F0F0;
+      border-color: var(--primary-gold);
+    }
+
+    .grid-cell.highlighted {
+      background: var(--primary-gold);
+      color: white;
+      border-color: var(--primary-gold);
+    }
+
+    .grid-cell.answer-correct {
+      background: var(--success-green);
+      color: white;
+      border-color: var(--success-green);
+    }
+
+    .grid-cell.answer-wrong {
+      background: var(--error-red);
+      color: white;
+      border-color: var(--error-red);
+    }
+
+    /* ===== WORD LIST ===== */
+    .word-list-section {
+      background: white;
+      border-radius: 8px;
+      padding: 24px;
+      margin-bottom: 32px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    .word-list-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--primary-dark);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .word-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .word-tag {
+      background: #F0F0F0;
+      border: 2px solid var(--border-light);
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      color: var(--primary-dark);
+      transition: all 0.2s;
+    }
+
+    .word-tag.found {
+      background: var(--success-green);
+      border-color: var(--success-green);
+      color: white;
+      text-decoration: line-through;
+    }
+
+    /* ===== ACTION BUTTONS ===== */
+    .action-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 24px;
+      justify-content: center;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-primary {
+      background: var(--primary-gold);
+      color: white;
+      border: 2px solid var(--primary-gold);
+    }
+
+    .btn-primary:hover {
+      background: #C9931C;
+      border-color: #C9931C;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(212, 168, 67, 0.3);
+    }
+
+    .btn-secondary {
+      background: white;
+      color: var(--primary-dark);
+      border: 2px solid var(--border-light);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--primary-gold);
+      color: var(--primary-gold);
+    }
+
+    .btn-small {
+      padding: 8px 16px;
+      font-size: 12px;
+    }
+
+    /* ===== EMPTY STATE ===== */
+    .empty-state {
+      text-align: center;
+      padding: 48px 24px;
+      color: var(--text-light);
+    }
+
+    .empty-state-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+
+    .empty-state-text {
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
+
+    /* ===== FOOTER ===== */
+    .footer {
+      background: var(--primary-dark);
+      color: white;
+      padding: 48px 24px;
+      margin-top: 64px;
+    }
+
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 32px;
+      margin-bottom: 32px;
+    }
+
+    .footer-section h3 {
+      font-size: 16px;
+      margin-bottom: 16px;
+      color: var(--primary-gold);
+    }
+
+    .footer-section a {
+      display: block;
+      color: rgba(255,255,255,0.8);
+      text-decoration: none;
+      font-size: 14px;
+      margin-bottom: 8px;
+      transition: color 0.2s;
+    }
+
+    .footer-section a:hover {
+      color: var(--primary-gold);
+    }
+
+    .footer-social {
+      display: flex;
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .footer-social a {
+      display: inline-flex;
+      width: 40px;
+      height: 40px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 50%;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .footer-bottom {
+      border-top: 1px solid rgba(255,255,255,0.1);
+      padding-top: 24px;
+      text-align: center;
+      font-size: 14px;
+      color: rgba(255,255,255,0.6);
+    }
+
+    /* ===== PRINT MODE ===== */
+    @media print {
+      body {
+        background: white;
+      }
+
+      .control-panel,
+      .action-bar,
+      .footer,
+      .word-list-section {
+        display: none;
+      }
+
+      .grid-wrapper {
+        box-shadow: none;
+        padding: 0;
+      }
+
+      .puzzle-grid {
+        background: white;
+        padding: 0;
+        gap: 4px;
+      }
+
+      .grid-cell {
+        border: 1px solid #999;
+      }
+
+      .grid-cell.highlighted {
+        background: white;
+        border: 1px solid #999;
+      }
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+      .header-title {
+        font-size: 24px;
+      }
+
+      .container {
+        padding: 16px 12px;
+      }
+
+      .control-panel {
+        padding: 16px;
+      }
+
+      .control-row {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .grid-wrapper {
+        padding: 16px;
+      }
+
+      .footer-content {
+        grid-template-columns: 1fr;
+        gap: 24px;
+      }
+
+      .action-bar {
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+      }
+    }
+
+    /* ===== UTILITY ===== */
+    .hidden {
+      display: none !important;
+    }
+
+    .text-center {
+      text-align: center;
+    }
+
+    .mt-24 {
+      margin-top: 24px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-banner">
+      <img id="headerImage" src="/covers/word-search-cover.jpg" alt="Word Search" onerror="this.parentElement.innerHTML='<div class=\"header-banner-fallback\">樂樂搜字遊戲</div>'">
+    </div>
+    <div class="header-content">
+      <h1 class="header-title">樂樂搜字遊戲</h1>
+      <p class="header-subtitle">Le Le Word Search - 輸入中文詞彙，沿著路徑找出正確的字詞吧！</p>
+    </div>
+  </div>
+
+  <!-- MAIN CONTAINER -->
+  <div class="container">
+    <!-- CONTROL PANEL -->
+    <div class="control-panel">
+      <!-- Language & Font -->
+      <div class="control-section">
+        <label class="section-label">顯示設定</label>
+        <div class="control-row">
+          <div class="control-group">
+            <button class="toggle-btn active" id="toggleTC" onclick="app.setLanguage('TC')">繁體 TC</button>
+            <button class="toggle-btn" id="toggleSC" onclick="app.setLanguage('SC')">簡體 SC</button>
+          </div>
+          <div class="control-group">
+            <select id="fontSelector" onchange="app.setFont(this.value)">
+              <option value="kai">標楷體</option>
+              <option value="round">圓體</option>
+              <option value="handwrite">手寫字</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Direction Options -->
+      <div class="control-section">
+        <label class="section-label">搜尋方向</label>
+        <div class="checkbox-group">
+          <div class="checkbox-item">
+            <input type="checkbox" id="dirHorizontal" checked onchange="app.updateDirections()">
+            <label for="dirHorizontal">水平 →</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="dirVertical" checked onchange="app.updateDirections()">
+            <label for="dirVertical">垂直 ↓</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="dirDiagonal" checked onchange="app.updateDirections()">
+            <label for="dirDiagonal">對角 ↘</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Play Mode -->
+      <div class="control-section">
+        <label class="section-label">遊戲模式</label>
+        <div class="control-row">
+          <button class="toggle-btn active" id="modePlay" onclick="app.setMode('play')">線上遊戲</button>
+          <button class="toggle-btn" id="modePrint" onclick="app.setMode('print')">列印版</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- WORD INPUT SECTION -->
+    <div class="control-panel">
+      <div class="word-input-section">
+        <label class="word-input-label">輸入詞彙</label>
+        <div class="input-tabs">
+          <button class="input-tab active" onclick="app.switchInputTab('manual')">手動輸入</button>
+          <button class="input-tab" onclick="app.switchInputTab('preset')">預設代碼</button>
+        </div>
+
+        <div id="manualInputTab">
+          <p class="input-hint">請輸入中文詞彙，用逗號或換行分隔。例如：貓,狗,鳥</p>
+          <textarea id="wordInput" placeholder="例如：貓&#10;狗&#10;鳥&#10;魚&#10;蝦&#10;蟹"></textarea>
+        </div>
+
+        <div id="presetInputTab" class="hidden">
+          <p class="input-hint">輸入預設代碼，例如 #RED01 或 #YELLOW50</p>
+          <input type="text" id="presetCode" placeholder="例如：#RED01" style="width: 100%; padding: 12px; border: 2px solid var(--border-light); border-radius: 6px; font-size: 14px; margin-bottom: 12px;">
+          <p style="font-size: 12px; color: var(--text-light); margin-bottom: 12px;">可用代碼範圍：</p>
+          <div style="font-size: 13px; color: var(--text-light); line-height: 1.8;">
+            • <span style="color: #D32F2F;">🔴 #RED01 ~ #RED100</span><br>
+            • <span style="color: #F57F17;">🟡 #YELLOW01 ~ #YELLOW100</span><br>
+            • <span style="color: #388E3C;">🟢 #GREEN01 ~ #GREEN100</span>
+          </div>
+        </div>
+
+        <div class="action-bar" style="margin-top: 16px;">
+          <button class="btn btn-primary" onclick="app.generatePuzzle()">生成謎題</button>
+          <button class="btn btn-secondary" onclick="app.clearPuzzle()">清空</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- GRID DISPLAY -->
+    <div class="grid-wrapper" id="gridWrapper" style="display: none;">
+      <div class="grid-info">
+        <div class="grid-info-primary">5 × 10 · 50字/頁</div>
+        <div>網格大小：寬5 × 高10</div>
+      </div>
+      <div class="puzzle-grid" id="puzzleGrid"></div>
+      <div class="action-bar">
+        <button class="btn btn-primary" onclick="window.print()">列印</button>
+        <button class="btn btn-secondary btn-small" id="hintsBtn" onclick="app.toggleHints()">顯示提示</button>
+        <button class="btn btn-secondary btn-small" id="answersBtn" onclick="app.toggleAnswers()">顯示答案</button>
+      </div>
+    </div>
+
+    <!-- WORD LIST -->
+    <div class="word-list-section" id="wordListSection" style="display: none;">
+      <h2 class="word-list-title">🔍 需要找出的詞彙</h2>
+      <div class="word-list" id="wordList"></div>
+    </div>
+
+    <!-- EMPTY STATE -->
+    <div id="emptyState" class="empty-state">
+      <div class="empty-state-icon">📝</div>
+      <div class="empty-state-text">請輸入詞彙或選擇預設代碼</div>
+      <p style="font-size: 14px;">然後點選「生成謎題」開始遊戲</p>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h3>樂樂文化</h3>
+        <a href="https://www.leleculture.com" target="_blank">官方網站</a>
+        <a href="https://www.leleculture.com/about" target="_blank">關於我們</a>
+        <a href="https://www.leleculture.com/contact" target="_blank">聯繫我們</a>
+      </div>
+      <div class="footer-section">
+        <h3>追蹤我們</h3>
+        <div class="footer-social">
+          <a href="https://instagram.com/leleculture" target="_blank" title="Instagram">📷</a>
+          <a href="https://facebook.com/leleculture" target="_blank" title="Facebook">👍</a>
+          <a href="https://youtube.com/leleculture" target="_blank" title="YouTube">▶️</a>
+        </div>
+      </div>
+      <div class="footer-section">
+        <h3>工具</h3>
+        <a href="/tools/" target="_blank">所有工具</a>
+        <a href="/maze/" target="_blank">迷宮遊戲</a>
+        <a href="/coloring/" target="_blank">著色遊戲</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      © 2026 樂樂文化 Le Le Culture · All Rights Reserved
+    </div>
+  </div>
+
+  <script>
+    // ===== CHARACTER POOLS =====
+    const charPoolTC = '人大小中天地日月水火山木田石花草鳥魚馬牛羊豬狗貓兔象獅虎熊鼠龍龜蛇鹿蜂蝶蜻蜓蟻蝦蟹螃蟹貝蛤蚌珍珠寶石金銀銅鐵錫鉛玉翡翠瑪瑙琥珀水晶鑽石蛋糕餅乾麵包米飯粥湯菜肉魚蝦蟹蔬果樹葉花朵星月陽雲雨雪風冰雷電冬春夏秋';
+    const charPoolSC = '人大小中天地日月水火山木田石花草鸟鱼马牛羊猪狗猫兔象狮虎熊鼠龙龟蛇鹿蜂蝶蜻蜓蚁虾蟹螃蟹贝蛤蚌珍珠宝石金银铜铁锡铅玉翡翠玛瑙琥珀水晶钻石蛋糕饼干面包米饭粥汤菜肉鱼虾蟹蔬果树叶花朵星月阳云雨雪风冰雷电冬春夏秋';
+
+    // ===== PRESET BOOK MAPPING =====
+    const presetBooks = {
+      // Placeholder - will be populated later
+      // Example: '#RED01': ['貓', '狗', '鳥', ...],
+    };
+
+    // ===== MAIN APP =====
+    const app = {
+      state: {
+        language: 'TC',
+        font: 'kai',
+        mode: 'play',
+        directions: {
+          horizontal: true,
+          vertical: true,
+          diagonal: true
+        },
+        showHints: false,
+        showAnswers: false,
+        words: [],
+        grid: [],
+        wordPositions: {}
+      },
+
+      setLanguage(lang) {
+        this.state.language = lang;
+        document.getElementById('toggleTC').classList.toggle('active', lang === 'TC');
+        document.getElementById('toggleSC').classList.toggle('active', lang === 'SC');
+        this.updateGridDisplay();
+      },
+
+      setFont(font) {
+        this.state.font = font;
+        this.updateGridDisplay();
+      },
+
+      setMode(mode) {
+        this.state.mode = mode;
+        document.getElementById('modePlay').classList.toggle('active', mode === 'play');
+        document.getElementById('modePrint').classList.toggle('active', mode === 'print');
+      },
+
+      updateDirections() {
+        this.state.directions = {
+          horizontal: document.getElementById('dirHorizontal').checked,
+          vertical: document.getElementById('dirVertical').checked,
+          diagonal: document.getElementById('dirDiagonal').checked
+        };
+      },
+
+      switchInputTab(tab) {
+        const manual = document.getElementById('manualInputTab');
+        const preset = document.getElementById('presetInputTab');
+        const tabs = document.querySelectorAll('.input-tab');
+
+        if (tab === 'manual') {
+          manual.classList.remove('hidden');
+          preset.classList.add('hidden');
+          tabs[0].classList.add('active');
+          tabs[1].classList.remove('active');
+        } else {
+          manual.classList.add('hidden');
+          preset.classList.remove('hidden');
+          tabs[0].classList.remove('active');
+          tabs[1].classList.add('active');
+        }
+      },
+
+      parseWords(input) {
+        return input
+          .split(/[,\n]+/)
+          .map(w => w.trim())
+          .filter(w => w.length > 0 && /[\u4E00-\u9FFF]+/.test(w));
+      },
+
+      loadPresetWords() {
+        const code = document.getElementById('presetCode').value.toUpperCase().trim();
+        if (presetBooks[code]) {
+          return presetBooks[code];
+        }
+        alert(`代碼 "${code}" 尚未開放。請手動輸入詞彙。`);
+        return [];
+      },
+
+      generatePuzzle() {
+        let words = [];
+        const activeTab = document.querySelector('.input-tab.active').textContent;
+
+        if (activeTab.includes('手動')) {
+          const input = document.getElementById('wordInput').value;
+          words = this.parseWords(input);
+        } else {
+          words = this.loadPresetWords();
+        }
+
+        if (words.length === 0) {
+          alert('請輸入有效的詞彙');
+          return;
+        }
+
+        this.state.words = words;
+        this.createPuzzle();
+        this.displayPuzzle();
+      },
+
+      createPuzzle() {
+        const rows = 10;
+        const cols = 5;
+
+        // Initialize empty grid
+        this.state.grid = Array(rows).fill(null).map(() => Array(cols).fill(''));
+        this.state.wordPositions = {};
+
+        // Sort words by length (longest first)
+        const sortedWords = [...this.state.words].sort((a, b) => b.length - a.length);
+
+        // Directions
+        const directions = [];
+        if (this.state.directions.horizontal) directions.push({ dr: 0, dc: 1, name: 'h' });
+        if (this.state.directions.vertical) directions.push({ dr: 1, dc: 0, name: 'v' });
+        if (this.state.directions.diagonal) directions.push({ dr: 1, dc: 1, name: 'd' });
+
+        // Try to place each word
+        for (const word of sortedWords) {
+          let placed = false;
+          for (let attempt = 0; attempt < 200; attempt++) {
+            const dir = directions[Math.floor(Math.random() * directions.length)];
+            const startRow = Math.floor(Math.random() * rows);
+            const startCol = Math.floor(Math.random() * cols);
+
+            if (this.canPlaceWord(word, startRow, startCol, dir, rows, cols)) {
+              this.placeWord(word, startRow, startCol, dir);
+              this.state.wordPositions[word] = { row: startRow, col: startCol, dir: dir.name };
+              placed = true;
+              break;
+            }
+          }
+        }
+
+        // Fill remaining cells with random characters
+        const charPool = this.state.language === 'TC' ? charPoolTC : charPoolSC;
+        for (let r = 0; r < rows; r++) {
+          for (let c = 0; c < cols; c++) {
+            if (this.state.grid[r][c] === '') {
+              this.state.grid[r][c] = charPool[Math.floor(Math.random() * charPool.length)];
+            }
+          }
+        }
+      },
+
+      canPlaceWord(word, startRow, startCol, dir, rows, cols) {
+        for (let i = 0; i < word.length; i++) {
+          const r = startRow + i * dir.dr;
+          const c = startCol + i * dir.dc;
+
+          if (r < 0 || r >= rows || c < 0 || c >= cols) return false;
+
+          const existing = this.state.grid[r][c];
+          if (existing !== '' && existing !== word[i]) return false;
+        }
+        return true;
+      },
+
+      placeWord(word, startRow, startCol, dir) {
+        for (let i = 0; i < word.length; i++) {
+          const r = startRow + i * dir.dr;
+          const c = startCol + i * dir.dc;
+          this.state.grid[r][c] = word[i];
+        }
+      },
+
+      displayPuzzle() {
+        const grid = document.getElementById('puzzleGrid');
+        grid.innerHTML = '';
+        grid.style.gridTemplateColumns = 'repeat(5, 1fr)';
+
+        const charClass = `char-${this.state.font}`;
+
+        for (let r = 0; r < 10; r++) {
+          for (let c = 0; c < 5; c++) {
+            const cell = document.createElement('div');
+            cell.className = `grid-cell ${charClass}`;
+            cell.dataset.row = r;
+            cell.dataset.col = c;
+
+            const char = document.createElement('div');
+            char.className = 'grid-cell-char';
+            char.textContent = this.state.grid[r][c];
+
+            cell.appendChild(char);
+            cell.addEventListener('click', () => this.toggleCell(cell));
+
+            grid.appendChild(cell);
+          }
+        }
+
+        this.displayWordList();
+        document.getElementById('emptyState').classList.add('hidden');
+        document.getElementById('gridWrapper').classList.remove('hidden');
+        document.getElementById('wordListSection').classList.remove('hidden');
+      },
+
+      displayWordList() {
+        const list = document.getElementById('wordList');
+        list.innerHTML = '';
+
+        for (const word of this.state.words) {
+          const tag = document.createElement('div');
+          tag.className = 'word-tag';
+          tag.textContent = word;
+          tag.dataset.word = word;
+          list.appendChild(tag);
+        }
+      },
+
+      toggleCell(cell) {
+        if (this.state.mode === 'print') return;
+        cell.classList.toggle('highlighted');
+      },
+
+      toggleHints() {
+        this.state.showHints = !this.state.showHints;
+        document.getElementById('hintsBtn').classList.toggle('active', this.state.showHints);
+        // Implementation would show/hide hints
+      },
+
+      toggleAnswers() {
+        this.state.showAnswers = !this.state.showAnswers;
+        document.getElementById('answersBtn').classList.toggle('active', this.state.showAnswers);
+        // Implementation would show/hide answers
+      },
+
+      updateGridDisplay() {
+        if (this.state.grid.length > 0) {
+          this.displayPuzzle();
+        }
+      },
+
+      clearPuzzle() {
+        this.state.grid = [];
+        this.state.words = [];
+        this.state.wordPositions = {};
+        document.getElementById('puzzleGrid').innerHTML = '';
+        document.getElementById('emptyState').classList.remove('hidden');
+        document.getElementById('gridWrapper').classList.add('hidden');
+        document.getElementById('wordListSection').classList.add('hidden');
+        document.getElementById('wordInput').value = '';
+        document.getElementById('presetCode').value = '';
+      }
+    };
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('Word Search Puzzle initialized');
+    });
+  </script>
+
+</body>
+</html>

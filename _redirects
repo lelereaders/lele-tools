@@ -1,0 +1,15 @@
+# SPA fallback for each tool — ensures deep links / React Router work
+/bingo-project/*           /bingo-project/index.html           200
+/characters/*              /characters/index.html              200
+/chinese-learning-quiz/*   /chinese-learning-quiz/index.html   200
+/easter-activity-project/* /easter-activity-project/index.html 200
+/lele-365-reading-plan/*   /lele-365-reading-plan/index.html   200
+/library/*                 /library/index.html                 200
+/maze/*                    /maze/index.html                    200
+/maze-v2/*                 /maze-v2/index.html                 200
+/puzzle/*                  /puzzle/index.html                  200
+/reading/*                 /reading/index.html                 200
+/reading-level/*           /reading-level/index.html           200
+/theme/*                   /theme/index.html                   200
+/translate/*               /translate/index.html               200
+/word-grid-maker/*         /word-grid-maker/index.html         200
