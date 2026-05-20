@@ -45,6 +45,17 @@ h1{font-size:26px;color:#1a1a1a;margin-bottom:6px}
 .footer a:hover{color:#D4A843}
 .footer .sub-footer{margin-top:.4rem;font-size:12px;color:#aaa}
 .footer .sub-footer a{color:#aaa;font-size:12px}
+/* API Key Setup */
+.key-box{background:#fff;border-radius:16px;border:1px solid #f0c060;padding:1.2rem 1.5rem;margin-bottom:1.2rem;display:none}
+.key-box.visible{display:block}
+.key-box p{font-size:13px;color:#888;margin-bottom:.8rem}
+.key-row{display:flex;gap:8px}
+.key-row input{flex:1;padding:10px 14px;border:1.5px solid #eee;border-radius:10px;font-size:14px;outline:none;transition:border-color .2s}
+.key-row input:focus{border-color:#D4A843}
+.key-row button{padding:10px 16px;border:none;border-radius:10px;background:#D4A843;color:#fff;font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap}
+.key-row button:hover{background:#c19a3a}
+.key-set{font-size:12px;color:#888;margin-top:.5rem}
+.key-set a{color:#D4A843;cursor:pointer;text-decoration:none}
 /* Print */
 @media print{
   body{background:#fff;padding:0;display:block}
@@ -63,6 +74,14 @@ h1{font-size:26px;color:#1a1a1a;margin-bottom:6px}
 </div>
 
 <div class="container">
+
+  <div class="key-box" id="keyBox">
+    <p>請輸入你的 Claude API Key（只存在你的瀏覽器，不會上傳）</p>
+    <div class="key-row">
+      <input type="password" id="keyInput" placeholder="sk-ant-..." autocomplete="off">
+      <button id="keyBtn">儲存</button>
+    </div>
+  </div>
 
   <div class="drop-zone" id="dropZone">
     <input type="file" id="fileInput" accept="image/*">
@@ -92,8 +111,26 @@ h1{font-size:26px;color:#1a1a1a;margin-bottom:6px}
 </div>
 
 <script>
-const API_KEY = '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';
 const API_URL = 'https://api.anthropic.com/v1/messages';
+const LS_KEY = 'lele_anthropic_key';
+
+function getApiKey() { return localStorage.getItem(LS_KEY) || ''; }
+
+function initKeyBox() {
+  const keyBox  = document.getElementById('keyBox');
+  const keyInput = document.getElementById('keyInput');
+  const keyBtn  = document.getElementById('keyBtn');
+  if (!getApiKey()) keyBox.classList.add('visible');
+
+  keyBtn.addEventListener('click', () => {
+    const val = keyInput.value.trim();
+    if (!val.startsWith('sk-ant-')) { alert('請輸入正確的 Claude API Key（sk-ant- 開頭）'); return; }
+    localStorage.setItem(LS_KEY, val);
+    keyBox.classList.remove('visible');
+    keyInput.value = '';
+  });
+}
+initKeyBox();
 
 const dropZone   = document.getElementById('dropZone');
 const fileInput  = document.getElementById('fileInput');
@@ -157,6 +194,13 @@ document.addEventListener('paste', e => {
 // Convert
 convertBtn.addEventListener('click', async () => {
   if (!imageBase64) return;
+  const apiKey = getApiKey();
+  if (!apiKey) {
+    document.getElementById('keyBox').classList.add('visible');
+    statusEl.textContent = '請先輸入 API Key';
+    statusEl.className = 'status error';
+    return;
+  }
   convertBtn.disabled = true;
   pdfBtn.disabled = true;
   statusEl.textContent = '正在辨識並轉換中，請稍候...';
@@ -185,7 +229,7 @@ convertBtn.addEventListener('click', async () => {
     const res = await fetch(API_URL, {
       method: 'POST',
       headers: {
-        'x-api-key': API_KEY,
+        'x-api-key': apiKey,
         'anthropic-version': '2023-06-01',
         'content-type': 'application/json',
         'anthropic-dangerous-direct-browser-access': 'true'
