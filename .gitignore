@@ -35,3 +35,6 @@ playwright.config.ts
 # Internal source data
 *.xlsx
 build.py
+
+# Claude Code superpowers
+.superpowers/
