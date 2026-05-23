@@ -50,6 +50,7 @@ function getTransactions(since) {
     headers.forEach(function(h, i) { obj[h] = row[i] === null ? '' : String(row[i]) })
     return obj
   })
+  // Requires ISO 8601 format in created_at; manual sheet edits may break this filter
   if (since) rows = rows.filter(function(r) { return r.created_at >= since })
   return json({ rows: rows })
 }

@@ -81,6 +81,18 @@ describe('flushSyncQueue', () => {
     const item = await db.syncQueue.get(qid)
     expect(item?.retries).toBe(1)
   })
+
+  it('removes queue item after MAX_RETRIES exceeded', async () => {
+    const unsynced = { ...sample, id: 'T0005', synced: false, source: 'app' as const }
+    await db.transactions.put(unsynced)
+    const qid = await db.syncQueue.add({ payload: unsynced, retries: 5 })
+    vi.mocked(gasApi.appendTransaction).mockRejectedValueOnce(new Error('network'))
+
+    await flushSyncQueue()
+
+    const item = await db.syncQueue.get(qid)
+    expect(item).toBeUndefined()
+  })
 })
 
 describe('addToQueue', () => {

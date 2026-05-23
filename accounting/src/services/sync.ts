@@ -3,6 +3,7 @@ import { fetchAllTransactions, fetchTransactionsSince, appendTransaction } from 
 import type { Transaction } from '../types'
 
 const LAST_SYNC_KEY = 'lele_last_sync'
+const MAX_RETRIES = 5
 
 export async function pullTransactions(): Promise<void> {
   const lastSync = localStorage.getItem(LAST_SYNC_KEY)
@@ -24,7 +25,11 @@ export async function flushSyncQueue(): Promise<void> {
       await db.transactions.update(item.payload.id, { synced: true })
       await db.syncQueue.delete(item.id!)
     } catch {
-      await db.syncQueue.update(item.id!, { retries: item.retries + 1 })
+      if (item.retries >= MAX_RETRIES) {
+        await db.syncQueue.delete(item.id!)
+      } else {
+        await db.syncQueue.update(item.id!, { retries: item.retries + 1 })
+      }
     }
   }
 }
