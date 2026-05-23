@@ -17,20 +17,20 @@ node_modules/
 # Zip backups (live outside the repo)
 *.zip
 
-# Lovable source files (this repo is built-only; keep source in lele-tools-source/)
-src/
-package.json
-package-lock.json
-bun.lock
-bun.lockb
-vite.config.ts
-tsconfig*.json
-tailwind.config.*
-postcss.config.*
-eslint.config.*
-components.json
-playwright-fixture.ts
-playwright.config.ts
+# Lovable source files (root-level only — scoped with / so accounting/ subdirs are unaffected)
+/src/
+/package.json
+/package-lock.json
+/bun.lock
+/bun.lockb
+/vite.config.ts
+/tsconfig*.json
+/tailwind.config.*
+/postcss.config.*
+/eslint.config.*
+/components.json
+/playwright-fixture.ts
+/playwright.config.ts
 
 # Internal source data
 *.xlsx
