@@ -1,16 +1,18 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { fetchAllTransactions, appendTransaction, fetchMeta } from '../../src/services/gasApi'
+import { fetchAllTransactions, appendTransaction, fetchMeta, fetchTransactionsSince } from '../../src/services/gasApi'
 import type { Transaction } from '../../src/types'
 
 const GAS_URL = 'https://script.google.com/macros/s/TEST/exec'
+const GAS_TOKEN = 'test-token'
 
 beforeEach(() => {
   vi.stubEnv('VITE_GAS_URL', GAS_URL)
+  vi.stubEnv('VITE_GAS_TOKEN', GAS_TOKEN)
   vi.stubGlobal('fetch', vi.fn())
 })
 
 describe('fetchAllTransactions', () => {
-  it('calls GAS with action=getTransactions and parses rows', async () => {
+  it('calls GAS with action=getTransactions and token, parses rows', async () => {
     const mockRows = [{
       id: 'T0001', date: '2026-01-02', description: '普捷印刷',
       category: 'books 普捷-印刷費用', currency: 'TWD', amount: '-320030',
@@ -26,10 +28,25 @@ describe('fetchAllTransactions', () => {
     const result = await fetchAllTransactions()
 
     expect(fetch).toHaveBeenCalledWith(expect.stringContaining('action=getTransactions'))
+    expect(fetch).toHaveBeenCalledWith(expect.stringContaining('token=test-token'))
     expect(result).toHaveLength(1)
     expect(result[0].id).toBe('T0001')
     expect(result[0].amount).toBe(-320030)
     expect(result[0].synced).toBe(true)
+  })
+})
+
+describe('fetchTransactionsSince', () => {
+  it('calls GAS with since parameter', async () => {
+    vi.mocked(fetch).mockResolvedValue({
+      ok: true,
+      json: async () => ({ rows: [] })
+    } as Response)
+
+    await fetchTransactionsSince('2026-01-01T00:00:00.000Z')
+
+    expect(fetch).toHaveBeenCalledWith(expect.stringContaining('action=getTransactions'))
+    expect(fetch).toHaveBeenCalledWith(expect.stringContaining('since='))
   })
 })
 

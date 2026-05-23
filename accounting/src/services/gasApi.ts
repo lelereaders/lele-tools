@@ -1,6 +1,7 @@
 import type { Transaction, Category, Account } from '../types'
 
-const GAS_URL = import.meta.env.VITE_GAS_URL as string
+function gasUrl(): string { return import.meta.env.VITE_GAS_URL as string }
+function gasToken(): string { return import.meta.env.VITE_GAS_TOKEN as string }
 
 interface GASRow {
   id: string; date: string; description: string; category: string
@@ -28,7 +29,14 @@ function rowToTransaction(row: GASRow): Transaction {
 }
 
 export async function fetchAllTransactions(): Promise<Transaction[]> {
-  const url = `${GAS_URL}?action=getTransactions`
+  const url = `${gasUrl()}?action=getTransactions&token=${gasToken()}`
+  const res = await fetch(url)
+  const json = await res.json()
+  return (json.rows as GASRow[]).map(rowToTransaction)
+}
+
+export async function fetchTransactionsSince(since: string): Promise<Transaction[]> {
+  const url = `${gasUrl()}?action=getTransactions&since=${encodeURIComponent(since)}&token=${gasToken()}`
   const res = await fetch(url)
   const json = await res.json()
   return (json.rows as GASRow[]).map(rowToTransaction)
@@ -42,14 +50,14 @@ export async function appendTransaction(t: Transaction): Promise<boolean> {
     created_at: t.created_at, source: t.source
   }
   const data = encodeURIComponent(JSON.stringify(payload))
-  const url = `${GAS_URL}?action=appendTransaction&data=${data}`
+  const url = `${gasUrl()}?action=appendTransaction&data=${data}&token=${gasToken()}`
   const res = await fetch(url)
   const json = await res.json()
   return json.success === true
 }
 
 export async function fetchMeta(): Promise<{ categories: Category[]; accounts: Account[] }> {
-  const url = `${GAS_URL}?action=getMeta`
+  const url = `${gasUrl()}?action=getMeta&token=${gasToken()}`
   const res = await fetch(url)
   return res.json()
 }

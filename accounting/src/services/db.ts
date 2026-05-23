@@ -1,13 +1,22 @@
 import Dexie, { type Table } from 'dexie'
-import type { Transaction } from '../types'
+import type { Transaction, Category, Account, SyncQueueItem } from '../types'
 
 class LeleDB extends Dexie {
-  transactions!: Table<Transaction>
+  transactions!: Table<Transaction, string>
+  categories!: Table<Category, string>
+  accounts!: Table<Account, string>
+  syncQueue!: Table<SyncQueueItem, number>
 
   constructor() {
     super('lele-accounting')
     this.version(1).stores({
       transactions: 'id, date, category, currency, from_account, to_account, source'
+    })
+    this.version(2).stores({
+      transactions: 'id, date, category, currency, from_account, to_account, source, synced',
+      categories: 'name, type',
+      accounts: 'name, type',
+      syncQueue: '++id'
     })
   }
 }

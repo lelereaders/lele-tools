@@ -37,3 +37,9 @@ export function nextId(): string {
   const rand = Math.random().toString(36).slice(2, 5).toUpperCase()
   return `A-${ts}-${rand}`
 }
+
+export interface SyncQueueItem {
+  id?: number       // Dexie auto-increment PK
+  payload: Transaction
+  retries: number
+}
