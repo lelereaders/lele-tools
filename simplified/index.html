@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>轉簡體 · 樂樂文化工具箱</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans TC',-apple-system,sans-serif;background:#FFF8F4;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:2rem 1rem}
+.header{text-align:center;margin-bottom:2rem}
+.header a{font-size:13px;color:#888;text-decoration:none;display:block;margin-bottom:8px}
+.header a:hover{color:#D4A843}
+h1{font-size:26px;color:#1a1a1a;margin-bottom:6px}
+.header>p{font-size:14px;color:#888}
+.container{max-width:680px;width:100%}
+/* Drop Zone */
+.drop-zone{border:2px dashed #D4A843;border-radius:16px;background:#fff;padding:2.5rem;text-align:center;cursor:pointer;transition:background .2s,border-color .2s;position:relative;margin-bottom:1.2rem}
+.drop-zone.drag-over{background:#FFFBF0;border-color:#c19a3a}
+.drop-zone.has-image{padding:0;border-style:solid;overflow:hidden}
+.drop-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.drop-zone .dz-icon{font-size:40px;margin-bottom:10px}
+.drop-zone .dz-text{font-size:15px;color:#555;margin-bottom:4px}
+.drop-zone .dz-sub{font-size:12px;color:#aaa}
+.drop-zone img{width:100%;max-height:360px;object-fit:contain;display:block}
+/* Buttons */
+.btn-row{display:flex;gap:10px;margin-bottom:1.2rem}
+.btn{flex:1;padding:13px;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;transition:background .2s;font-family:inherit}
+.btn-primary{background:#D4A843;color:#fff}
+.btn-primary:hover{background:#c19a3a}
+.btn-primary:disabled{background:#e0c98a;cursor:not-allowed}
+.btn-secondary{background:#f0f0f0;color:#555}
+.btn-secondary:hover{background:#e5e5e5}
+.btn-secondary:disabled{opacity:.5;cursor:not-allowed}
+/* Status */
+.status{font-size:13px;color:#888;text-align:center;margin-bottom:1rem;min-height:1.4em}
+.status.error{color:#e74c3c}
+.status.loading{color:#D4A843}
+/* Result */
+.result-box{background:#fff;border-radius:16px;border:1px solid #eee;padding:1.5rem;min-height:120px;white-space:pre-wrap;font-size:15px;line-height:1.9;color:#1a1a1a;display:none;margin-bottom:1.2rem;max-height:480px;overflow-y:auto}
+.result-label{font-size:12px;color:#aaa;margin-bottom:6px;display:none}
+/* Footer */
+.footer{background:#1a1a1a;color:#fff;text-align:center;padding:1.2rem 1rem;margin-top:2.5rem;font-size:13px;width:100vw;margin-left:calc(-50vw + 50%)}
+.footer a{color:#fff;text-decoration:none;margin:0 .5rem}
+.footer a:hover{color:#D4A843}
+.footer .sub-footer{margin-top:.4rem;font-size:12px;color:#aaa}
+.footer .sub-footer a{color:#aaa;font-size:12px}
+/* API Key Setup */
+.key-box{background:#fff;border-radius:16px;border:1px solid #f0c060;padding:1.2rem 1.5rem;margin-bottom:1.2rem;display:none}
+.key-box.visible{display:block}
+.key-box p{font-size:13px;color:#888;margin-bottom:.8rem}
+.key-row{display:flex;gap:8px}
+.key-row input{flex:1;padding:10px 14px;border:1.5px solid #eee;border-radius:10px;font-size:14px;outline:none;transition:border-color .2s}
+.key-row input:focus{border-color:#D4A843}
+.key-row button{padding:10px 16px;border:none;border-radius:10px;background:#D4A843;color:#fff;font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap}
+.key-row button:hover{background:#c19a3a}
+.key-set{font-size:12px;color:#888;margin-top:.5rem}
+.key-set a{color:#D4A843;cursor:pointer;text-decoration:none}
+/* Print */
+@media print{
+  body{background:#fff;padding:0;display:block}
+  .header,.drop-zone,.btn-row,.status,.result-label,.footer{display:none!important}
+  .result-box{display:block!important;border:none;padding:1.5cm;max-height:none;overflow:visible;font-size:12pt;line-height:2}
+}
+@media(max-width:600px){h1{font-size:21px}.btn{font-size:14px}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <a href="/">← 工具箱首頁</a>
+  <h1>轉簡體</h1>
+  <p>貼上截圖，自動抓取文字並轉換成簡體中文，下載成 PDF</p>
+</div>
+
+<div class="container">
+
+  <div class="key-box" id="keyBox">
+    <p>請輸入你的 Claude API Key（只存在你的瀏覽器，不會上傳）</p>
+    <div class="key-row">
+      <input type="password" id="keyInput" placeholder="sk-ant-..." autocomplete="off">
+      <button id="keyBtn">儲存</button>
+    </div>
+  </div>
+
+  <div class="drop-zone" id="dropZone">
+    <input type="file" id="fileInput" accept="image/*">
+    <div id="dzPlaceholder">
+      <div class="dz-icon">🖼️</div>
+      <div class="dz-text">點選選圖、或直接把截圖拖曳到這裡</div>
+      <div class="dz-sub">也可以用 Ctrl+V 貼上截圖</div>
+    </div>
+    <img id="previewImg" style="display:none" alt="預覽">
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-primary" id="convertBtn" disabled>轉換成簡體</button>
+    <button class="btn btn-secondary" id="pdfBtn" disabled>下載 PDF</button>
+  </div>
+
+  <div class="status" id="status"></div>
+
+  <div class="result-label" id="resultLabel">轉換結果</div>
+  <div class="result-box" id="resultBox"></div>
+
+</div>
+
+<div class="footer">
+  <p><a href="https://www.lelechinese.com" target="_blank">官網</a> <a href="https://www.instagram.com/lelechinesetw" target="_blank">Instagram</a> <a href="https://www.facebook.com/lelechinese" target="_blank">Facebook</a> <a href="https://www.youtube.com/@lelechinese" target="_blank">YouTube</a></p>
+  <p class="sub-footer">© 2026 <a href="https://www.lelechinese.com" target="_blank">樂樂文化 Le Le Culture</a></p>
+</div>
+
+<script>
+const API_URL = 'https://api.anthropic.com/v1/messages';
+const LS_KEY = 'lele_anthropic_key';
+
+function getApiKey() { return localStorage.getItem(LS_KEY) || ''; }
+
+function initKeyBox() {
+  const keyBox  = document.getElementById('keyBox');
+  const keyInput = document.getElementById('keyInput');
+  const keyBtn  = document.getElementById('keyBtn');
+  if (!getApiKey()) keyBox.classList.add('visible');
+
+  keyBtn.addEventListener('click', () => {
+    const val = keyInput.value.trim();
+    if (!val.startsWith('sk-ant-')) { alert('請輸入正確的 Claude API Key（sk-ant- 開頭）'); return; }
+    localStorage.setItem(LS_KEY, val);
+    keyBox.classList.remove('visible');
+    keyInput.value = '';
+  });
+}
+initKeyBox();
+
+const dropZone   = document.getElementById('dropZone');
+const fileInput  = document.getElementById('fileInput');
+const previewImg = document.getElementById('previewImg');
+const dzPlaceholder = document.getElementById('dzPlaceholder');
+const convertBtn = document.getElementById('convertBtn');
+const pdfBtn     = document.getElementById('pdfBtn');
+const statusEl   = document.getElementById('status');
+const resultBox  = document.getElementById('resultBox');
+const resultLabel= document.getElementById('resultLabel');
+
+let imageBase64 = null;
+let imageMediaType = null;
+
+function setImage(file) {
+  if (!file || !file.type.startsWith('image/')) return;
+  imageMediaType = file.type;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const dataUrl = e.target.result;
+    imageBase64 = dataUrl.split(',')[1];
+    previewImg.src = dataUrl;
+    previewImg.style.display = 'block';
+    dzPlaceholder.style.display = 'none';
+    dropZone.classList.add('has-image');
+    convertBtn.disabled = false;
+    statusEl.textContent = '';
+    statusEl.className = 'status';
+    resultBox.style.display = 'none';
+    resultLabel.style.display = 'none';
+    pdfBtn.disabled = true;
+  };
+  reader.readAsDataURL(file);
+}
+
+// Click to upload
+fileInput.addEventListener('change', e => setImage(e.target.files[0]));
+
+// Drag & drop
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+dropZone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropZone.classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  setImage(file);
+});
+
+// Ctrl+V paste anywhere on the page
+document.addEventListener('paste', e => {
+  const items = e.clipboardData && e.clipboardData.items;
+  if (!items) return;
+  for (const item of items) {
+    if (item.type.startsWith('image/')) {
+      setImage(item.getAsFile());
+      break;
+    }
+  }
+});
+
+// Convert
+convertBtn.addEventListener('click', async () => {
+  if (!imageBase64) return;
+  const apiKey = getApiKey();
+  if (!apiKey) {
+    document.getElementById('keyBox').classList.add('visible');
+    statusEl.textContent = '請先輸入 API Key';
+    statusEl.className = 'status error';
+    return;
+  }
+  convertBtn.disabled = true;
+  pdfBtn.disabled = true;
+  statusEl.textContent = '正在辨識並轉換中，請稍候...';
+  statusEl.className = 'status loading';
+  resultBox.style.display = 'none';
+  resultLabel.style.display = 'none';
+
+  const prompt = `請從這張圖片中找出所有中文文字，並將它們全部轉換成簡體中文輸出。
+
+規則：
+1. 只輸出文字內容，不要任何說明或前言。
+2. 每個獨立的文字元素（標題、段落、標籤、按鈕文字等）各自一行。
+3. 只改字形，不改內容。
+4. 以下詞語依照簡體習慣替換：
+   - 影片、短影音 → 视频
+   - 列印 → 打印
+   - 繁體 → 繁体
+   - 簡體 → 简体
+   - 臺灣 / 台灣 → 台湾
+   - 數位 → 数字
+   - 軟體 → 软件
+   - 網站 → 网站
+5. 如果圖片中沒有中文，請輸出「（圖片中未偵測到中文文字）」。`;
+
+  try {
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: {
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'content-type': 'application/json',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 2048,
+        messages: [{
+          role: 'user',
+          content: [
+            { type: 'image', source: { type: 'base64', media_type: imageMediaType, data: imageBase64 } },
+            { type: 'text', text: prompt }
+          ]
+        }]
+      })
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error?.message || `HTTP ${res.status}`);
+    }
+
+    const data = await res.json();
+    const text = data.content?.[0]?.text || '';
+    resultBox.textContent = text;
+    resultBox.style.display = 'block';
+    resultLabel.style.display = 'block';
+    statusEl.textContent = '轉換完成';
+    statusEl.className = 'status';
+    pdfBtn.disabled = false;
+  } catch (err) {
+    statusEl.textContent = '錯誤：' + err.message;
+    statusEl.className = 'status error';
+  } finally {
+    convertBtn.disabled = false;
+  }
+});
+
+// Download PDF via print
+pdfBtn.addEventListener('click', () => {
+  window.print();
+});
+</script>
+</body>
+</html>
