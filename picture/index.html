@@ -18,28 +18,41 @@
     .card{background:var(--surface);border-radius:14px;border:1px solid var(--border);padding:24px;box-shadow:0 2px 10px rgba(0,0,0,.05)}
     .card-title{font-size:15px;font-weight:700;color:var(--primary);margin-bottom:20px;display:flex;align-items:center;gap:8px}
     .tag{background:var(--tag-bg);color:var(--primary);padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600}
-    .section-label{font-size:12px;font-weight:600;color:var(--text-light);margin-bottom:8px}
-    .quick-scenes{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:22px}
-    .scene-btn{padding:6px 13px;border-radius:20px;border:1.5px solid var(--border);background:white;font-size:12px;font-family:inherit;cursor:pointer;color:var(--text);transition:all .18s}
-    .scene-btn:hover{border-color:var(--primary);color:var(--primary)}
-    .scene-btn.active{background:var(--primary);border-color:var(--primary);color:white}
+    .section-label{font-size:12px;font-weight:600;color:var(--text-light);margin-bottom:6px}
     .field{margin-bottom:15px}
     label{display:block;font-size:12px;font-weight:600;color:var(--text-light);margin-bottom:5px}
     label .hint{font-weight:400}
-    input,select,textarea{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13.5px;font-family:inherit;color:var(--text);background:var(--bg);transition:border-color .18s;outline:none}
-    input:focus,select:focus,textarea:focus{border-color:var(--primary);background:white}
-    textarea{resize:vertical;min-height:72px}
-    .btn-generate{width:100%;padding:14px;background:var(--primary);color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;margin-top:6px;transition:background .18s}
+    input,textarea{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13.5px;font-family:inherit;color:var(--text);background:var(--bg);transition:border-color .18s;outline:none}
+    input:focus,textarea:focus{border-color:var(--primary);background:white}
+    textarea{resize:vertical;min-height:80px}
+    .api-box{background:#FFF9F5;border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:18px}
+    .api-row{display:flex;gap:8px;margin-top:8px}
+    .api-row input{flex:1}
+    .btn-save{padding:10px 14px;background:var(--text-light);color:white;border:none;border-radius:8px;font-size:12px;font-weight:600;font-family:inherit;cursor:pointer;white-space:nowrap}
+    .btn-save:hover{background:var(--text)}
+    .api-ok{font-size:11px;color:var(--success);margin-top:6px;display:none}
+    .upload-area{border:2px dashed var(--border);border-radius:12px;min-height:160px;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;transition:all .18s;margin-bottom:16px;overflow:hidden;background:var(--bg)}
+    .upload-area:hover,.upload-area.over{border-color:var(--primary);background:#FFF5F2}
+    .upload-area input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+    .upload-hint{text-align:center;pointer-events:none}
+    .upload-hint svg{opacity:.4}
+    .upload-hint p{font-size:12px;color:var(--text-light);margin-top:8px}
+    #preview-img{max-width:100%;max-height:240px;object-fit:contain;border-radius:8px;display:none}
+    .btn-generate{width:100%;padding:14px;background:var(--primary);color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;margin-top:4px;transition:background .18s}
     .btn-generate:hover{background:var(--primary-dark)}
+    .btn-generate:disabled{background:#ccc;cursor:not-allowed}
     .btn-copy{width:100%;padding:13px;background:var(--success);color:white;border:none;border-radius:10px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;transition:all .18s;display:none}
     .btn-copy:hover{background:#5a9e6d}
     .btn-copy.copied{background:var(--accent)}
-    .output-box{background:#1E1E2E;border-radius:10px;padding:18px;margin-bottom:12px;min-height:280px}
-    .output-placeholder{color:#555;font-size:14px;text-align:center;padding:60px 20px;line-height:1.8}
-    .output-text{color:#E8D5C4;font-size:12.5px;line-height:1.85;white-space:pre-wrap;font-family:'Courier New',monospace;display:none}
-    .tip{background:#FFF8E7;border-left:3px solid var(--accent);padding:10px 14px;border-radius:0 8px 8px 0;font-size:12px;color:var(--text-light);margin-top:14px;line-height:1.65}
+    .output-box{background:#1E1E2E;border-radius:10px;padding:18px;margin-bottom:12px;min-height:240px;display:flex;align-items:center;justify-content:center}
+    .output-placeholder{color:#555;font-size:14px;text-align:center;line-height:1.8}
+    #output-loading{color:#888;font-size:13px;text-align:center;display:none}
+    #output-loading span{display:inline-block;animation:pulse 1.2s ease-in-out infinite}
+    @keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}
+    #output-text{color:#E8D5C4;font-size:12.5px;line-height:1.85;white-space:pre-wrap;font-family:'Courier New',monospace;display:none;width:100%;align-self:flex-start}
+    .tip{background:#FFF8E7;border-left:3px solid var(--accent);padding:10px 14px;border-radius:0 8px 8px 0;font-size:12px;color:var(--text-light);margin-top:14px;line-height:1.7}
     .tip strong{color:var(--text)}
-    .divider{border:none;border-top:1px solid var(--border);margin:18px 0}
+    .divider{border:none;border-top:1px solid var(--border);margin:16px 0}
     footer{text-align:center;padding:20px;font-size:12px;color:var(--text-light)}
     #pw-overlay{position:fixed;inset:0;background:rgba(253,248,243,0.97);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;gap:16px}
     #pw-overlay h2{font-size:22px;font-weight:700;color:var(--primary)}
@@ -52,6 +65,7 @@
   </style>
 </head>
 <body>
+
 <div id="pw-overlay">
   <h2>Le Le AI 生圖工具</h2>
   <p>請輸入密碼以繼續</p>
@@ -59,64 +73,218 @@
   <button id="pw-btn" onclick="checkPw()">進入</button>
   <span id="pw-error">密碼錯誤，請再試一次</span>
 </div>
+
 <header>
   <h1>Le Le AI 生圖指令生成器</h1>
-  <p>Google Flow x 樂樂水彩畫風</p>
+  <p>上傳參考圖 x 現代水彩風格 x Google Flow</p>
 </header>
+
 <div class="container">
   <div class="card">
-    <div class="card-title">場景設定</div>
-    <div class="section-label">快速載入範本</div>
-    <div class="quick-scenes">
-      <button class="scene-btn" onclick="loadScene('reading',this)">親子共讀</button>
-      <button class="scene-btn" onclick="loadScene('solo',this)">自主閱讀</button>
-      <button class="scene-btn" onclick="loadScene('bedtime',this)">睡前故事</button>
-      <button class="scene-btn" onclick="loadScene('outdoor',this)">戶外玩樂</button>
-      <button class="scene-btn" onclick="loadScene('writing',this)">練習書寫</button>
-      <button class="scene-btn" onclick="loadScene('group',this)">小組學習</button>
+    <div class="card-title">上傳參考圖</div>
+
+    <div class="api-box">
+      <div class="section-label">Anthropic API Key <span style="font-weight:400">（僅存在本機瀏覽器，不上傳伺服器）</span></div>
+      <div class="api-row">
+        <input type="password" id="api-key" placeholder="sk-ant-api03-...">
+        <button class="btn-save" onclick="saveKey()">儲存</button>
+      </div>
+      <div class="api-ok" id="api-ok">已儲存</div>
     </div>
-    <div class="field"><label>主角 <span class="hint">（人物+年齡）</span></label><input id="characters" type="text" placeholder="an Asian mother and her 4-year-old daughter"></div>
-    <div class="field"><label>主要動作</label><input id="action" type="text" placeholder="reading a Chinese picture book together"></div>
-    <div class="field"><label>場景地點</label><input id="setting" type="text" placeholder="cozy living room, warm afternoon light"></div>
-    <div class="field"><label>特定物品 <span class="hint">（可不填）</span></label><input id="props" type="text" placeholder="audio pen, stacked Chinese storybooks"></div>
-    <div class="field"><label>氣氛</label><select id="mood">
-      <option value="warm, loving, and nurturing">溫馨親子</option>
-      <option value="calm, focused, and peaceful">專注安靜</option>
-      <option value="joyful and playful">活潑歡樂</option>
-      <option value="magical and dreamy">夢幻奇妙</option>
-      <option value="cozy and intimate">舒適親密</option>
-    </select></div>
-    <div class="field"><label>季節</label><select id="season">
-      <option value="cherry blossom overlays softly framing the edges">春 — 櫻花</option>
-      <option value="soft green leaves and warm sunlight as overlays">夏 — 綠葉</option>
-      <option value="maple leaf overlays softly framing the edges">秋 — 楓葉</option>
-      <option value="soft snowflake details at the edges">冬 — 雪花</option>
-      <option value="seasonal botanical overlays with cherry blossoms and maple leaves">四季混合</option>
-    </select></div>
-    <div class="field"><label>附加說明 <span class="hint">（可不填）</span></label><textarea id="extra" placeholder="書封要有中文字、背景有木格窗..."></textarea></div>
-    <button class="btn-generate" onclick="doGenerate()">生成 Google Flow 指令</button>
-    <div class="tip">貼到 Google Flow，選 <strong>Imagen 4</strong>（靜態圖）或 <strong>Veo 3</strong>（影片）</div>
+
+    <div class="field">
+      <label>參考圖片 <span class="hint">（角色 / 場景）</span></label>
+      <div class="upload-area" id="upload-area"
+           ondragover="event.preventDefault();this.classList.add('over')"
+           ondragleave="this.classList.remove('over')"
+           ondrop="onDrop(event)">
+        <input type="file" id="img-input" accept="image/jpeg,image/png,image/webp" onchange="onFileChange(this)">
+        <div id="upload-hint" class="upload-hint">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#7A5C4E" stroke-width="1.5">
+            <rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 15l5-5 4 4 3-3 6 6"/><circle cx="8.5" cy="8.5" r="1.5"/>
+          </svg>
+          <p>點擊或拖曳上傳圖片<br>JPG / PNG / WEBP</p>
+        </div>
+        <img id="preview-img" alt="preview">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>修改提示 <span class="hint">（可不填）</span></label>
+      <textarea id="hints" placeholder="例：把背景換成秋天楓葉、讓角色拿著書本、加入溫暖的日落光線..."></textarea>
+    </div>
+
+    <button class="btn-generate" id="gen-btn" onclick="doAnalyze()">AI 分析並生成指令</button>
+    <div class="tip" style="margin-top:12px">Claude AI 會自動分析圖片的角色與場景，套入現代水彩畫風，生成可貼入 Google Flow 的指令。</div>
   </div>
+
   <div class="card">
     <div class="card-title">產出的 Prompt <span class="tag">Google Flow</span></div>
-    <div class="output-box">
-      <div id="placeholder" class="output-placeholder">填寫左側欄位後<br>點「生成指令」</div>
-      <div id="output" class="output-text"></div>
+    <div class="output-box" id="output-box">
+      <div id="output-placeholder" class="output-placeholder">上傳圖片後<br>點「AI 分析並生成指令」</div>
+      <div id="output-loading"><span>AI 正在分析圖片，請稍候...</span></div>
+      <div id="output-text"></div>
     </div>
     <button class="btn-copy" id="copy-btn" onclick="copyText()">複製指令</button>
-    <div class="tip"><strong>畫風固定不變。</strong>每次只需更換場景描述。</div>
+    <div class="tip">
+      <strong>在 Google Flow 怎麼用：</strong><br>
+      1. 在 Flow 上傳你的參考圖片作為 Image Reference<br>
+      2. 貼上上方生成的文字 prompt<br>
+      3. 選 <strong>Imagen 4</strong>（靜態圖）或 <strong>Veo 3</strong>（影片）
+    </div>
     <hr class="divider">
-    <div style="font-size:12px;color:var(--text-light);line-height:1.7">暖色系水彩渲染、圓臉奇比角色、東亞家居美學、四季植物邊框裝飾。</div>
+    <div style="font-size:12px;color:var(--text-light);line-height:1.7">現代水彩手繪質感、透明疊色、濕潤暈染效果。畫風固定，每次只需更換參考圖與修改提示。</div>
   </div>
 </div>
+
 <footer>Le Le Readers &copy; 2026 | tools.lelechinese.com/picture</footer>
+
 <script>
-function checkPw(){var v=document.getElementById('pw-input').value;if(v==='AMAZING'){document.getElementById('pw-overlay').style.display='none';}else{document.getElementById('pw-error').style.display='block';document.getElementById('pw-input').value='';}}
-var STYLE="Soft watercolor children's book illustration. Warm and cozy atmosphere with painterly watercolor texture, visible paper grain, loose color washes, gentle color bleeding at edges. Color palette: warm amber, blush pink, sage green, creamy white, soft cool accents of twilight blue. Cute chibi-style characters with rounded faces, chubby proportions, simple expressive features. Soft gentle outlines. East Asian home aesthetic with red paper lanterns, ceramic teapots, colorful Chinese storybooks. Warm indoor ambient lighting, soft natural light from windows. Dreamy nostalgic nurturing mood. High quality children's educational illustration.";
-var PRESETS={reading:{characters:"an Asian mother and her 4-year-old daughter",action:"sitting together at a wooden table, reading a Chinese picture book aloud",setting:"cozy home study room, warm afternoon light",props:"colorful storybooks stacked on table, a small audio pen",mood:"warm, loving, and nurturing",season:"cherry blossom overlays softly framing the edges"},solo:{characters:"a young Asian child, age 5",action:"sitting cross-legged on a floor cushion, reading a colorful Chinese storybook independently",setting:"bright cozy room, soft afternoon sunlight from a window",props:"stacks of colorful picture books around the child",mood:"calm, focused, and peaceful",season:"soft green leaves and warm sunlight as overlays"},bedtime:{characters:"an Asian mother and her young child",action:"bedtime story, mother reading aloud sitting on the bed edge, child tucked under a soft blanket",setting:"child bedroom, soft warm lamp, nighttime",props:"open Chinese picture book, stuffed animals",mood:"magical and dreamy",season:"soft snowflake details at the edges"},outdoor:{characters:"two Asian children ages 4 and 6",action:"sitting on a picnic blanket under a big tree, looking at a picture book together",setting:"garden, sunny day",props:"colorful storybooks on blanket, small basket",mood:"joyful and playful",season:"soft green leaves and warm sunlight as overlays"},writing:{characters:"a young Asian child age 6",action:"carefully practicing writing Chinese characters at a wooden desk",setting:"cozy home study corner, afternoon light",props:"open workbook, pencils, small potted plant",mood:"calm, focused, and peaceful",season:"cherry blossom overlays softly framing the edges"},group:{characters:"three young Asian children ages 4 to 6",action:"sitting in a small circle on floor cushions, sharing Chinese picture books and smiling",setting:"warm cozy playroom, soft light",props:"colorful storybooks, small red paper lanterns",mood:"joyful and playful",season:"seasonal botanical overlays with cherry blossoms and maple leaves"}};
-function loadScene(key,btn){var s=PRESETS[key];document.getElementById('characters').value=s.characters;document.getElementById('action').value=s.action;document.getElementById('setting').value=s.setting;document.getElementById('props').value=s.props;document.getElementById('mood').value=s.mood;document.getElementById('season').value=s.season;document.getElementById('extra').value='';var btns=document.querySelectorAll('.scene-btn');for(var i=0;i<btns.length;i++)btns[i].classList.remove('active');btn.classList.add('active');}
-function doGenerate(){var c=document.getElementById('characters').value.trim();var a=document.getElementById('action').value.trim();if(!c||!a){alert('請至少填寫主角和動作');return;}var st=document.getElementById('setting').value.trim();var pr=document.getElementById('props').value.trim();var m=document.getElementById('mood').value;var se=document.getElementById('season').value;var ex=document.getElementById('extra').value.trim();var scene='Scene: '+c+' are '+a+'.';if(st)scene+=' Setting: '+st+'.';if(pr)scene+=' Props: '+pr+'.';scene+=' Mood: '+m+'. '+se.charAt(0).toUpperCase()+se.slice(1)+'.';if(ex)scene+=' Additional: '+ex;var prompt=STYLE+'\n\n'+scene;document.getElementById('placeholder').style.display='none';var out=document.getElementById('output');out.style.display='block';out.textContent=prompt;var btn=document.getElementById('copy-btn');btn.style.display='block';btn.textContent='複製指令';btn.classList.remove('copied');}
-function copyText(){var text=document.getElementById('output').textContent;navigator.clipboard.writeText(text).then(function(){var btn=document.getElementById('copy-btn');btn.textContent='已複製！';btn.classList.add('copied');setTimeout(function(){btn.textContent='複製指令';btn.classList.remove('copied');},2200);});}
+var STYLE = "Modern watercolor illustration. Loose expressive brushstrokes, visible paper grain and texture, wet-on-wet color bleeding, soft transparent washes, clean white paper highlights. Warm luminous color palette with delicate transparent layering. Fluid natural brushwork. Contemporary painterly children's book aesthetic. High quality fine art watercolor rendering.";
+
+var _imgBase64 = null;
+var _imgType = 'image/jpeg';
+
+function checkPw() {
+  var v = document.getElementById('pw-input').value;
+  if (v === 'AMAZING') {
+    document.getElementById('pw-overlay').style.display = 'none';
+    loadKey();
+  } else {
+    document.getElementById('pw-error').style.display = 'block';
+    document.getElementById('pw-input').value = '';
+  }
+}
+
+function saveKey() {
+  var key = document.getElementById('api-key').value.trim();
+  if (!key) return;
+  localStorage.setItem('lele_anthropic_key', key);
+  var ok = document.getElementById('api-ok');
+  ok.style.display = 'block';
+  setTimeout(function() { ok.style.display = 'none'; }, 2000);
+}
+
+function loadKey() {
+  var saved = localStorage.getItem('lele_anthropic_key');
+  if (saved) document.getElementById('api-key').value = saved;
+}
+
+function onFileChange(input) {
+  if (input.files && input.files[0]) loadImage(input.files[0]);
+}
+
+function onDrop(e) {
+  e.preventDefault();
+  document.getElementById('upload-area').classList.remove('over');
+  var file = e.dataTransfer.files[0];
+  if (file && file.type.startsWith('image/')) loadImage(file);
+}
+
+function loadImage(file) {
+  _imgType = file.type || 'image/jpeg';
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var img = new Image();
+    img.onload = function() {
+      var MAX = 1024;
+      var w = img.width, h = img.height;
+      if (w > MAX || h > MAX) {
+        if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
+        else { w = Math.round(w * MAX / h); h = MAX; }
+      }
+      var canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      var compressed = canvas.toDataURL('image/jpeg', 0.85);
+      _imgBase64 = compressed.split(',')[1];
+      _imgType = 'image/jpeg';
+      var preview = document.getElementById('preview-img');
+      preview.src = compressed;
+      preview.style.display = 'block';
+      document.getElementById('upload-hint').style.display = 'none';
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+async function doAnalyze() {
+  var apiKey = document.getElementById('api-key').value.trim();
+  if (!apiKey) { alert('請先輸入並儲存 Anthropic API Key'); return; }
+  if (!_imgBase64) { alert('請先上傳參考圖片'); return; }
+
+  var hints = document.getElementById('hints').value.trim();
+  var btn = document.getElementById('gen-btn');
+
+  btn.disabled = true;
+  btn.textContent = '分析中...';
+  document.getElementById('output-placeholder').style.display = 'none';
+  document.getElementById('output-loading').style.display = 'block';
+  document.getElementById('output-text').style.display = 'none';
+  document.getElementById('copy-btn').style.display = 'none';
+
+  try {
+    var resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-5',
+        max_tokens: 400,
+        messages: [{
+          role: 'user',
+          content: [
+            {type: 'image', source: {type: 'base64', media_type: _imgType, data: _imgBase64}},
+            {type: 'text', text: 'Analyze this image and write a description for an AI image generation prompt. Cover: characters (appearance, age, clothing, expression, action/pose), setting/environment, lighting, mood, and notable props. Write in English as comma-separated descriptive phrases under 80 words. Output only the description, no introduction or explanation.'}
+          ]
+        }]
+      })
+    });
+
+    if (!resp.ok) {
+      var err = await resp.json();
+      throw new Error(err.error ? err.error.message : 'API error ' + resp.status);
+    }
+
+    var data = await resp.json();
+    var description = data.content[0].text.trim();
+    var finalPrompt = STYLE + '\n\nScene: ' + description;
+    if (hints) finalPrompt += '\n\nModifications: ' + hints;
+
+    document.getElementById('output-loading').style.display = 'none';
+    var out = document.getElementById('output-text');
+    out.textContent = finalPrompt;
+    out.style.display = 'block';
+    var copyBtn = document.getElementById('copy-btn');
+    copyBtn.style.display = 'block';
+    copyBtn.textContent = '複製指令';
+    copyBtn.classList.remove('copied');
+
+  } catch(e) {
+    document.getElementById('output-loading').style.display = 'none';
+    var ph = document.getElementById('output-placeholder');
+    ph.textContent = '錯誤：' + e.message;
+    ph.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'AI 分析並生成指令';
+  }
+}
+
+function copyText() {
+  var text = document.getElementById('output-text').textContent;
+  navigator.clipboard.writeText(text).then(function() {
+    var btn = document.getElementById('copy-btn');
+    btn.textContent = '已複製！';
+    btn.classList.add('copied');
+    setTimeout(function() { btn.textContent = '複製指令'; btn.classList.remove('copied'); }, 2200);
+  });
+}
 </script>
 </body>
 </html>
