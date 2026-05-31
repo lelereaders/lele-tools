@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Le Le 客服信件回覆助手</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--primary:#E8735A;--primary-dark:#d4634a;--accent:#D4A017;--bg:#FDF8F3;--surface:#FFFFFF;--text:#3D2B1F;--text-light:#7A5C4E;--border:#E8D5C4;--success:#6BAF7E;--tag-bg:#FEE8E0;--history-bg:#FFF9F5}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Noto Sans TC',-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+    header{background:var(--primary);color:white;padding:18px 28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+    header div h1{font-size:20px;font-weight:700}
+    header div p{font-size:13px;opacity:.85;margin-top:2px}
+    .container{max-width:1180px;margin:0 auto;padding:24px 20px;display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
+    @media(max-width:860px){.container{grid-template-columns:1fr}}
+    .card{background:var(--surface);border-radius:14px;border:1px solid var(--border);padding:22px;box-shadow:0 2px 10px rgba(0,0,0,.05)}
+    .card-title{font-size:15px;font-weight:700;color:var(--primary);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+    .tag{background:var(--tag-bg);color:var(--primary);padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600}
+    .section-label{font-size:12px;font-weight:600;color:var(--text-light);margin-bottom:6px}
+    .field{margin-bottom:14px}
+    label{display:block;font-size:12px;font-weight:600;color:var(--text-light);margin-bottom:5px}
+    input,textarea,select{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13.5px;font-family:inherit;color:var(--text);background:var(--bg);transition:border-color .18s;outline:none}
+    input:focus,textarea:focus,select:focus{border-color:var(--primary);background:white}
+    textarea{resize:vertical}
+    .api-box{background:#FFF9F5;border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:18px}
+    .api-row{display:flex;gap:8px;margin-top:8px}
+    .api-row input{flex:1}
+    .btn-save{padding:10px 14px;background:var(--text-light);color:white;border:none;border-radius:8px;font-size:12px;font-weight:600;font-family:inherit;cursor:pointer;white-space:nowrap}
+    .btn-save:hover{background:var(--text)}
+    .api-ok{font-size:11px;color:var(--success);margin-top:6px;display:none}
+    .btn-generate{width:100%;padding:13px;background:var(--primary);color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;margin-top:4px;transition:background .18s}
+    .btn-generate:hover{background:var(--primary-dark)}
+    .btn-generate:disabled{background:#ccc;cursor:not-allowed}
+    .btn-copy{width:100%;padding:12px;background:var(--success);color:white;border:none;border-radius:10px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;transition:all .18s;display:none;margin-top:10px}
+    .btn-copy:hover{background:#5a9e6d}
+    .btn-copy.copied{background:var(--accent)}
+    .output-area{background:#F8F3EE;border-radius:10px;padding:18px;min-height:200px;margin-bottom:10px;font-size:13.5px;line-height:1.9;color:var(--text);white-space:pre-wrap;display:flex;align-items:center;justify-content:center}
+    .output-placeholder{color:#aaa;font-size:14px;text-align:center;line-height:1.9}
+    #output-loading{color:var(--text-light);font-size:13px;text-align:center;display:none}
+    #output-loading span{display:inline-block;animation:pulse 1.2s ease-in-out infinite}
+    @keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}
+    #output-text{display:none;width:100%;align-self:flex-start;color:var(--text)}
+    .tip{background:#FFF8E7;border-left:3px solid var(--accent);padding:10px 14px;border-radius:0 8px 8px 0;font-size:12px;color:var(--text-light);margin-top:14px;line-height:1.7}
+    .tip strong{color:var(--text)}
+    /* History Panel */
+    .history-panel{margin-top:20px;background:var(--surface);border-radius:14px;border:1px solid var(--border);padding:20px;box-shadow:0 2px 10px rgba(0,0,0,.05)}
+    .history-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+    .history-header h3{font-size:14px;font-weight:700;color:var(--text)}
+    .btn-clear-history{padding:5px 12px;background:none;border:1px solid var(--border);border-radius:6px;font-size:11px;color:var(--text-light);font-family:inherit;cursor:pointer}
+    .btn-clear-history:hover{border-color:var(--primary);color:var(--primary)}
+    .history-empty{font-size:13px;color:#bbb;text-align:center;padding:20px 0}
+    .history-item{border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px;background:var(--history-bg);cursor:pointer;transition:border-color .15s}
+    .history-item:hover{border-color:var(--primary)}
+    .history-item-meta{font-size:11px;color:var(--text-light);margin-bottom:6px;display:flex;align-items:center;justify-content:space-between}
+    .history-item-preview{font-size:12.5px;color:var(--text);line-height:1.6;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+    .history-badge{background:var(--tag-bg);color:var(--primary);padding:1px 7px;border-radius:4px;font-size:10px;font-weight:600}
+    /* Password overlay */
+    #pw-overlay{position:fixed;inset:0;background:rgba(253,248,243,0.97);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;gap:16px}
+    #pw-overlay h2{font-size:22px;font-weight:700;color:var(--primary)}
+    #pw-overlay p{font-size:13px;color:var(--text-light)}
+    #pw-input{width:240px;padding:12px 16px;border:2px solid var(--border);border-radius:10px;font-size:16px;font-family:inherit;text-align:center;letter-spacing:3px;outline:none}
+    #pw-input:focus{border-color:var(--primary)}
+    #pw-btn{padding:12px 32px;background:var(--primary);color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer}
+    #pw-error{color:#c0392b;font-size:12px;display:none}
+    footer{text-align:center;padding:20px;font-size:12px;color:var(--text-light)}
+    .btn-use-history{font-size:11px;color:var(--primary);background:none;border:none;cursor:pointer;font-family:inherit;padding:0;margin-top:4px;text-decoration:underline}
+  </style>
+</head>
+<body>
+
+<div id="pw-overlay">
+  <h2>Le Le 客服信件助手</h2>
+  <p>請輸入密碼以繼續</p>
+  <input id="pw-input" type="password" placeholder="Password" onkeydown="if(event.key==='Enter')checkPw()">
+  <button id="pw-btn" onclick="checkPw()">進入</button>
+  <span id="pw-error">密碼錯誤，請再試一次</span>
+</div>
+
+<header>
+  <div>
+    <h1>Le Le 客服信件回覆助手</h1>
+    <p>貼上來信，一鍵生成符合樂樂語氣的回覆 — 支援中英文來信</p>
+  </div>
+</header>
+
+<div class="container">
+  <!-- Left: Input -->
+  <div>
+    <div class="card">
+      <div class="card-title">來信內容 <span class="tag">貼上原文</span></div>
+
+      <div class="api-box">
+        <div class="section-label">Anthropic API Key <span style="font-weight:400;font-size:11px">（僅存在本機，不上傳伺服器）</span></div>
+        <div class="api-row">
+          <input type="password" id="api-key" placeholder="sk-ant-api03-...">
+          <button class="btn-save" onclick="saveKey()">儲存</button>
+        </div>
+        <div class="api-ok" id="api-ok">已儲存</div>
+      </div>
+
+      <div class="field">
+        <label>客人來信 <span style="font-weight:400">（中文或英文皆可）</span></label>
+        <textarea id="incoming-email" rows="10" placeholder="貼上客人的原始 Email 或訊息..."></textarea>
+      </div>
+
+      <div class="field">
+        <label>回覆語言</label>
+        <select id="reply-lang">
+          <option value="zh-TW">繁體中文</option>
+          <option value="en">English</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>補充備注 <span style="font-weight:400">（選填 — 特殊情況、折扣碼、特定書名等）</span></label>
+        <textarea id="extra-note" rows="3" placeholder="例：這位媽媽上週才購買過，需要給折扣碼 LELE10..."></textarea>
+      </div>
+
+      <button class="btn-generate" id="gen-btn" onclick="doGenerate()">生成回覆</button>
+
+      <div class="tip" style="margin-top:14px">
+        <strong>記憶功能：</strong>過去的 Email 紀錄會自動存在瀏覽器，下次回覆時 AI 會參考歷史脈絡，不需要重複提供背景資料。
+      </div>
+    </div>
+  </div>
+
+  <!-- Right: Output -->
+  <div>
+    <div class="card">
+      <div class="card-title">回覆草稿 <span class="tag">可直接複製</span></div>
+      <div class="output-area" id="output-box">
+        <div id="output-placeholder" class="output-placeholder">貼上來信後<br>點「生成回覆」</div>
+        <div id="output-loading"><span>AI 正在撰寫回覆，請稍候...</span></div>
+        <div id="output-text"></div>
+      </div>
+      <button class="btn-copy" id="copy-btn" onclick="copyText()">複製回覆</button>
+      <button class="btn-generate" id="save-btn" onclick="saveToHistory()" style="display:none;margin-top:10px;background:var(--accent)">存入歷史記錄</button>
+      <div class="tip">
+        <strong>使用提示：</strong>複製後可直接貼到 Gmail 或 Kit 發送，建議稍作個人化微調後再送出。
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- History Panel full-width -->
+<div style="max-width:1180px;margin:0 auto;padding:0 20px 32px">
+  <div class="history-panel">
+    <div class="history-header">
+      <h3>過往 Email 記錄 <span id="history-count" style="font-weight:400;font-size:12px;color:var(--text-light)"></span></h3>
+      <button class="btn-clear-history" onclick="clearHistory()">清除全部</button>
+    </div>
+    <div id="history-list"><div class="history-empty">尚無記錄 — 儲存第一筆後開始累積</div></div>
+  </div>
+</div>
+
+<footer>Le Le Readers &copy; 2026 | tools.lelechinese.com/email-reply</footer>
+
+<script>
+var HISTORY_KEY = 'lele_email_history';
+var MAX_HISTORY = 50;
+var _currentIncoming = '';
+var _currentReply = '';
+
+var SYSTEM_PROMPT = `你是 Le Le Readers（樂樂繪本，又稱 Le Le Chinese / 樂樂文化）的客服與品牌代表，負責回覆家長、學校、合作夥伴寄來的 Email 或訊息。
+
+【品牌核心】
+- 產品：有聲中文故事書、學習單、Podcast（Le Le Talk）、YouTube、線上課程、Mastermind 社群
+- 目標客群：在海外（澳洲、紐西蘭、英國、美國、加拿大）用中文養育孩子的華人家庭，孩子年齡 2-12 歲
+- 使命：透過大量可理解輸入（comprehensible input）和全字認讀法（whole-word recognition）讓中文學習變得快樂、可持續
+
+【教學理念（絕對不可違反）】
+- 絕對不推薦注音（ㄅㄆㄇ）或拼音（pinyin）作為孩子的識字工具
+- 一律引導家長：「重複聽 Le Le 有聲書，同一本書讀五次以上」
+- 識字方法只認可：全字認讀 + 大量可理解輸入
+
+【回覆風格】
+- 語氣：溫暖、親切、專業，像信任的教育顧問朋友，不要企業官腔
+- 繁體中文為主（除非家長用英文寫，則用英文回覆）
+- 結尾永遠要有具體的下一步行動（CTA）
+- 簡潔有力，避免冗長客套
+
+【常見回覆場景】
+- 選書建議 -> 根據孩子年齡/中文程度推薦書單，引導多聽多讀
+- 購買問題 -> 說明 Shopify 訂單流程、優惠碼使用方式
+- 教學疑問 -> 強調聽力輸入為先、重複閱讀、不強迫孩子背字
+- 合作邀約 -> 熱情歡迎，詢問更多細節
+- 退換貨 -> 體貼處理，維護客戶關係
+
+請根據來信內容，撰寫一封完整、可直接發送的回覆。不要加任何說明或前言，直接輸出信件內文。`;
+
+// Password
+function checkPw() {
+  if (document.getElementById('pw-input').value === 'AMAZING') {
+    document.getElementById('pw-overlay').style.display = 'none';
+    loadKey();
+    renderHistory();
+  } else {
+    document.getElementById('pw-error').style.display = 'block';
+    document.getElementById('pw-input').value = '';
+  }
+}
+
+// API Key
+function saveKey() {
+  var key = document.getElementById('api-key').value.trim();
+  if (!key) return;
+  localStorage.setItem('lele_anthropic_key', key);
+  var ok = document.getElementById('api-ok');
+  ok.style.display = 'block';
+  setTimeout(function() { ok.style.display = 'none'; }, 2000);
+}
+
+function loadKey() {
+  var saved = localStorage.getItem('lele_anthropic_key');
+  if (saved) document.getElementById('api-key').value = saved;
+}
+
+// History
+function getHistory() {
+  try { return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); }
+  catch(e) { return []; }
+}
+
+function saveHistory(arr) {
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(arr));
+}
+
+function buildHistoryContext(history) {
+  if (!history.length) return '';
+  var recent = history.slice(-10);
+  var lines = ['【過往 Email 記錄（供參考，了解客戶背景與我們的回覆慣例）】'];
+  recent.forEach(function(item, i) {
+    lines.push('\n--- 記錄 ' + (i + 1) + ' (' + item.date + ') ---');
+    lines.push('來信摘要：' + item.incoming.slice(0, 300) + (item.incoming.length > 300 ? '...' : ''));
+    lines.push('我方回覆：' + item.reply.slice(0, 400) + (item.reply.length > 400 ? '...' : ''));
+  });
+  return lines.join('\n');
+}
+
+function renderHistory() {
+  var history = getHistory();
+  var list = document.getElementById('history-list');
+  var count = document.getElementById('history-count');
+  count.textContent = history.length ? '（共 ' + history.length + ' 筆）' : '';
+
+  if (!history.length) {
+    list.innerHTML = '<div class="history-empty">尚無記錄 — 儲存第一筆後開始累積</div>';
+    return;
+  }
+
+  var html = '';
+  var recent = history.slice().reverse().slice(0, 20);
+  recent.forEach(function(item, i) {
+    var idx = history.length - 1 - i;
+    html += '<div class="history-item" onclick="loadHistoryItem(' + idx + ')">';
+    html += '<div class="history-item-meta"><span>' + item.date + '</span>';
+    html += '<span class="history-badge">' + item.lang + '</span></div>';
+    html += '<div class="history-item-preview"><strong>來信：</strong>' + escHtml(item.incoming.slice(0, 120)) + '...</div>';
+    html += '<div class="history-item-preview" style="margin-top:4px"><strong>回覆：</strong>' + escHtml(item.reply.slice(0, 120)) + '...</div>';
+    html += '</div>';
+  });
+  list.innerHTML = html;
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function loadHistoryItem(idx) {
+  var history = getHistory();
+  var item = history[idx];
+  if (!item) return;
+  document.getElementById('incoming-email').value = item.incoming;
+  document.getElementById('reply-lang').value = item.lang === 'English' ? 'en' : 'zh-TW';
+  showOutput(item.reply);
+  _currentIncoming = item.incoming;
+  _currentReply = item.reply;
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+function clearHistory() {
+  if (!confirm('確定要清除所有 Email 記錄嗎？')) return;
+  localStorage.removeItem(HISTORY_KEY);
+  renderHistory();
+}
+
+function saveToHistory() {
+  if (!_currentIncoming || !_currentReply) return;
+  var history = getHistory();
+  var lang = document.getElementById('reply-lang').value === 'en' ? 'English' : '繁體中文';
+  history.push({
+    date: new Date().toLocaleDateString('zh-TW', {year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}),
+    lang: lang,
+    incoming: _currentIncoming,
+    reply: _currentReply
+  });
+  if (history.length > MAX_HISTORY) history = history.slice(-MAX_HISTORY);
+  saveHistory(history);
+  renderHistory();
+  var btn = document.getElementById('save-btn');
+  btn.textContent = '已儲存';
+  btn.style.background = '#6BAF7E';
+  setTimeout(function() {
+    btn.textContent = '存入歷史記錄';
+    btn.style.background = 'var(--accent)';
+  }, 2000);
+}
+
+// Generate
+async function doGenerate() {
+  var apiKey = document.getElementById('api-key').value.trim();
+  if (!apiKey) { alert('請先輸入並儲存 Anthropic API Key'); return; }
+
+  var incoming = document.getElementById('incoming-email').value.trim();
+  if (!incoming) { alert('請貼上客人的來信內容'); return; }
+
+  var lang = document.getElementById('reply-lang').value;
+  var extraNote = document.getElementById('extra-note').value.trim();
+  var history = getHistory();
+  var historyContext = buildHistoryContext(history);
+
+  var btn = document.getElementById('gen-btn');
+  btn.disabled = true;
+  btn.textContent = '生成中...';
+  document.getElementById('output-placeholder').style.display = 'none';
+  document.getElementById('output-loading').style.display = 'block';
+  document.getElementById('output-text').style.display = 'none';
+  document.getElementById('copy-btn').style.display = 'none';
+  document.getElementById('save-btn').style.display = 'none';
+
+  var langInstruction = lang === 'en'
+    ? 'Reply in English. Keep the warm, professional Le Le brand tone.'
+    : '請用繁體中文回覆，語氣溫暖親切專業。';
+
+  var userMessage = '';
+  if (historyContext) userMessage += historyContext + '\n\n';
+  userMessage += '【客人來信】\n' + incoming;
+  if (extraNote) userMessage += '\n\n【補充備注】\n' + extraNote;
+  userMessage += '\n\n' + langInstruction;
+
+  try {
+    var resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1200,
+        system: SYSTEM_PROMPT,
+        messages: [{role: 'user', content: userMessage}]
+      })
+    });
+
+    if (!resp.ok) {
+      var err = await resp.json();
+      throw new Error(err.error ? err.error.message : 'API error ' + resp.status);
+    }
+
+    var data = await resp.json();
+    var reply = data.content[0].text.trim();
+
+    _currentIncoming = incoming;
+    _currentReply = reply;
+
+    showOutput(reply);
+
+  } catch(e) {
+    document.getElementById('output-loading').style.display = 'none';
+    var ph = document.getElementById('output-placeholder');
+    ph.textContent = '錯誤：' + e.message;
+    ph.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '生成回覆';
+  }
+}
+
+function showOutput(text) {
+  document.getElementById('output-loading').style.display = 'none';
+  document.getElementById('output-placeholder').style.display = 'none';
+  var out = document.getElementById('output-text');
+  out.textContent = text;
+  out.style.display = 'block';
+  var copyBtn = document.getElementById('copy-btn');
+  copyBtn.style.display = 'block';
+  copyBtn.textContent = '複製回覆';
+  copyBtn.classList.remove('copied');
+  document.getElementById('save-btn').style.display = 'block';
+}
+
+function copyText() {
+  var text = document.getElementById('output-text').textContent;
+  navigator.clipboard.writeText(text).then(function() {
+    var btn = document.getElementById('copy-btn');
+    btn.textContent = '已複製';
+    btn.classList.add('copied');
+    setTimeout(function() {
+      btn.textContent = '複製回覆';
+      btn.classList.remove('copied');
+    }, 2000);
+  });
+}
+</script>
+</body>
+</html>
