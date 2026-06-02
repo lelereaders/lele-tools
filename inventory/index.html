@@ -11,7 +11,7 @@
       --primary:#E8735A;--primary-dark:#d4634a;--accent:#D4A017;
       --bg:#FDF8F3;--surface:#fff;--text:#3D2B1F;--text-light:#7A5C4E;
       --border:#E8D5C4;--success:#6BAF7E;--danger:#E05252;--warn:#E8A23A;
-      --produce:#3A8FE8;--ship:#8B5CF6;
+      --produce:#3A8FE8;--ship:#8B5CF6;--consume:#E8A23A;
     }
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:'Noto Sans TC',-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
@@ -22,7 +22,9 @@
     .sync-dot.syncing{background:var(--accent);animation:blink 1s infinite}
     .sync-dot.error{background:var(--danger)}
     @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
-    .main{max-width:1100px;margin:0 auto;padding:18px 16px}
+    .main{max-width:1200px;margin:0 auto;padding:18px 16px}
+
+    /* Nav */
     .nav{display:flex;gap:4px;margin-bottom:18px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:5px}
     .nav-btn{flex:1;padding:10px 6px;border:none;background:none;font-family:inherit;font-size:13px;font-weight:600;color:var(--text-light);cursor:pointer;border-radius:9px;transition:all .15s;text-align:center}
     .nav-btn.active{background:var(--primary);color:#fff}
@@ -31,65 +33,120 @@
     .nav-btn:hover:not(.active){background:#F5EDE6;color:var(--text)}
     .section{display:none}
     .section.active{display:block}
+
+    /* Card */
     .card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:14px;box-shadow:0 2px 6px rgba(0,0,0,.04)}
-    .card-title{font-size:14px;font-weight:700;color:var(--primary);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+    .card-title{font-size:14px;font-weight:700;color:var(--primary);margin-bottom:14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
     .card-title.produce{color:var(--produce)}
     .card-title.ship{color:var(--ship)}
-    .inv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
-    .inv-card{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px 14px}
-    .inv-sku{font-family:monospace;font-size:11px;font-weight:700;color:var(--text-light);margin-bottom:2px}
-    .inv-name{font-size:13px;font-weight:600;color:var(--text);margin-bottom:8px;line-height:1.3}
-    .inv-qty{font-size:26px;font-weight:700;color:var(--primary);line-height:1}
-    .inv-unit{font-size:11px;color:var(--text-light);margin-left:3px}
-    .inv-ctn{font-size:11px;color:var(--text-light);margin-top:3px}
-    .inv-cat{display:inline-block;font-size:9px;padding:1px 6px;border-radius:8px;font-weight:700;margin-bottom:6px}
+    .card-title.consume{color:var(--consume)}
+
+    /* Tabs + Sort (like UPC tool) */
+    .toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:10px}
+    .tabs{display:flex;gap:4px;flex-wrap:wrap}
+    .tab{padding:5px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--border);background:none;color:var(--text-light);cursor:pointer;font-family:inherit;transition:all .15s}
+    .tab.active{background:var(--primary);border-color:var(--primary);color:#fff}
+    .tab:hover:not(.active){border-color:var(--primary);color:var(--primary)}
+    .sort-row{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+    .sort-label{font-size:11px;font-weight:700;color:var(--text-light);white-space:nowrap}
+    .sort-btn{padding:4px 12px;border:1.5px solid var(--border);border-radius:20px;background:none;font-size:11px;font-weight:600;color:var(--text-light);font-family:inherit;cursor:pointer;transition:all .15s}
+    .sort-btn.active{background:var(--primary);border-color:var(--primary);color:#fff}
+    .sort-btn:hover:not(.active){border-color:var(--primary);color:var(--primary)}
+    .search-row{display:flex;gap:10px;margin-bottom:12px}
+    .search-row input{flex:1;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;outline:none;background:var(--bg)}
+    .search-row input:focus{border-color:var(--primary);background:#fff}
+    .btn-refresh{padding:9px 16px;background:var(--success);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;white-space:nowrap}
+
+    /* Table */
+    .table-wrap{overflow-x:auto}
+    table{width:100%;border-collapse:collapse;font-size:13px}
+    th{background:#FFF5F0;padding:9px 12px;text-align:left;font-size:11px;font-weight:700;color:var(--text-light);border-bottom:2px solid var(--border);white-space:nowrap}
+    td{padding:9px 12px;border-bottom:1px solid #F5EDE6;vertical-align:middle}
+    tr:last-child td{border-bottom:none}
+    tr:hover td{background:#FDFAF8}
+    .sku{font-family:monospace;font-size:12.5px;font-weight:700;color:var(--text)}
+    .barcode-display{font-family:monospace;font-size:11px;letter-spacing:.5px;color:var(--text-light)}
+    .cat-badge{display:inline-block;font-size:10px;padding:2px 7px;border-radius:10px;font-weight:600}
     .cat-書籍{background:#E8F0FF;color:#3059B3}
     .cat-配件{background:#FFF0E6;color:#C06020}
     .cat-耗材{background:#E8F5E9;color:#2E7D32}
     .cat-套組{background:#FFF3E0;color:#E65100}
-    .inv-updated{font-size:10px;color:#bbb;margin-top:5px}
-    .inv-zero .inv-qty{color:#ccc}
-    .inv-low .inv-qty{color:var(--warn)}
+    .qty-cell{font-size:18px;font-weight:700;color:var(--primary)}
+    .qty-zero{color:#ccc}
+    .qty-low{color:var(--warn)}
+    .date-cell{font-size:11px;color:var(--text-light)}
+    .empty{text-align:center;padding:40px;color:#bbb;font-size:14px}
+    .loading{text-align:center;padding:30px;color:var(--text-light);font-size:13px}
+
+    /* Forms */
     .field{margin-bottom:13px}
     .field label{display:block;font-size:11px;font-weight:700;color:var(--text-light);margin-bottom:5px;text-transform:uppercase;letter-spacing:.3px}
     .field input,.field select,.field textarea{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:inherit;color:var(--text);background:var(--bg);outline:none;transition:border-color .15s}
-    .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--primary);background:#fff}
+    .field input:focus,.field select:focus{border-color:var(--primary);background:#fff}
     .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    .picker-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;margin-bottom:14px}
+
+    /* Produce sub-tabs */
+    .sub-tabs{display:flex;gap:6px;margin-bottom:14px}
+    .sub-tab{flex:1;padding:10px;border-radius:10px;border:2px solid var(--border);background:none;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;text-align:center;color:var(--text-light);transition:all .15s}
+    .sub-tab.active-in{border-color:var(--produce);background:#EFF6FF;color:var(--produce)}
+    .sub-tab.active-out{border-color:var(--consume);background:#FFF8E1;color:var(--consume)}
+    .sub-tab:hover{border-color:var(--primary)}
+    .sub-panel{display:none}
+    .sub-panel.active{display:block}
+    .sub-note{background:#F8F8F0;border-left:3px solid var(--accent);padding:8px 12px;border-radius:0 8px 8px 0;font-size:12px;color:var(--text-light);margin-bottom:12px;line-height:1.5}
+
+    /* Picker */
+    .picker-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px;margin-bottom:14px}
     .picker-item{border:2px solid var(--border);border-radius:10px;padding:10px 12px;cursor:pointer;transition:all .15s;background:var(--bg);user-select:none}
     .picker-item:hover{border-color:var(--primary)}
-    .picker-item.selected{border-color:var(--produce);background:#EFF6FF}
-    .picker-item.selected.ship-mode{border-color:var(--ship);background:#F5F0FF}
+    .picker-item.sel-in{border-color:var(--produce);background:#EFF6FF}
+    .picker-item.sel-out{border-color:var(--consume);background:#FFF8E1}
+    .picker-item.sel-ship{border-color:var(--ship);background:#F5F0FF}
     .picker-sku{font-family:monospace;font-size:11px;font-weight:700;color:var(--text-light)}
     .picker-name{font-size:12px;color:var(--text);line-height:1.3;margin-top:2px}
     .picker-stock{font-size:11px;color:var(--text-light);margin-top:4px}
+
+    /* Sel rows */
     .sel-row{display:grid;grid-template-columns:1fr 100px 100px 32px;gap:8px;align-items:center;margin-bottom:8px;padding:10px 12px;background:var(--bg);border:1px solid var(--border);border-radius:8px}
-    .sel-row.ship-row{border-color:#DDD5F5}
+    .sel-row.row-in{border-color:#BFDBFE}
+    .sel-row.row-out{border-color:#FDE68A}
+    .sel-row.row-ship{border-color:#DDD5F5}
     .sel-input{padding:7px 10px;border:1.5px solid var(--border);border-radius:6px;font-size:14px;font-family:inherit;text-align:center;background:#fff;width:100%;outline:none}
     .sel-input:focus{border-color:var(--produce)}
+    .sel-input.in-input:focus{border-color:var(--produce)}
+    .sel-input.out-input:focus{border-color:var(--consume)}
     .sel-input.ship-input:focus{border-color:var(--ship)}
     .sel-del{border:none;background:none;color:#ccc;cursor:pointer;font-size:18px;padding:0;line-height:1}
     .sel-del:hover{color:var(--danger)}
     .sel-header{display:grid;grid-template-columns:1fr 100px 100px 32px;gap:8px;font-size:10px;font-weight:700;color:var(--text-light);padding:0 12px;margin-bottom:4px;text-transform:uppercase}
+
+    /* Buttons */
     .btn-primary{width:100%;padding:13px;border:none;border-radius:10px;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;transition:background .15s;margin-top:6px}
-    .btn-produce{background:var(--produce);color:#fff}
-    .btn-produce:hover{background:#2a7fd8}
-    .btn-produce:disabled{background:#aaa;cursor:not-allowed}
+    .btn-in{background:var(--produce);color:#fff}
+    .btn-in:hover{background:#2a7fd8}
+    .btn-in:disabled{background:#aaa;cursor:not-allowed}
+    .btn-out{background:var(--consume);color:#fff}
+    .btn-out:hover{background:#d4901a}
+    .btn-out:disabled{background:#aaa;cursor:not-allowed}
     .btn-ship{background:var(--ship);color:#fff}
     .btn-ship:hover{background:#7c4def}
     .btn-ship:disabled{background:#aaa;cursor:not-allowed}
-    .summary-box{background:#F0F7FF;border:1px solid #BFDBFE;border-radius:8px;padding:12px 14px;margin-top:10px;font-size:13px;line-height:1.8;color:var(--text)}
+    .summary-box{background:#F0F7FF;border:1px solid #BFDBFE;border-radius:8px;padding:12px 14px;margin-top:10px;font-size:13px;line-height:1.9;color:var(--text)}
+    .summary-box.out-summary{background:#FFFBEB;border-color:#FDE68A}
     .summary-box.ship-summary{background:#F5F0FF;border-color:#DDD5F5}
     .summary-row{display:flex;justify-content:space-between}
     .summary-key{color:var(--text-light)}
     .flash{border-radius:8px;padding:11px 14px;font-size:13px;margin-top:10px;display:none}
     .flash.ok{background:#E8F5E9;border:1px solid #A5D6A7;color:#2E7D32}
     .flash.err{background:#FFEBEE;border:1px solid #FFCDD2;color:#C62828}
+
+    /* History */
     .history-item{border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px;background:var(--surface)}
     .history-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:6px}
-    .history-date{font-size:12px;font-weight:700;color:var(--text)}
+    .history-date{font-size:12px;font-weight:700}
     .history-type{font-size:11px;font-weight:700;padding:2px 10px;border-radius:10px}
     .type-produce{background:#DBEAFE;color:var(--produce)}
+    .type-consume{background:#FEF3C7;color:var(--consume)}
     .type-ship{background:#EDE9FE;color:var(--ship)}
     .history-note{font-size:12px;color:var(--text-light);margin-bottom:8px;font-style:italic}
     .history-items{display:flex;flex-wrap:wrap;gap:6px}
@@ -97,8 +154,8 @@
     .filter-row{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center}
     .filter-row select,.filter-row input{padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;background:var(--bg);outline:none}
     .btn-export-hist{padding:8px 16px;background:var(--success);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;margin-left:auto}
-    .empty{text-align:center;padding:40px;color:#bbb;font-size:14px}
-    .loading{text-align:center;padding:30px;color:var(--text-light);font-size:13px}
+
+    /* Password */
     #pw-overlay{position:fixed;inset:0;background:rgba(253,248,243,.97);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;gap:14px}
     #pw-overlay h2{font-size:22px;font-weight:700;color:var(--primary)}
     #pw-overlay p{font-size:13px;color:var(--text-light)}
@@ -121,7 +178,7 @@
 <header>
   <div>
     <h1>樂樂文化 庫存管理系統</h1>
-    <p>生產記錄 · 出貨記錄 · 即時同步</p>
+    <p>生產 · 用料 · 出貨 · 即時同步</p>
   </div>
   <div style="display:flex;align-items:center;gap:6px;font-size:12px">
     <span class="sync-dot" id="sync-dot"></span>
@@ -133,47 +190,105 @@
 <div class="main">
   <div class="nav">
     <button class="nav-btn active" onclick="showSection('inventory')">📦 目前庫存</button>
-    <button class="nav-btn produce" onclick="showSection('produce')">🏭 記錄生產</button>
+    <button class="nav-btn produce" onclick="showSection('produce')">🏭 生產 / 用料</button>
     <button class="nav-btn ship" onclick="showSection('ship')">🚚 記錄出貨</button>
     <button class="nav-btn" onclick="showSection('history')">📋 歷史紀錄</button>
   </div>
 
-  <!-- 庫存 -->
+  <!-- ===== 庫存 ===== -->
   <div class="section active" id="sec-inventory">
     <div class="card">
-      <div class="card-title" style="justify-content:space-between">
-        <span>目前庫存一覽</span>
-        <button class="btn-export-hist" onclick="renderInventory()">重新整理</button>
+      <div class="toolbar">
+        <div class="tabs" id="inv-tabs">
+          <button class="tab active" onclick="setInvTab('全部')">全部</button>
+          <button class="tab" onclick="setInvTab('書籍')">書籍</button>
+          <button class="tab" onclick="setInvTab('配件')">配件</button>
+          <button class="tab" onclick="setInvTab('耗材')">耗材</button>
+          <button class="tab" onclick="setInvTab('套組')">套組</button>
+        </div>
+        <div class="sort-row">
+          <span class="sort-label">排序：</span>
+          <button class="sort-btn active" data-isort="sku" onclick="setInvSort('sku')">SKU</button>
+          <button class="sort-btn" data-isort="name" onclick="setInvSort('name')">品名</button>
+          <button class="sort-btn" data-isort="qty" onclick="setInvSort('qty')">數量</button>
+          <button class="sort-btn" data-isort="cat" onclick="setInvSort('cat')">類別</button>
+        </div>
       </div>
-      <div id="inv-grid" class="inv-grid"><div class="loading">載入中...</div></div>
+      <div class="search-row">
+        <input type="text" id="inv-search" placeholder="搜尋 SKU 或商品名稱..." oninput="renderInvTable()">
+        <button class="btn-refresh" onclick="loadInventory()">重新整理</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>SKU</th>
+              <th>國際條碼</th>
+              <th>商品名稱</th>
+              <th>類別</th>
+              <th style="text-align:right">現有數量</th>
+              <th style="text-align:right">箱數</th>
+              <th>最後更新</th>
+            </tr>
+          </thead>
+          <tbody id="inv-tbody"></tbody>
+        </table>
+        <div id="inv-empty" class="empty" style="display:none">沒有符合的產品</div>
+        <div id="inv-loading" class="loading">載入中...</div>
+      </div>
     </div>
   </div>
 
-  <!-- 生產 -->
+  <!-- ===== 生產 / 用料 ===== -->
   <div class="section" id="sec-produce">
     <div class="card">
-      <div class="card-title produce">記錄生產</div>
-      <div class="row2">
-        <div class="field"><label>生產日期</label><input type="date" id="p-date"></div>
+      <div class="card-title produce" style="margin-bottom:8px">生產 / 用料記錄</div>
+      <div class="row2" style="margin-bottom:14px">
+        <div class="field"><label>日期</label><input type="date" id="p-date"></div>
         <div class="field"><label>備注（選填）</label><input type="text" id="p-note" placeholder="例：第一批生產"></div>
       </div>
-      <div class="field">
-        <label>選擇生產的產品（可多選）</label>
-        <div class="picker-grid" id="produce-picker"></div>
+
+      <!-- Sub-tabs -->
+      <div class="sub-tabs">
+        <button class="sub-tab active-in" id="stab-in" onclick="setProdSubTab('in')">
+          入庫（產出）<br><small style="font-weight:400;font-size:11px">做好的成品，增加庫存</small>
+        </button>
+        <button class="sub-tab" id="stab-out" onclick="setProdSubTab('out')">
+          出庫（用料）<br><small style="font-weight:400;font-size:11px">拿去製作的原料，扣除庫存</small>
+        </button>
       </div>
-      <div id="produce-selected-wrap" style="display:none">
-        <div class="card-title produce" style="font-size:13px;margin-bottom:8px">填入數量</div>
-        <div class="sel-header"><div>產品</div><div style="text-align:center">生產套數</div><div style="text-align:center">箱數</div><div></div></div>
-        <div id="produce-selected"></div>
-        <div class="summary-box" id="produce-summary"></div>
+
+      <!-- 入庫面板 -->
+      <div class="sub-panel active" id="panel-in">
+        <div class="sub-note">選擇本次<strong>做好</strong>的產品，填入生產套數與箱數</div>
+        <div class="picker-grid" id="produce-picker-in"></div>
+        <div id="produce-in-wrap" style="display:none">
+          <div class="sel-header"><div>產品</div><div style="text-align:center">產出套數</div><div style="text-align:center">箱數</div><div></div></div>
+          <div id="produce-in-rows"></div>
+          <div class="summary-box" id="in-summary"></div>
+        </div>
+        <button class="btn-primary btn-in" id="btn-in" onclick="submitProduce('in')">確認入庫（產出）</button>
+        <div class="flash ok" id="in-flash"></div>
+        <div class="flash err" id="in-err"></div>
       </div>
-      <button class="btn-primary btn-produce" id="produce-btn" onclick="submitProduce()">確認記錄生產</button>
-      <div class="flash ok" id="produce-flash"></div>
-      <div class="flash err" id="produce-err"></div>
+
+      <!-- 出庫面板 -->
+      <div class="sub-panel" id="panel-out">
+        <div class="sub-note">選擇本次<strong>拿去製作</strong>消耗的材料，填入用量</div>
+        <div class="picker-grid" id="produce-picker-out"></div>
+        <div id="produce-out-wrap" style="display:none">
+          <div class="sel-header"><div>材料</div><div style="text-align:center">消耗數量</div><div style="text-align:center">現有庫存</div><div></div></div>
+          <div id="produce-out-rows"></div>
+          <div class="summary-box out-summary" id="out-summary"></div>
+        </div>
+        <button class="btn-primary btn-out" id="btn-out" onclick="submitProduce('out')">確認出庫（用料）</button>
+        <div class="flash ok" id="out-flash"></div>
+        <div class="flash err" id="out-err"></div>
+      </div>
     </div>
   </div>
 
-  <!-- 出貨 -->
+  <!-- ===== 出貨 ===== -->
   <div class="section" id="sec-ship">
     <div class="card">
       <div class="card-title ship">記錄出貨</div>
@@ -181,12 +296,8 @@
         <div class="field"><label>出貨日期</label><input type="date" id="s-date"></div>
         <div class="field"><label>訂單編號 / 備注</label><input type="text" id="s-ref" placeholder="例：ORD-20260602 或客戶名"></div>
       </div>
-      <div class="field">
-        <label>選擇出貨的產品（可多選）</label>
-        <div class="picker-grid" id="ship-picker"></div>
-      </div>
+      <div class="picker-grid" id="ship-picker"></div>
       <div id="ship-selected-wrap" style="display:none">
-        <div class="card-title ship" style="font-size:13px;margin-bottom:8px">填入出貨數量</div>
         <div class="sel-header"><div>產品</div><div style="text-align:center">出貨數量</div><div style="text-align:center">現有庫存</div><div></div></div>
         <div id="ship-selected"></div>
         <div class="summary-box ship-summary" id="ship-summary"></div>
@@ -197,14 +308,15 @@
     </div>
   </div>
 
-  <!-- 歷史 -->
+  <!-- ===== 歷史 ===== -->
   <div class="section" id="sec-history">
     <div class="card">
       <div class="card-title">歷史紀錄</div>
       <div class="filter-row">
         <select id="hist-type" onchange="renderHistory()">
           <option value="">全部類型</option>
-          <option value="produce">生產記錄</option>
+          <option value="produce">入庫（產出）</option>
+          <option value="consume">出庫（用料）</option>
           <option value="ship">出貨記錄</option>
         </select>
         <input type="month" id="hist-month" onchange="renderHistory()">
@@ -223,401 +335,393 @@ var PW_FACTORY = '京好好棒';
 var PW_IRENE   = 'AMAZING';
 
 var PRODUCTS = [
-  {sku:'TC-R100', name:'樂樂聽讀叢書-繁體初級（紅）', cat:'書籍', unit:'套'},
-  {sku:'TC-Y100', name:'樂樂聽讀叢書-繁體中級（黃）', cat:'書籍', unit:'套'},
-  {sku:'TC-G100', name:'樂樂聽讀叢書-繁體高級（綠）', cat:'書籍', unit:'套'},
-  {sku:'SC-R100', name:'樂樂聽讀叢書-簡體初級（紅）', cat:'書籍', unit:'套'},
-  {sku:'SC-Y100', name:'樂樂聽讀叢書-簡體中級（黃）', cat:'書籍', unit:'套'},
-  {sku:'SC-G100', name:'樂樂聽讀叢書-簡體高級（綠）', cat:'書籍', unit:'套'},
-  {sku:'TC-300ALL', name:'樂樂聽讀叢書-整套300-繁體', cat:'套組', unit:'套'},
-  {sku:'SC-300ALL', name:'樂樂聽讀叢書-整套300-簡體', cat:'套組', unit:'套'},
-  {sku:'PEN-01',  name:'樂樂點讀筆', cat:'配件', unit:'支'},
-  {sku:'TC-RC',   name:'樂樂字詞卡-繁體初級（紅）', cat:'配件', unit:'盒'},
-  {sku:'TC-YC',   name:'樂樂字詞卡-繁體中級（黃）', cat:'配件', unit:'盒'},
-  {sku:'TC-GC',   name:'樂樂字詞卡-繁體高級（綠）', cat:'配件', unit:'盒'},
-  {sku:'SC-RC',   name:'樂樂字詞卡-簡體初級（紅）', cat:'配件', unit:'盒'},
-  {sku:'SC-YC',   name:'樂樂字詞卡-簡體中級（黃）', cat:'配件', unit:'盒'},
-  {sku:'SC-GC',   name:'樂樂字詞卡-簡體高級（綠）', cat:'配件', unit:'盒'},
-  {sku:'TC-B',    name:'樂樂黃色小花袋子-繁體', cat:'配件', unit:'個'},
-  {sku:'SC-B',    name:'樂樂黃色小花袋子-簡體', cat:'配件', unit:'個'},
-  {sku:'S-01',    name:'樂樂點讀貼紙（1套裝）', cat:'套組', unit:'套'},
-  {sku:'LELE-01', name:'14X14X17CM PVC盒（紅/黃書用）', cat:'耗材', unit:'個'},
-  {sku:'LELE-02', name:'14X17X17CM PVC盒（綠書用）', cat:'耗材', unit:'個'},
-  {sku:'LELE-03', name:'點讀筆掛繩', cat:'配件', unit:'條'},
-  {sku:'LELE-04', name:'感謝卡', cat:'耗材', unit:'張'},
-  {sku:'LELE-05', name:'樂樂點讀貼紙（袋裝）', cat:'耗材', unit:'袋'},
-  {sku:'LELE-06', name:'樂樂西式資料夾', cat:'耗材', unit:'個'},
-  {sku:'LELE-08', name:'樂樂圓型貼紙', cat:'耗材', unit:'張'},
+  {sku:'TC-R100', barcode:'978-986-938-726', name:'樂樂聽讀叢書-繁體初級（紅）', cat:'書籍', unit:'套'},
+  {sku:'TC-Y100', barcode:'978-986-938-725', name:'樂樂聽讀叢書-繁體中級（黃）', cat:'書籍', unit:'套'},
+  {sku:'TC-G100', barcode:'978-986-938-721', name:'樂樂聽讀叢書-繁體高級（綠）', cat:'書籍', unit:'套'},
+  {sku:'SC-R100', barcode:'978-986-938-723', name:'樂樂聽讀叢書-簡體初級（紅）', cat:'書籍', unit:'套'},
+  {sku:'SC-Y100', barcode:'978-986-938-724', name:'樂樂聽讀叢書-簡體中級（黃）', cat:'書籍', unit:'套'},
+  {sku:'SC-G100', barcode:'978-986-938-722', name:'樂樂聽讀叢書-簡體高級（綠）', cat:'書籍', unit:'套'},
+  {sku:'TC-300ALL', barcode:'970-976-982-070', name:'樂樂聽讀叢書-整套300-繁體', cat:'套組', unit:'套'},
+  {sku:'SC-300ALL', barcode:'970-976-982-071', name:'樂樂聽讀叢書-整套300-簡體', cat:'套組', unit:'套'},
+  {sku:'PEN-01',  barcode:'970-976-982-000', name:'樂樂點讀筆', cat:'配件', unit:'支'},
+  {sku:'TC-RC',   barcode:'970-976-982-004', name:'樂樂字詞卡-繁體初級（紅）', cat:'配件', unit:'盒'},
+  {sku:'TC-YC',   barcode:'970-976-982-005', name:'樂樂字詞卡-繁體中級（黃）', cat:'配件', unit:'盒'},
+  {sku:'TC-GC',   barcode:'970-976-982-006', name:'樂樂字詞卡-繁體高級（綠）', cat:'配件', unit:'盒'},
+  {sku:'SC-RC',   barcode:'970-976-982-010', name:'樂樂字詞卡-簡體初級（紅）', cat:'配件', unit:'盒'},
+  {sku:'SC-YC',   barcode:'970-976-982-011', name:'樂樂字詞卡-簡體中級（黃）', cat:'配件', unit:'盒'},
+  {sku:'SC-GC',   barcode:'970-976-982-012', name:'樂樂字詞卡-簡體高級（綠）', cat:'配件', unit:'盒'},
+  {sku:'TC-B',    barcode:'970-976-982-067', name:'樂樂黃色小花袋子-繁體', cat:'配件', unit:'個'},
+  {sku:'SC-B',    barcode:'970-976-982-068', name:'樂樂黃色小花袋子-簡體', cat:'配件', unit:'個'},
+  {sku:'S-01',    barcode:'970-976-982-072', name:'樂樂點讀貼紙（1套裝）', cat:'套組', unit:'套'},
+  {sku:'LELE-01', barcode:'970-976-982-074', name:'14X14X17CM PVC盒（紅/黃書用）', cat:'耗材', unit:'個'},
+  {sku:'LELE-02', barcode:'970-976-982-075', name:'14X17X17CM PVC盒（綠書用）', cat:'耗材', unit:'個'},
+  {sku:'LELE-03', barcode:'970-976-982-076', name:'點讀筆掛繩', cat:'配件', unit:'條'},
+  {sku:'LELE-04', barcode:'970-976-982-077', name:'感謝卡', cat:'耗材', unit:'張'},
+  {sku:'LELE-05', barcode:'970-976-982-078', name:'樂樂點讀貼紙（袋裝）', cat:'耗材', unit:'袋'},
+  {sku:'LELE-06', barcode:'970-976-982-079', name:'樂樂西式資料夾', cat:'耗材', unit:'個'},
+  {sku:'LELE-08', barcode:'970-976-982-073', name:'樂樂圓型貼紙', cat:'耗材', unit:'張'},
 ];
 
-// ===================== SUPABASE HELPERS =====================
-function sbHeaders() {
-  return {'Content-Type':'application/json','apikey':SB_ANON,'Authorization':'Bearer '+SB_ANON};
-}
+// ===================== SUPABASE =====================
+function sbH(){ return {'Content-Type':'application/json','apikey':SB_ANON,'Authorization':'Bearer '+SB_ANON}; }
+async function sbGet(t,p){ var r=await fetch(SB_URL+'/rest/v1/'+t+'?'+(p||''),{headers:sbH()}); if(!r.ok) throw new Error(await r.text()); return r.json(); }
+async function sbUpsert(t,d){ var r=await fetch(SB_URL+'/rest/v1/'+t,{method:'POST',headers:Object.assign({},sbH(),{'Prefer':'resolution=merge-duplicates,return=minimal'}),body:JSON.stringify(d)}); if(!r.ok) throw new Error(await r.text()); }
+async function sbInsert(t,d){ var r=await fetch(SB_URL+'/rest/v1/'+t,{method:'POST',headers:Object.assign({},sbH(),{'Prefer':'return=representation'}),body:JSON.stringify(d)}); if(!r.ok) throw new Error(await r.text()); return r.json(); }
 
-async function sbGet(table, params) {
-  var url = SB_URL+'/rest/v1/'+table+'?'+( params||'');
-  var r = await fetch(url, {headers: sbHeaders()});
-  if (!r.ok) throw new Error(await r.text());
-  return r.json();
-}
-
-async function sbUpsert(table, data) {
-  var r = await fetch(SB_URL+'/rest/v1/'+table, {
-    method:'POST',
-    headers: Object.assign({},sbHeaders(),{'Prefer':'resolution=merge-duplicates,return=minimal'}),
-    body: JSON.stringify(data)
-  });
-  if (!r.ok) throw new Error(await r.text());
-}
-
-async function sbInsert(table, data) {
-  var r = await fetch(SB_URL+'/rest/v1/'+table, {
-    method:'POST',
-    headers: Object.assign({},sbHeaders(),{'Prefer':'return=representation'}),
-    body: JSON.stringify(data)
-  });
-  if (!r.ok) throw new Error(await r.text());
-  return r.json();
-}
-
-async function sbUpdate(table, id, data) {
-  var r = await fetch(SB_URL+'/rest/v1/'+table+'?sku=eq.'+encodeURIComponent(id), {
-    method:'PATCH',
-    headers: Object.assign({},sbHeaders(),{'Prefer':'return=minimal'}),
-    body: JSON.stringify(data)
-  });
-  if (!r.ok) throw new Error(await r.text());
-}
+// ===================== STATE =====================
+var _invCache = {};
+var _invTab   = '全部';
+var _invSort  = 'sku';
+var _prodSubTab = 'in';
+var _selIn = {}, _selOut = {}, _shipSel = {};
 
 // ===================== PASSWORD =====================
-function checkPw() {
-  var v = document.getElementById('pw-input').value;
-  if (v === PW_FACTORY || v === PW_IRENE) {
-    document.getElementById('pw-overlay').style.display = 'none';
-    init();
-  } else {
-    document.getElementById('pw-error').style.display = 'block';
-    document.getElementById('pw-input').value = '';
-  }
-}
+function checkPw(){ var v=document.getElementById('pw-input').value; if(v===PW_FACTORY||v===PW_IRENE){document.getElementById('pw-overlay').style.display='none';init();}else{document.getElementById('pw-error').style.display='block';document.getElementById('pw-input').value='';} }
 
-// ===================== SYNC STATUS =====================
-function setSyncing(state) {
-  var dot = document.getElementById('sync-dot');
-  var txt = document.getElementById('sync-status');
-  if (state === 'ok')      { dot.className='sync-dot'; txt.textContent='已同步'; }
-  if (state === 'syncing') { dot.className='sync-dot syncing'; txt.textContent='同步中...'; }
-  if (state === 'error')   { dot.className='sync-dot error'; txt.textContent='連線失敗'; }
-}
+// ===================== SYNC =====================
+function setSyncing(s){ var d=document.getElementById('sync-dot'),t=document.getElementById('sync-status'); if(s==='ok'){d.className='sync-dot';t.textContent='已同步';}else if(s==='syncing'){d.className='sync-dot syncing';t.textContent='同步中...';}else{d.className='sync-dot error';t.textContent='連線失敗';} }
 
 // ===================== NAV =====================
-function showSection(id) {
-  document.querySelectorAll('.section').forEach(function(el){ el.classList.remove('active'); });
+function showSection(id){
+  document.querySelectorAll('.section').forEach(function(el){el.classList.remove('active');});
   document.getElementById('sec-'+id).classList.add('active');
   document.querySelectorAll('.nav-btn').forEach(function(el,i){
     var ids=['inventory','produce','ship','history'];
-    el.classList.toggle('active', ids[i]===id);
+    el.classList.toggle('active',ids[i]===id);
   });
-  if (id==='inventory') renderInventory();
-  if (id==='produce')  { renderPicker('produce'); resetProduceForm(); }
-  if (id==='ship')     { renderPicker('ship'); resetShipForm(); }
-  if (id==='history')  renderHistory();
+  if(id==='inventory') loadInventory();
+  if(id==='produce'){ renderProdPicker(); resetProduceForm(); }
+  if(id==='ship'){ renderShipPicker(); resetShipForm(); }
+  if(id==='history') renderHistory();
 }
 
-// ===================== INVENTORY =====================
-var _invCache = {};
-
-async function renderInventory() {
+// ===================== INVENTORY TABLE =====================
+async function loadInventory(){
   setSyncing('syncing');
-  try {
+  document.getElementById('inv-loading').style.display='block';
+  document.getElementById('inv-tbody').innerHTML='';
+  document.getElementById('inv-empty').style.display='none';
+  try{
     var rows = await sbGet('inventory','select=sku,qty,cartons,last_updated');
-    _invCache = {};
-    rows.forEach(function(r){ _invCache[r.sku] = r; });
+    _invCache={};
+    rows.forEach(function(r){_invCache[r.sku]=r;});
     setSyncing('ok');
-  } catch(e) {
-    setSyncing('error');
-  }
-  var grid = document.getElementById('inv-grid');
-  grid.innerHTML = PRODUCTS.map(function(p){
-    var s = _invCache[p.sku] || {qty:0, cartons:0, last_updated:null};
-    var cls = s.qty===0 ? 'inv-zero' : (s.qty<=10 ? 'inv-low' : '');
-    return '<div class="inv-card '+cls+'">' +
-      '<div class="inv-cat cat-'+p.cat+'">'+p.cat+'</div>' +
-      '<div class="inv-sku">'+p.sku+'</div>' +
-      '<div class="inv-name">'+p.name+'</div>' +
-      '<div><span class="inv-qty">'+s.qty+'</span><span class="inv-unit">'+p.unit+'</span></div>' +
-      (s.cartons ? '<div class="inv-ctn">'+s.cartons+' 箱</div>' : '') +
-      (s.last_updated ? '<div class="inv-updated">更新：'+s.last_updated+'</div>' : '') +
-      '</div>';
+  }catch(e){ setSyncing('error'); }
+  document.getElementById('inv-loading').style.display='none';
+  renderInvTable();
+}
+
+function setInvTab(t){ _invTab=t; document.querySelectorAll('#inv-tabs .tab').forEach(function(el){el.classList.toggle('active',el.textContent===t);}); renderInvTable(); }
+function setInvSort(s){ _invSort=s; document.querySelectorAll('[data-isort]').forEach(function(el){el.classList.toggle('active',el.dataset.isort===s);}); renderInvTable(); }
+
+function renderInvTable(){
+  var q=(document.getElementById('inv-search').value||'').trim().toLowerCase();
+  var list=PRODUCTS.filter(function(p){
+    if(_invTab!=='全部'&&p.cat!==_invTab)return false;
+    if(q&&!p.sku.toLowerCase().includes(q)&&!p.name.toLowerCase().includes(q)&&!p.barcode.includes(q))return false;
+    return true;
+  });
+  list.sort(function(a,b){
+    if(_invSort==='sku')  return a.sku.localeCompare(b.sku,'en',{sensitivity:'base'});
+    if(_invSort==='name') return a.name.localeCompare(b.name,'zh-TW');
+    if(_invSort==='cat')  return a.cat.localeCompare(b.cat,'zh-TW')||a.sku.localeCompare(b.sku,'en');
+    if(_invSort==='qty'){
+      var qa=(_invCache[a.sku]||{qty:0}).qty, qb=(_invCache[b.sku]||{qty:0}).qty;
+      return qb-qa;
+    }
+    return 0;
+  });
+  var tbody=document.getElementById('inv-tbody');
+  if(!list.length){tbody.innerHTML='';document.getElementById('inv-empty').style.display='block';return;}
+  document.getElementById('inv-empty').style.display='none';
+  tbody.innerHTML=list.map(function(p){
+    var s=_invCache[p.sku]||{qty:0,cartons:0,last_updated:null};
+    var qcls=s.qty===0?'qty-zero':(s.qty<=10?'qty-low':'');
+    return '<tr>'+
+      '<td class="sku">'+p.sku+'</td>'+
+      '<td><span class="barcode-display">'+p.barcode+'</span></td>'+
+      '<td>'+esc(p.name)+'</td>'+
+      '<td><span class="cat-badge cat-'+p.cat+'">'+p.cat+'</span></td>'+
+      '<td style="text-align:right"><span class="qty-cell '+qcls+'">'+s.qty+'</span> <span style="font-size:11px;color:var(--text-light)">'+p.unit+'</span></td>'+
+      '<td style="text-align:right;font-size:13px;color:var(--text-light)">'+(s.cartons||0)+' 箱</td>'+
+      '<td class="date-cell">'+(s.last_updated||'—')+'</td>'+
+      '</tr>';
   }).join('');
 }
 
-// ===================== PICKER =====================
-var _produceSel = {};
-var _shipSel    = {};
+// ===================== PROD SUB-TABS =====================
+function setProdSubTab(t){
+  _prodSubTab=t;
+  document.getElementById('stab-in').className='sub-tab'+(t==='in'?' active-in':'');
+  document.getElementById('stab-out').className='sub-tab'+(t==='out'?' active-out':'');
+  document.getElementById('panel-in').classList.toggle('active',t==='in');
+  document.getElementById('panel-out').classList.toggle('active',t==='out');
+}
 
-function renderPicker(mode) {
-  var sel = mode==='produce' ? _produceSel : _shipSel;
-  var id  = mode+'-picker';
-  var shipMode = mode==='ship' ? 'ship-mode' : '';
-  document.getElementById(id).innerHTML = PRODUCTS.map(function(p){
-    var s = _invCache[p.sku] || {qty:0};
-    var isSel = !!sel[p.sku];
-    var stockNote = mode==='ship' ? '庫存：'+s.qty+' '+p.unit : '';
-    return '<div class="picker-item '+(isSel?'selected '+shipMode:'')+'" data-sku="'+p.sku+'" data-mode="'+mode+'" onclick="togglePick(this)">' +
-      '<div class="picker-sku">'+p.sku+'</div>' +
-      '<div class="picker-name">'+p.name+'</div>' +
-      (stockNote ? '<div class="picker-stock">'+stockNote+'</div>' : '') +
-      '</div>';
+// ===================== PROD PICKERS =====================
+function renderProdPicker(){
+  // IN picker
+  document.getElementById('produce-picker-in').innerHTML=PRODUCTS.map(function(p){
+    var isSel=!!_selIn[p.sku];
+    var cur=(_invCache[p.sku]||{qty:0}).qty;
+    return '<div class="picker-item'+(isSel?' sel-in':'')+'" data-sku="'+p.sku+'" data-pmode="in" onclick="toggleProdPick(this)">'+
+      '<div class="picker-sku">'+p.sku+'</div>'+
+      '<div class="picker-name">'+p.name+'</div>'+
+      '<div class="picker-stock">現有：'+cur+' '+p.unit+'</div></div>';
+  }).join('');
+  // OUT picker
+  document.getElementById('produce-picker-out').innerHTML=PRODUCTS.map(function(p){
+    var isSel=!!_selOut[p.sku];
+    var cur=(_invCache[p.sku]||{qty:0}).qty;
+    return '<div class="picker-item'+(isSel?' sel-out':'')+'" data-sku="'+p.sku+'" data-pmode="out" onclick="toggleProdPick(this)">'+
+      '<div class="picker-sku">'+p.sku+'</div>'+
+      '<div class="picker-name">'+p.name+'</div>'+
+      '<div class="picker-stock">現有：'+cur+' '+p.unit+'</div></div>';
   }).join('');
 }
 
-function togglePick(el) {
-  var sku = el.dataset.sku, mode = el.dataset.mode;
-  var sel = mode==='produce' ? _produceSel : _shipSel;
-  if (sel[sku]) {
-    delete sel[sku];
-    el.classList.remove('selected','ship-mode');
-  } else {
-    var p = PRODUCTS.find(function(x){return x.sku===sku;});
-    sel[sku] = {sku:sku, name:p.name, unit:p.unit, qty:0, cartons:0};
-    el.classList.add('selected');
-    if (mode==='ship') el.classList.add('ship-mode');
-  }
-  if (mode==='produce') renderProduceSelected();
-  else renderShipSelected();
+function toggleProdPick(el){
+  var sku=el.dataset.sku, mode=el.dataset.pmode;
+  var sel=mode==='in'?_selIn:_selOut;
+  if(sel[sku]){delete sel[sku];el.classList.remove('sel-in','sel-out');}
+  else{var p=PRODUCTS.find(function(x){return x.sku===sku;});sel[sku]={sku:sku,name:p.name,unit:p.unit,qty:0,cartons:0};el.classList.add(mode==='in'?'sel-in':'sel-out');}
+  if(mode==='in') renderInRows();
+  else renderOutRows();
 }
 
-// ===================== PRODUCE =====================
-function resetProduceForm() {
-  _produceSel = {};
-  document.getElementById('p-date').value = todayStr();
-  document.getElementById('p-note').value = '';
-  document.getElementById('produce-selected-wrap').style.display = 'none';
-  document.getElementById('produce-flash').style.display = 'none';
-  document.getElementById('produce-err').style.display = 'none';
-}
-
-function renderProduceSelected() {
-  var keys = Object.keys(_produceSel);
-  var wrap = document.getElementById('produce-selected-wrap');
-  if (!keys.length) { wrap.style.display='none'; return; }
+function renderInRows(){
+  var keys=Object.keys(_selIn);
+  var wrap=document.getElementById('produce-in-wrap');
+  if(!keys.length){wrap.style.display='none';return;}
   wrap.style.display='block';
-  document.getElementById('produce-selected').innerHTML = keys.map(function(sku){
-    var item = _produceSel[sku];
-    var cur = (_invCache[sku]||{qty:0}).qty;
-    return '<div class="sel-row">' +
-      '<div><div style="font-size:13px;font-weight:600">'+item.name+'</div><div style="font-size:10px;font-family:monospace;color:var(--text-light)">'+sku+' | 現有：'+cur+' '+item.unit+'</div></div>' +
-      '<input class="sel-input" type="number" min="0" placeholder="套數" oninput="updateProduceQty(\''+sku+'\',\'qty\',this.value);updateProduceSummary()">' +
-      '<input class="sel-input" type="number" min="0" placeholder="箱數" oninput="updateProduceQty(\''+sku+'\',\'cartons\',this.value)">' +
-      '<button class="sel-del" onclick="removeProduce(\''+sku+'\')">×</button>' +
-      '</div>';
+  document.getElementById('produce-in-rows').innerHTML=keys.map(function(sku){
+    var item=_selIn[sku],cur=(_invCache[sku]||{qty:0}).qty;
+    return '<div class="sel-row row-in">'+
+      '<div><div style="font-size:13px;font-weight:600">'+item.name+'</div><div style="font-size:10px;font-family:monospace;color:var(--text-light)">'+sku+' | 現有 '+cur+' '+item.unit+'</div></div>'+
+      '<input class="sel-input in-input" type="number" min="0" placeholder="套數" oninput="updIn(\''+sku+'\',\'qty\',this.value);updInSummary()">'+
+      '<input class="sel-input in-input" type="number" min="0" placeholder="箱數" oninput="updIn(\''+sku+'\',\'cartons\',this.value)">'+
+      '<button class="sel-del" onclick="removeIn(\''+sku+'\')">×</button></div>';
   }).join('');
-  updateProduceSummary();
+  updInSummary();
 }
 
-function updateProduceQty(sku,field,val){ if(_produceSel[sku]) _produceSel[sku][field]=parseInt(val)||0; }
-
-function removeProduce(sku) {
-  delete _produceSel[sku];
-  document.querySelectorAll('[data-sku="'+sku+'"][data-mode="produce"]').forEach(function(el){ el.classList.remove('selected'); });
-  renderProduceSelected();
-}
-
-function updateProduceSummary() {
-  var keys = Object.keys(_produceSel);
-  if (!keys.length) { document.getElementById('produce-summary').innerHTML=''; return; }
-  document.getElementById('produce-summary').innerHTML = keys.map(function(sku){
-    var item=_produceSel[sku], cur=(_invCache[sku]||{qty:0}).qty, after=cur+(item.qty||0);
-    return '<div class="summary-row"><span class="summary-key">'+item.name.slice(0,18)+'</span>' +
-      '<span class="summary-val">'+cur+' + '+(item.qty||0)+' = <span style="color:var(--produce)">'+after+'</span> '+item.unit+'</span></div>';
+function updIn(sku,f,v){if(_selIn[sku])_selIn[sku][f]=parseInt(v)||0;}
+function removeIn(sku){delete _selIn[sku];document.querySelectorAll('[data-sku="'+sku+'"][data-pmode="in"]').forEach(function(el){el.classList.remove('sel-in');});renderInRows();}
+function updInSummary(){
+  var keys=Object.keys(_selIn);
+  if(!keys.length){document.getElementById('in-summary').innerHTML='';return;}
+  document.getElementById('in-summary').innerHTML=keys.map(function(sku){
+    var item=_selIn[sku],cur=(_invCache[sku]||{qty:0}).qty,after=cur+(item.qty||0);
+    return '<div class="summary-row"><span class="summary-key">'+item.name.slice(0,20)+'</span><span class="summary-val">'+cur+' + '+(item.qty||0)+' = <span style="color:var(--produce)">'+after+'</span> '+item.unit+'</span></div>';
   }).join('');
 }
 
-async function submitProduce() {
-  var date = document.getElementById('p-date').value;
-  var note = document.getElementById('p-note').value.trim();
-  var err = document.getElementById('produce-err');
-  var flash = document.getElementById('produce-flash');
-  var btn = document.getElementById('produce-btn');
-  err.style.display='none';
-  if (!date) { showMsg(err,'請選擇日期'); return; }
-  var keys = Object.keys(_produceSel).filter(function(k){ return (_produceSel[k].qty||0)>0; });
-  if (!keys.length) { showMsg(err,'請選擇至少一個產品並填入數量'); return; }
+function renderOutRows(){
+  var keys=Object.keys(_selOut);
+  var wrap=document.getElementById('produce-out-wrap');
+  if(!keys.length){wrap.style.display='none';return;}
+  wrap.style.display='block';
+  document.getElementById('produce-out-rows').innerHTML=keys.map(function(sku){
+    var item=_selOut[sku],cur=(_invCache[sku]||{qty:0}).qty;
+    return '<div class="sel-row row-out">'+
+      '<div><div style="font-size:13px;font-weight:600">'+item.name+'</div><div style="font-size:10px;font-family:monospace;color:var(--text-light)">'+sku+'</div></div>'+
+      '<input class="sel-input out-input" type="number" min="0" placeholder="消耗量" oninput="updOut(\''+sku+'\',this.value);updOutSummary()">'+
+      '<div style="text-align:center;font-size:13px;font-weight:600;color:var(--text-light)">'+cur+' '+item.unit+'</div>'+
+      '<button class="sel-del" onclick="removeOut(\''+sku+'\')">×</button></div>';
+  }).join('');
+  updOutSummary();
+}
 
-  btn.disabled=true; btn.textContent='儲存中...';
+function updOut(sku,v){if(_selOut[sku])_selOut[sku].qty=parseInt(v)||0;}
+function removeOut(sku){delete _selOut[sku];document.querySelectorAll('[data-sku="'+sku+'"][data-pmode="out"]').forEach(function(el){el.classList.remove('sel-out');});renderOutRows();}
+function updOutSummary(){
+  var keys=Object.keys(_selOut);
+  if(!keys.length){document.getElementById('out-summary').innerHTML='';return;}
+  document.getElementById('out-summary').innerHTML=keys.map(function(sku){
+    var item=_selOut[sku],cur=(_invCache[sku]||{qty:0}).qty,after=cur-(item.qty||0);
+    var warn=after<0?' style="color:var(--danger)"':(after<=5?' style="color:var(--warn)"':' style="color:var(--consume)"');
+    return '<div class="summary-row"><span class="summary-key">'+item.name.slice(0,20)+'</span><span class="summary-val">'+cur+' - '+(item.qty||0)+' = <span'+warn+'>'+after+'</span> '+item.unit+'</span></div>';
+  }).join('');
+}
+
+async function submitProduce(mode){
+  var date=document.getElementById('p-date').value;
+  var note=document.getElementById('p-note').value.trim();
+  var sel=mode==='in'?_selIn:_selOut;
+  var errEl=document.getElementById(mode+'-err');
+  var flashEl=document.getElementById(mode+'-flash');
+  var btnEl=document.getElementById('btn-'+mode);
+  errEl.style.display='none';
+  if(!date){showMsg(errEl,'請選擇日期');return;}
+  var keys=Object.keys(sel).filter(function(k){return (sel[k].qty||0)>0;});
+  if(!keys.length){showMsg(errEl,'請選擇至少一個產品並填入數量');return;}
+  btnEl.disabled=true; btnEl.textContent='儲存中...';
   setSyncing('syncing');
-  try {
-    var histRows = await sbInsert('inv_history', {type:'produce', date:date, note:note||null});
-    var histId = histRows[0].id;
-    var items = [];
-    var invUpdates = [];
+  try{
+    var type=mode==='in'?'produce':'consume';
+    var histRows=await sbInsert('inv_history',{type:type,date:date,note:note||null});
+    var histId=histRows[0].id;
+    var items=[],invUpdates=[];
     keys.forEach(function(sku){
-      var item=_produceSel[sku], qty=item.qty||0, ctns=item.cartons||0;
-      var cur = (_invCache[sku]||{qty:0,cartons:0});
-      items.push({history_id:histId, sku:sku, name:item.name, qty:qty, cartons:ctns, unit:item.unit});
-      invUpdates.push({sku:sku, qty:cur.qty+qty, cartons:cur.cartons+ctns, last_updated:date});
+      var item=sel[sku],qty=item.qty||0,ctns=item.cartons||0;
+      var cur=_invCache[sku]||{qty:0,cartons:0};
+      items.push({history_id:histId,sku:sku,name:item.name,qty:qty,cartons:ctns,unit:item.unit});
+      var newQty=mode==='in'?cur.qty+qty:Math.max(0,cur.qty-qty);
+      var newCtns=mode==='in'?cur.cartons+ctns:cur.cartons;
+      invUpdates.push({sku:sku,qty:newQty,cartons:newCtns,last_updated:date});
     });
-    await sbInsert('inv_history_items', items);
-    await sbUpsert('inventory', invUpdates);
+    await sbInsert('inv_history_items',items);
+    await sbUpsert('inventory',invUpdates);
     setSyncing('ok');
-    showMsg(flash,'已記錄生產！庫存已更新並同步。');
-    setTimeout(function(){ resetProduceForm(); renderPicker('produce'); renderInventory(); },1800);
-  } catch(e) {
-    setSyncing('error');
-    showMsg(err,'儲存失敗：'+e.message);
-  } finally {
-    btn.disabled=false; btn.textContent='確認記錄生產';
-  }
+    showMsg(flashEl,mode==='in'?'入庫成功！庫存已增加。':'用料記錄完成！庫存已扣除。');
+    if(mode==='in'){_selIn={};}else{_selOut={};}
+    setTimeout(function(){ loadInventory(); renderProdPicker(); if(mode==='in'){document.getElementById('produce-in-wrap').style.display='none';}else{document.getElementById('produce-out-wrap').style.display='none';} },1500);
+  }catch(e){setSyncing('error');showMsg(errEl,'儲存失敗：'+e.message);}
+  finally{btnEl.disabled=false;btnEl.textContent=mode==='in'?'確認入庫（產出）':'確認出庫（用料）';}
+}
+
+function resetProduceForm(){
+  _selIn={}; _selOut={};
+  document.getElementById('p-date').value=todayStr();
+  document.getElementById('p-note').value='';
+  ['produce-in-wrap','produce-out-wrap'].forEach(function(id){document.getElementById(id).style.display='none';});
+  ['in-flash','in-err','out-flash','out-err'].forEach(function(id){document.getElementById(id).style.display='none';});
+  setProdSubTab('in');
 }
 
 // ===================== SHIP =====================
-function resetShipForm() {
-  _shipSel = {};
-  document.getElementById('s-date').value = todayStr();
-  document.getElementById('s-ref').value = '';
+function renderShipPicker(){
+  document.getElementById('ship-picker').innerHTML=PRODUCTS.map(function(p){
+    var isSel=!!_shipSel[p.sku];
+    var cur=(_invCache[p.sku]||{qty:0}).qty;
+    return '<div class="picker-item'+(isSel?' sel-ship':'')+'" data-sku="'+p.sku+'" onclick="toggleShip(this)">'+
+      '<div class="picker-sku">'+p.sku+'</div>'+
+      '<div class="picker-name">'+p.name+'</div>'+
+      '<div class="picker-stock">庫存：'+cur+' '+p.unit+'</div></div>';
+  }).join('');
+}
+
+function toggleShip(el){
+  var sku=el.dataset.sku;
+  if(_shipSel[sku]){delete _shipSel[sku];el.classList.remove('sel-ship');}
+  else{var p=PRODUCTS.find(function(x){return x.sku===sku;});_shipSel[sku]={sku:sku,name:p.name,unit:p.unit,qty:0};el.classList.add('sel-ship');}
+  renderShipRows();
+}
+
+function renderShipRows(){
+  var keys=Object.keys(_shipSel);
+  var wrap=document.getElementById('ship-selected-wrap');
+  if(!keys.length){wrap.style.display='none';return;}
+  wrap.style.display='block';
+  document.getElementById('ship-selected').innerHTML=keys.map(function(sku){
+    var item=_shipSel[sku],cur=(_invCache[sku]||{qty:0}).qty;
+    return '<div class="sel-row row-ship">'+
+      '<div><div style="font-size:13px;font-weight:600">'+item.name+'</div><div style="font-size:10px;font-family:monospace;color:var(--text-light)">'+sku+'</div></div>'+
+      '<input class="sel-input ship-input" type="number" min="0" placeholder="出貨數" oninput="updShip(\''+sku+'\',this.value);updShipSummary()">'+
+      '<div style="text-align:center;font-size:13px;font-weight:600;color:var(--text-light)">'+cur+' '+item.unit+'</div>'+
+      '<button class="sel-del" onclick="removeShip(\''+sku+'\')">×</button></div>';
+  }).join('');
+  updShipSummary();
+}
+
+function updShip(sku,v){if(_shipSel[sku])_shipSel[sku].qty=parseInt(v)||0;}
+function removeShip(sku){delete _shipSel[sku];document.querySelectorAll('[data-sku="'+sku+'"]').forEach(function(el){el.classList.remove('sel-ship');});renderShipRows();}
+function updShipSummary(){
+  var keys=Object.keys(_shipSel);
+  if(!keys.length){document.getElementById('ship-summary').innerHTML='';return;}
+  document.getElementById('ship-summary').innerHTML=keys.map(function(sku){
+    var item=_shipSel[sku],cur=(_invCache[sku]||{qty:0}).qty,after=cur-(item.qty||0);
+    var warn=after<0?' style="color:var(--danger)"':(after<=5?' style="color:var(--warn)"':' style="color:var(--ship)"');
+    return '<div class="summary-row"><span class="summary-key">'+item.name.slice(0,20)+'</span><span class="summary-val">'+cur+' - '+(item.qty||0)+' = <span'+warn+'>'+after+'</span> '+item.unit+'</span></div>';
+  }).join('');
+}
+
+async function submitShip(){
+  var date=document.getElementById('s-date').value;
+  var ref=document.getElementById('s-ref').value.trim();
+  var err=document.getElementById('ship-err'),flash=document.getElementById('ship-flash'),btn=document.getElementById('ship-btn');
+  err.style.display='none';
+  if(!date){showMsg(err,'請選擇日期');return;}
+  var keys=Object.keys(_shipSel).filter(function(k){return(_shipSel[k].qty||0)>0;});
+  if(!keys.length){showMsg(err,'請選擇至少一個產品並填入數量');return;}
+  var over=keys.filter(function(sku){return(_shipSel[sku].qty||0)>(_invCache[sku]||{qty:0}).qty;}).map(function(sku){return _shipSel[sku].name;});
+  if(over.length&&!confirm('以下產品出貨數超過庫存，確定繼續？\n'+over.join('\n')))return;
+  btn.disabled=true;btn.textContent='儲存中...';setSyncing('syncing');
+  try{
+    var histRows=await sbInsert('inv_history',{type:'ship',date:date,note:ref||null});
+    var histId=histRows[0].id;
+    var items=[],invUpdates=[];
+    keys.forEach(function(sku){
+      var item=_shipSel[sku],qty=item.qty||0,cur=_invCache[sku]||{qty:0,cartons:0};
+      items.push({history_id:histId,sku:sku,name:item.name,qty:qty,unit:item.unit});
+      invUpdates.push({sku:sku,qty:Math.max(0,cur.qty-qty),cartons:cur.cartons,last_updated:date});
+    });
+    await sbInsert('inv_history_items',items);
+    await sbUpsert('inventory',invUpdates);
+    setSyncing('ok');showMsg(flash,'出貨記錄完成！庫存已扣除。');
+    _shipSel={};
+    setTimeout(function(){resetShipForm();loadInventory();renderShipPicker();},1500);
+  }catch(e){setSyncing('error');showMsg(err,'儲存失敗：'+e.message);}
+  finally{btn.disabled=false;btn.textContent='確認記錄出貨';}
+}
+
+function resetShipForm(){
+  _shipSel={};
+  document.getElementById('s-date').value=todayStr();
+  document.getElementById('s-ref').value='';
   document.getElementById('ship-selected-wrap').style.display='none';
   document.getElementById('ship-flash').style.display='none';
   document.getElementById('ship-err').style.display='none';
 }
 
-function renderShipSelected() {
-  var keys = Object.keys(_shipSel);
-  var wrap = document.getElementById('ship-selected-wrap');
-  if (!keys.length) { wrap.style.display='none'; return; }
-  wrap.style.display='block';
-  document.getElementById('ship-selected').innerHTML = keys.map(function(sku){
-    var item=_shipSel[sku], cur=(_invCache[sku]||{qty:0}).qty;
-    return '<div class="sel-row ship-row">' +
-      '<div><div style="font-size:13px;font-weight:600">'+item.name+'</div><div style="font-size:10px;font-family:monospace;color:var(--text-light)">'+sku+'</div></div>' +
-      '<input class="sel-input ship-input" type="number" min="0" placeholder="出貨數" oninput="updateShipQty(\''+sku+'\',this.value);updateShipSummary()">' +
-      '<div style="text-align:center;font-size:13px;font-weight:600;color:var(--text-light)">'+cur+' '+item.unit+'</div>' +
-      '<button class="sel-del" onclick="removeShip(\''+sku+'\')">×</button>' +
-      '</div>';
-  }).join('');
-  updateShipSummary();
-}
-
-function updateShipQty(sku,val){ if(_shipSel[sku]) _shipSel[sku].qty=parseInt(val)||0; }
-
-function removeShip(sku) {
-  delete _shipSel[sku];
-  document.querySelectorAll('[data-sku="'+sku+'"][data-mode="ship"]').forEach(function(el){ el.classList.remove('selected','ship-mode'); });
-  renderShipSelected();
-}
-
-function updateShipSummary() {
-  var keys = Object.keys(_shipSel);
-  if (!keys.length) { document.getElementById('ship-summary').innerHTML=''; return; }
-  document.getElementById('ship-summary').innerHTML = keys.map(function(sku){
-    var item=_shipSel[sku], cur=(_invCache[sku]||{qty:0}).qty, after=cur-(item.qty||0);
-    var warn = after<0 ? ' style="color:var(--danger)"' : (after<=5 ? ' style="color:var(--warn)"' : ' style="color:var(--ship)"');
-    return '<div class="summary-row"><span class="summary-key">'+item.name.slice(0,18)+'</span>' +
-      '<span class="summary-val">'+cur+' - '+(item.qty||0)+' = <span'+warn+'>'+after+'</span> '+item.unit+'</span></div>';
-  }).join('');
-}
-
-async function submitShip() {
-  var date = document.getElementById('s-date').value;
-  var ref  = document.getElementById('s-ref').value.trim();
-  var err  = document.getElementById('ship-err');
-  var flash= document.getElementById('ship-flash');
-  var btn  = document.getElementById('ship-btn');
-  err.style.display='none';
-  if (!date) { showMsg(err,'請選擇日期'); return; }
-  var keys = Object.keys(_shipSel).filter(function(k){ return (_shipSel[k].qty||0)>0; });
-  if (!keys.length) { showMsg(err,'請選擇至少一個產品並填入數量'); return; }
-
-  var overList = keys.filter(function(sku){
-    return (_shipSel[sku].qty||0) > (_invCache[sku]||{qty:0}).qty;
-  }).map(function(sku){ return _shipSel[sku].name; });
-  if (overList.length && !confirm('以下產品出貨數超過庫存，確定繼續？\n'+overList.join('\n'))) return;
-
-  btn.disabled=true; btn.textContent='儲存中...';
-  setSyncing('syncing');
-  try {
-    var histRows = await sbInsert('inv_history', {type:'ship', date:date, note:ref||null});
-    var histId = histRows[0].id;
-    var items=[], invUpdates=[];
-    keys.forEach(function(sku){
-      var item=_shipSel[sku], qty=item.qty||0;
-      var cur = (_invCache[sku]||{qty:0,cartons:0});
-      items.push({history_id:histId, sku:sku, name:item.name, qty:qty, unit:item.unit});
-      invUpdates.push({sku:sku, qty:Math.max(0,cur.qty-qty), cartons:cur.cartons, last_updated:date});
-    });
-    await sbInsert('inv_history_items', items);
-    await sbUpsert('inventory', invUpdates);
-    setSyncing('ok');
-    showMsg(flash,'已記錄出貨！庫存已扣除並同步。');
-    setTimeout(function(){ resetShipForm(); renderPicker('ship'); renderInventory(); },1800);
-  } catch(e) {
-    setSyncing('error');
-    showMsg(err,'儲存失敗：'+e.message);
-  } finally {
-    btn.disabled=false; btn.textContent='確認記錄出貨';
-  }
-}
-
 // ===================== HISTORY =====================
-async function renderHistory() {
-  var typeF  = document.getElementById('hist-type').value;
-  var monthF = document.getElementById('hist-month').value;
-  var list   = document.getElementById('history-list');
-  list.innerHTML = '<div class="loading">載入中...</div>';
+async function renderHistory(){
+  var typeF=document.getElementById('hist-type').value;
+  var monthF=document.getElementById('hist-month').value;
+  var list=document.getElementById('history-list');
+  list.innerHTML='<div class="loading">載入中...</div>';
   setSyncing('syncing');
-  try {
-    var params = 'select=id,type,date,note,inv_history_items(sku,name,qty,unit,cartons)&order=date.desc,id.desc&limit=100';
-    if (typeF)  params += '&type=eq.'+typeF;
-    if (monthF) params += '&date=gte.'+monthF+'-01&date=lt.'+nextMonth(monthF)+'-01';
-    var rows = await sbGet('inv_history', params);
+  try{
+    var params='select=id,type,date,note,inv_history_items(sku,name,qty,unit,cartons)&order=date.desc,id.desc&limit=100';
+    if(typeF) params+='&type=eq.'+typeF;
+    if(monthF) params+='&date=gte.'+monthF+'-01&date=lt.'+nextMonth(monthF)+'-01';
+    var rows=await sbGet('inv_history',params);
     setSyncing('ok');
-    if (!rows.length) { list.innerHTML='<div class="empty">沒有符合的紀錄</div>'; return; }
-    list.innerHTML = rows.map(function(h){
-      var chips = (h.inv_history_items||[]).map(function(item){
-        return '<span class="history-chip">'+item.sku+' × '+item.qty+' '+item.unit+'</span>';
-      }).join('');
-      return '<div class="history-item">' +
-        '<div class="history-meta"><span class="history-date">'+h.date+'</span>' +
-        '<span class="history-type type-'+h.type+'">'+(h.type==='produce'?'生產記錄':'出貨記錄')+'</span></div>' +
-        (h.note ? '<div class="history-note">'+esc(h.note)+'</div>' : '') +
+    if(!rows.length){list.innerHTML='<div class="empty">沒有符合的紀錄</div>';return;}
+    var typeLabels={produce:'入庫（產出）',consume:'出庫（用料）',ship:'出貨記錄'};
+    list.innerHTML=rows.map(function(h){
+      var chips=(h.inv_history_items||[]).map(function(item){return '<span class="history-chip">'+item.sku+' × '+item.qty+' '+item.unit+'</span>';}).join('');
+      return '<div class="history-item">'+
+        '<div class="history-meta"><span class="history-date">'+h.date+'</span>'+
+        '<span class="history-type type-'+h.type+'">'+(typeLabels[h.type]||h.type)+'</span></div>'+
+        (h.note?'<div class="history-note">'+esc(h.note)+'</div>':'')+
         '<div class="history-items">'+chips+'</div></div>';
     }).join('');
-  } catch(e) {
-    setSyncing('error');
-    list.innerHTML='<div class="empty">載入失敗：'+e.message+'</div>';
-  }
+  }catch(e){setSyncing('error');list.innerHTML='<div class="empty">載入失敗：'+e.message+'</div>';}
 }
 
-async function exportHistory() {
-  var rows = await sbGet('inv_history','select=id,type,date,note,inv_history_items(sku,name,qty,unit)&order=date.desc&limit=1000');
-  var csv = [['日期','類型','備注','SKU','商品名稱','數量','單位']];
-  rows.forEach(function(h){
-    (h.inv_history_items||[]).forEach(function(item){
-      csv.push([h.date, h.type==='produce'?'生產':'出貨', h.note||'', item.sku, item.name, item.qty, item.unit]);
-    });
-  });
-  var blob = new Blob(['﻿'+csv.map(function(r){return r.map(function(c){return '"'+String(c).replace(/"/g,'""')+'"';}).join(',');}).join('\n')],{type:'text/csv;charset=utf-8'});
-  var a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'lele-inventory-'+todayStr()+'.csv';
-  a.click();
+async function exportHistory(){
+  var rows=await sbGet('inv_history','select=id,type,date,note,inv_history_items(sku,name,qty,unit)&order=date.desc&limit=1000');
+  var typeLabels={produce:'入庫（產出）',consume:'出庫（用料）',ship:'出貨記錄'};
+  var csv=[['日期','類型','備注','SKU','商品名稱','數量','單位']];
+  rows.forEach(function(h){(h.inv_history_items||[]).forEach(function(item){csv.push([h.date,typeLabels[h.type]||h.type,h.note||'',item.sku,item.name,item.qty,item.unit]);});});
+  var blob=new Blob(['﻿'+csv.map(function(r){return r.map(function(c){return'"'+String(c).replace(/"/g,'""')+'"';}).join(',');}).join('\n')],{type:'text/csv;charset=utf-8'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='lele-inventory-'+todayStr()+'.csv';a.click();
 }
 
 // ===================== UTILS =====================
-function todayStr(){ return new Date().toISOString().slice(0,10); }
-function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-function showMsg(el,msg){ el.textContent=msg; el.style.display='block'; setTimeout(function(){ el.style.display='none'; },6000); }
-function nextMonth(ym){ var d=new Date(ym+'-01'); d.setMonth(d.getMonth()+1); return d.toISOString().slice(0,7); }
+function todayStr(){return new Date().toISOString().slice(0,10);}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function showMsg(el,msg){el.textContent=msg;el.style.display='block';setTimeout(function(){el.style.display='none';},6000);}
+function nextMonth(ym){var d=new Date(ym+'-01');d.setMonth(d.getMonth()+1);return d.toISOString().slice(0,7);}
 
 // ===================== INIT =====================
-function init() {
-  var now = new Date();
-  document.getElementById('header-date').textContent =
-    now.getFullYear()+'/'+(now.getMonth()+1).toString().padStart(2,'0')+'/'+now.getDate().toString().padStart(2,'0');
-  document.getElementById('p-date').value = todayStr();
-  document.getElementById('s-date').value = todayStr();
-  renderInventory();
+function init(){
+  var now=new Date();
+  document.getElementById('header-date').textContent=now.getFullYear()+'/'+(now.getMonth()+1).toString().padStart(2,'0')+'/'+now.getDate().toString().padStart(2,'0');
+  document.getElementById('p-date').value=todayStr();
+  document.getElementById('s-date').value=todayStr();
+  loadInventory();
 }
 </script>
 </body>
