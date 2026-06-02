@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>樂樂文化 UPC 條碼登記系統</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --primary:#E8735A;--primary-dark:#d4634a;--accent:#D4A017;
+      --bg:#FDF8F3;--surface:#fff;--text:#3D2B1F;--text-light:#7A5C4E;
+      --border:#E8D5C4;--success:#6BAF7E;--warn:#E8A23A;--danger:#E05252;
+      --series-978:#EEF4FF;--series-978-text:#3059B3;
+      --series-970:#FFF0E6;--series-970-text:#C06020;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Noto Sans TC',-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+    header{background:var(--primary);color:#fff;padding:16px 28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+    header h1{font-size:20px;font-weight:700}
+    header p{font-size:12px;opacity:.85;margin-top:2px}
+    .main{max-width:1280px;margin:0 auto;padding:20px}
+
+    /* Stats */
+    .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:20px}
+    .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 18px}
+    .stat-card .val{font-size:26px;font-weight:700;color:var(--primary);margin-bottom:2px}
+    .stat-card .lbl{font-size:11px;color:var(--text-light)}
+    .stat-978 .val{color:var(--series-978-text)}
+    .stat-970 .val{color:var(--series-970-text)}
+
+    /* Layout */
+    .layout{display:grid;grid-template-columns:1fr 360px;gap:20px;align-items:start}
+    @media(max-width:960px){.layout{grid-template-columns:1fr}}
+
+    /* Table card */
+    .card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+    .card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px}
+    .card-title{font-size:15px;font-weight:700;color:var(--primary)}
+
+    /* Tabs */
+    .tabs{display:flex;gap:4px;flex-wrap:wrap}
+    .tab{padding:5px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--border);background:none;color:var(--text-light);cursor:pointer;font-family:inherit;transition:all .15s}
+    .tab.active{background:var(--primary);border-color:var(--primary);color:#fff}
+    .tab:hover:not(.active){border-color:var(--primary);color:var(--primary)}
+
+    /* Search */
+    .search-row{display:flex;gap:10px;margin-bottom:14px}
+    .search-row input{flex:1;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;outline:none;background:var(--bg)}
+    .search-row input:focus{border-color:var(--primary);background:#fff}
+    .btn-export{padding:9px 16px;background:var(--success);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;white-space:nowrap}
+    .btn-export:hover{background:#5a9e6d}
+
+    /* Table */
+    .table-wrap{overflow-x:auto}
+    table{width:100%;border-collapse:collapse;font-size:13px}
+    th{background:#FFF5F0;padding:9px 12px;text-align:left;font-size:11px;font-weight:700;color:var(--text-light);border-bottom:2px solid var(--border);white-space:nowrap}
+    td{padding:9px 12px;border-bottom:1px solid #F5EDE6;vertical-align:middle}
+    tr:last-child td{border-bottom:none}
+    tr:hover td{background:#FDFAF8}
+    .sku{font-family:monospace;font-size:12.5px;font-weight:700;color:var(--text)}
+    .barcode-display{font-family:monospace;font-size:12px;letter-spacing:.5px}
+    .barcode-978{color:var(--series-978-text);background:var(--series-978);padding:2px 8px;border-radius:4px}
+    .barcode-970{color:var(--series-970-text);background:var(--series-970);padding:2px 8px;border-radius:4px}
+    .check-digit{opacity:.5;font-size:11px}
+    .cat-badge{display:inline-block;font-size:10px;padding:2px 7px;border-radius:10px;font-weight:600;background:#F0EDE8;color:var(--text-light)}
+    .cat-書籍{background:#E8F0FF;color:#3059B3}
+    .cat-配件{background:#FFF0E6;color:#C06020}
+    .cat-耗材{background:#E8F5E9;color:#2E7D32}
+    .cat-套組{background:#FFF3E0;color:#E65100}
+    .cat-贈品{background:#FCE4EC;color:#C2185B}
+    .btn-del{padding:3px 10px;border:1px solid #eee;border-radius:6px;font-size:11px;color:#bbb;background:none;cursor:pointer;font-family:inherit}
+    .btn-del:hover{border-color:var(--danger);color:var(--danger)}
+    .date-cell{font-size:11px;color:var(--text-light)}
+    .empty-state{text-align:center;padding:40px;color:#bbb;font-size:14px}
+
+    /* Add form */
+    .form-card{position:sticky;top:20px}
+    .field{margin-bottom:13px}
+    .field label{display:block;font-size:11px;font-weight:700;color:var(--text-light);margin-bottom:5px;text-transform:uppercase;letter-spacing:.3px}
+    .field input,.field select,.field textarea{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;color:var(--text);background:var(--bg);outline:none;transition:border-color .15s}
+    .field input:focus,.field select:focus{border-color:var(--primary);background:#fff}
+    .barcode-preview{background:#FFF9F5;border:1px solid var(--border);border-radius:8px;padding:12px;margin-top:-6px;margin-bottom:13px;text-align:center}
+    .barcode-preview .code{font-family:monospace;font-size:18px;font-weight:700;letter-spacing:1px;color:var(--text)}
+    .barcode-preview .code-check{font-size:12px;color:var(--text-light);margin-top:4px}
+    .barcode-preview .series-label{font-size:10px;font-weight:600;margin-bottom:6px;padding:2px 10px;border-radius:10px;display:inline-block}
+    .sl-978{background:var(--series-978);color:var(--series-978-text)}
+    .sl-970{background:var(--series-970);color:var(--series-970-text)}
+    .btn-add{width:100%;padding:12px;background:var(--primary);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;transition:background .15s}
+    .btn-add:hover{background:var(--primary-dark)}
+    .btn-next{width:100%;padding:8px;background:none;border:1.5px solid var(--border);border-radius:8px;font-size:12px;color:var(--text-light);font-family:inherit;cursor:pointer;margin-bottom:6px;transition:all .15s}
+    .btn-next:hover{border-color:var(--primary);color:var(--primary)}
+    .divider{border:none;border-top:1px solid var(--border);margin:14px 0}
+    .success-flash{background:#E8F5E9;border:1px solid #A5D6A7;border-radius:8px;padding:10px 14px;font-size:12px;color:#2E7D32;margin-top:10px;display:none}
+    .warn-note{background:#FFF8E1;border-left:3px solid var(--warn);padding:10px 12px;border-radius:0 8px 8px 0;font-size:11.5px;color:var(--text-light);line-height:1.6;margin-bottom:14px}
+
+    /* Password overlay */
+    #pw-overlay{position:fixed;inset:0;background:rgba(253,248,243,.97);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;gap:14px}
+    #pw-overlay h2{font-size:22px;font-weight:700;color:var(--primary)}
+    #pw-input{width:220px;padding:11px 16px;border:2px solid var(--border);border-radius:10px;font-size:16px;font-family:inherit;text-align:center;letter-spacing:3px;outline:none}
+    #pw-input:focus{border-color:var(--primary)}
+    #pw-btn{padding:11px 30px;background:var(--primary);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer}
+    #pw-error{color:#c0392b;font-size:12px;display:none}
+    footer{text-align:center;padding:18px;font-size:12px;color:var(--text-light);margin-top:10px}
+  </style>
+</head>
+<body>
+
+<div id="pw-overlay">
+  <h2>樂樂文化 UPC 系統</h2>
+  <p style="font-size:13px;color:#7A5C4E">請輸入密碼以繼續</p>
+  <input id="pw-input" type="password" placeholder="Password" onkeydown="if(event.key==='Enter')checkPw()">
+  <button id="pw-btn" onclick="checkPw()">進入</button>
+  <span id="pw-error">密碼錯誤</span>
+</div>
+
+<header>
+  <div>
+    <h1>樂樂文化 UPC 條碼登記系統</h1>
+    <p>國際條碼管理 — 產品、配件、耗材、套組、贈品</p>
+  </div>
+</header>
+
+<div class="main">
+  <div class="stats" id="stats-row"></div>
+
+  <div class="layout">
+    <!-- Left: Product Table -->
+    <div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">產品條碼一覽</div>
+          <div class="tabs" id="tabs">
+            <button class="tab active" onclick="setTab('全部')">全部</button>
+            <button class="tab" onclick="setTab('書籍')">書籍</button>
+            <button class="tab" onclick="setTab('配件')">配件</button>
+            <button class="tab" onclick="setTab('耗材')">耗材</button>
+            <button class="tab" onclick="setTab('套組')">套組</button>
+            <button class="tab" onclick="setTab('贈品')">贈品</button>
+          </div>
+        </div>
+        <div class="search-row">
+          <input type="text" id="search-input" placeholder="搜尋 SKU 或商品名稱..." oninput="renderTable()">
+          <button class="btn-export" onclick="exportCSV()">匯出 CSV</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>SKU</th>
+                <th>國際條碼 (12碼)</th>
+                <th>EAN-13 完整碼</th>
+                <th>商品名稱</th>
+                <th>類別</th>
+                <th>新增日期</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="table-body"></tbody>
+          </table>
+          <div class="empty-state" id="empty-state" style="display:none">沒有符合的產品</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Add Form -->
+    <div>
+      <div class="card form-card">
+        <div class="card-title" style="margin-bottom:14px">新增產品條碼</div>
+
+        <div class="warn-note">
+          <strong>注意：</strong>新增前請先確認「下一個號碼」是否正確。初始資料來自 Excel 檔，耗材/套組區段（017-065）請手動核對後補齊。
+        </div>
+
+        <div class="field">
+          <label>條碼系列</label>
+          <select id="f-series" onchange="updateNextBarcode()">
+            <option value="970">970-976-982 系列（配件/耗材/套組/贈品）</option>
+            <option value="978">978-986-938 系列（書籍）</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>下一個可用號碼（3碼）</label>
+          <input type="number" id="f-seq" min="0" max="999" oninput="updateBarcodePreview()">
+        </div>
+
+        <div class="barcode-preview" id="barcode-preview">
+          <div class="series-label sl-970" id="preview-series-label">970-976-982 系列</div>
+          <div class="code" id="preview-code">-</div>
+          <div class="code-check" id="preview-check"></div>
+        </div>
+
+        <div class="field">
+          <label>SKU 編碼</label>
+          <input type="text" id="f-sku" placeholder="例：TC-R200">
+        </div>
+
+        <div class="field">
+          <label>商品名稱（中文）</label>
+          <input type="text" id="f-name" placeholder="例：樂樂聽讀叢書-繁體初級300">
+        </div>
+
+        <div class="field">
+          <label>類別</label>
+          <select id="f-cat">
+            <option value="配件">配件</option>
+            <option value="耗材">耗材</option>
+            <option value="套組">套組</option>
+            <option value="書籍">書籍</option>
+            <option value="贈品">贈品</option>
+          </select>
+        </div>
+
+        <button class="btn-next" onclick="autoFillNext()">自動填入下一個可用號碼</button>
+        <button class="btn-add" onclick="addProduct()">新增並登記</button>
+        <div class="success-flash" id="success-flash">已成功新增並儲存！</div>
+
+        <hr class="divider">
+
+        <div style="font-size:11px;color:var(--text-light);line-height:1.7">
+          <strong>EAN-13</strong> = 12碼條碼 + 1碼檢查碼<br>
+          條碼資料存在此瀏覽器 localStorage，不會上傳伺服器。<br>
+          如需備份，請定期點「匯出 CSV」。
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>Le Le Readers &copy; 2026 | tools.lelechinese.com/upc-registry</footer>
+
+<script>
+// ==================== INITIAL DATA ====================
+// Source: 樂樂文化-產品-國際條碼.xlsx
+// 耗材/套組 017-065 range: please verify and add via the form
+
+var SEED_DATA = [
+  // 書籍 — 978-986-938 系列
+  {sku:"TC-R100", barcode:"978986938726", name:"樂樂聽讀叢書-繁體初級（紅）", cat:"書籍", date:"2024-01-01"},
+  {sku:"TC-Y100", barcode:"978986938725", name:"樂樂聽讀叢書-繁體中級（黃）", cat:"書籍", date:"2024-01-01"},
+  {sku:"TC-G100", barcode:"978986938721", name:"樂樂聽讀叢書-繁體高級（綠）", cat:"書籍", date:"2024-01-01"},
+  {sku:"SC-R100", barcode:"978986938723", name:"樂樂聽讀叢書-簡體初級（紅）", cat:"書籍", date:"2024-01-01"},
+  {sku:"SC-Y100", barcode:"978986938724", name:"樂樂聽讀叢書-簡體中級（黃）", cat:"書籍", date:"2024-01-01"},
+  {sku:"SC-G100", barcode:"978986938722", name:"樂樂聽讀叢書-簡體高級（綠）", cat:"書籍", date:"2024-01-01"},
+  // 配件 — 970-976-982 系列（000-016 已確認）
+  {sku:"PEN-01", barcode:"970976982000", name:"樂樂點讀筆", cat:"配件", date:"2024-01-01"},
+  {sku:"TC-RB", barcode:"970976982001", name:"繁體紅書袋子", cat:"配件", date:"2024-01-01"},
+  {sku:"TC-YB", barcode:"970976982002", name:"繁體黃書袋子", cat:"配件", date:"2024-01-01"},
+  {sku:"TC-GB", barcode:"970976982003", name:"繁體綠書袋子", cat:"配件", date:"2024-01-01"},
+  {sku:"TC-RC", barcode:"970976982004", name:"樂樂字詞卡-繁體初級（紅）", cat:"配件", date:"2024-01-01"},
+  {sku:"TC-YC", barcode:"970976982005", name:"樂樂字詞卡-繁體中級（黃）", cat:"配件", date:"2024-01-01"},
+  {sku:"TC-GC", barcode:"970976982006", name:"樂樂字詞卡-繁體高級（綠）", cat:"配件", date:"2024-01-01"},
+  {sku:"SC-RB", barcode:"970976982007", name:"簡體紅書袋子", cat:"配件", date:"2024-01-01"},
+  {sku:"SC-YB", barcode:"970976982008", name:"簡體黃書袋子", cat:"配件", date:"2024-01-01"},
+  {sku:"SC-GB", barcode:"970976982009", name:"簡體綠書袋子", cat:"配件", date:"2024-01-01"},
+  {sku:"SC-RC", barcode:"970976982010", name:"樂樂字詞卡-簡體初級（紅）", cat:"配件", date:"2024-01-01"},
+  {sku:"SC-YC", barcode:"970976982011", name:"樂樂字詞卡-簡體中級（黃）", cat:"配件", date:"2024-01-01"},
+  {sku:"SC-GC", barcode:"970976982012", name:"樂樂字詞卡-簡體高級（綠）", cat:"配件", date:"2024-01-01"},
+  {sku:"RING-A", barcode:"970976982013", name:"RING-A", cat:"配件", date:"2024-01-01"},
+  {sku:"RING-B", barcode:"970976982014", name:"RING-B", cat:"配件", date:"2024-01-01"},
+  {sku:"RING-C", barcode:"970976982015", name:"RING-C", cat:"配件", date:"2024-01-01"},
+  {sku:"RING-D", barcode:"970976982016", name:"RING-D", cat:"配件", date:"2024-01-01"},
+  // 贈品（066 已確認，017-065 請透過表單補齊）
+  {sku:"HOHO-01", barcode:"970976982066", name:"厚厚私塾-蛇年剪紙包", cat:"贈品", date:"2024-01-01"},
+];
+
+var STORE_KEY = 'lele_upc_registry';
+var _tab = '全部';
+
+// ==================== EAN-13 CHECK DIGIT ====================
+function ean13Check(code12) {
+  var s = String(code12).replace(/\D/g,'');
+  if (s.length !== 12) return '?';
+  var sum = 0;
+  for (var i = 0; i < 12; i++) sum += parseInt(s[i]) * (i % 2 === 0 ? 1 : 3);
+  return (10 - (sum % 10)) % 10;
+}
+
+function formatBarcode(code12) {
+  var s = String(code12).padStart(12,'0');
+  return s.slice(0,3)+'-'+s.slice(3,6)+'-'+s.slice(6,9)+'-'+s.slice(9,12);
+}
+
+function seriesOf(code12) {
+  return String(code12).startsWith('978') ? '978' : '970';
+}
+
+// ==================== STORAGE ====================
+function getData() {
+  try { return JSON.parse(localStorage.getItem(STORE_KEY) || 'null'); }
+  catch(e) { return null; }
+}
+
+function setData(arr) {
+  localStorage.setItem(STORE_KEY, JSON.stringify(arr));
+}
+
+function initData() {
+  if (!getData()) setData(SEED_DATA);
+}
+
+// ==================== PASSWORD ====================
+function checkPw() {
+  if (document.getElementById('pw-input').value === 'AMAZING') {
+    document.getElementById('pw-overlay').style.display = 'none';
+    init();
+  } else {
+    document.getElementById('pw-error').style.display = 'block';
+    document.getElementById('pw-input').value = '';
+  }
+}
+
+// ==================== RENDER ====================
+function setTab(t) {
+  _tab = t;
+  document.querySelectorAll('.tab').forEach(function(el){
+    el.classList.toggle('active', el.textContent === t);
+  });
+  renderTable();
+}
+
+function renderTable() {
+  var data = getData() || [];
+  var q = document.getElementById('search-input').value.trim().toLowerCase();
+
+  var filtered = data.filter(function(r){
+    if (_tab !== '全部' && r.cat !== _tab) return false;
+    if (q && !r.sku.toLowerCase().includes(q) && !r.name.toLowerCase().includes(q) && !r.barcode.includes(q)) return false;
+    return true;
+  });
+
+  // Sort by barcode ascending
+  filtered.sort(function(a,b){
+    if (seriesOf(a.barcode) !== seriesOf(b.barcode)) return seriesOf(a.barcode) === '978' ? -1 : 1;
+    return a.barcode.localeCompare(b.barcode);
+  });
+
+  var tbody = document.getElementById('table-body');
+  if (!filtered.length) {
+    tbody.innerHTML = '';
+    document.getElementById('empty-state').style.display = 'block';
+    return;
+  }
+  document.getElementById('empty-state').style.display = 'none';
+
+  tbody.innerHTML = filtered.map(function(r, i) {
+    var ser = seriesOf(r.barcode);
+    var check = ean13Check(r.barcode);
+    var fmt = formatBarcode(r.barcode);
+    var ean13full = r.barcode + check;
+    var allIdx = data.indexOf(r);
+    return '<tr>' +
+      '<td class="sku">'+esc(r.sku)+'</td>' +
+      '<td><span class="barcode-display barcode-'+ser+'">'+fmt+'</span></td>' +
+      '<td><span class="barcode-display" style="font-size:11px;color:var(--text-light)">'+formatBarcode(r.barcode.slice(0,12))+'<span class="check-digit">'+check+'</span></span></td>' +
+      '<td>'+esc(r.name)+'</td>' +
+      '<td><span class="cat-badge cat-'+r.cat+'">'+esc(r.cat)+'</span></td>' +
+      '<td class="date-cell">'+esc(r.date||'')+'</td>' +
+      '<td><button class="btn-del" onclick="deleteProduct('+allIdx+')">刪除</button></td>' +
+      '</tr>';
+  }).join('');
+}
+
+function renderStats() {
+  var data = getData() || [];
+  var total = data.length;
+
+  // 978 series
+  var codes978 = data.filter(function(r){return seriesOf(r.barcode)==='978';})
+    .map(function(r){return parseInt(r.barcode.slice(9,12));});
+  var last978 = codes978.length ? Math.max.apply(null,codes978) : 0;
+  var next978 = last978 + 1;
+
+  // 970 series
+  var codes970 = data.filter(function(r){return seriesOf(r.barcode)==='970';})
+    .map(function(r){return parseInt(r.barcode.slice(9,12));});
+  var last970 = codes970.length ? Math.max.apply(null,codes970) : -1;
+  var next970 = last970 + 1;
+
+  document.getElementById('stats-row').innerHTML =
+    '<div class="stat-card"><div class="val">'+total+'</div><div class="lbl">產品總數</div></div>'+
+    '<div class="stat-card stat-978"><div class="val">978-986-938</div><div class="lbl">書籍系列 | 最後號碼 '+pad3(last978)+' | 下一個 '+pad3(next978)+'</div></div>'+
+    '<div class="stat-card stat-970"><div class="val">970-976-982</div><div class="lbl">配件/耗材系列 | 最後號碼 '+pad3(last970)+' | 下一個 '+pad3(next970)+'</div></div>';
+}
+
+// ==================== FORM ====================
+function getNextSeq(series) {
+  var data = getData() || [];
+  var prefix = series === '978' ? '978' : '970';
+  var codes = data.filter(function(r){return r.barcode.startsWith(prefix);})
+    .map(function(r){return parseInt(r.barcode.slice(9,12));});
+  if (!codes.length) return 0;
+  return Math.max.apply(null,codes) + 1;
+}
+
+function autoFillNext() {
+  var series = document.getElementById('f-series').value;
+  document.getElementById('f-seq').value = getNextSeq(series);
+  updateBarcodePreview();
+}
+
+function updateNextBarcode() {
+  autoFillNext();
+  var series = document.getElementById('f-series').value;
+  var cat = document.getElementById('f-cat');
+  if (series === '978') {
+    cat.value = '書籍';
+  }
+}
+
+function buildBarcode12(series, seq) {
+  var prefix = series === '978' ? '978986938' : '970976982';
+  return prefix + pad3(seq);
+}
+
+function updateBarcodePreview() {
+  var series = document.getElementById('f-series').value;
+  var seq = parseInt(document.getElementById('f-seq').value);
+  if (isNaN(seq)) {
+    document.getElementById('preview-code').textContent = '-';
+    document.getElementById('preview-check').textContent = '';
+    return;
+  }
+  var code12 = buildBarcode12(series, seq);
+  var check = ean13Check(code12);
+  var fmt = formatBarcode(code12);
+  document.getElementById('preview-code').textContent = fmt;
+  document.getElementById('preview-check').textContent = 'EAN-13 完整碼：'+fmt+'-'+check;
+
+  var label = document.getElementById('preview-series-label');
+  if (series === '978') {
+    label.textContent = '978-986-938 書籍系列';
+    label.className = 'series-label sl-978';
+  } else {
+    label.textContent = '970-976-982 配件/耗材系列';
+    label.className = 'series-label sl-970';
+  }
+}
+
+function addProduct() {
+  var series = document.getElementById('f-series').value;
+  var seq = parseInt(document.getElementById('f-seq').value);
+  var sku = document.getElementById('f-sku').value.trim();
+  var name = document.getElementById('f-name').value.trim();
+  var cat = document.getElementById('f-cat').value;
+
+  if (isNaN(seq) || !sku || !name) {
+    alert('請填寫 SKU、商品名稱，並確認號碼');
+    return;
+  }
+
+  var code12 = buildBarcode12(series, seq);
+  var data = getData() || [];
+
+  // Check duplicate barcode
+  if (data.some(function(r){return r.barcode === code12;})) {
+    alert('此條碼 '+formatBarcode(code12)+' 已存在，請確認號碼');
+    return;
+  }
+  // Check duplicate SKU
+  if (data.some(function(r){return r.sku === sku;})) {
+    if (!confirm('SKU '+sku+' 已存在，確定要繼續新增？')) return;
+  }
+
+  var today = new Date().toISOString().slice(0,10);
+  data.push({sku:sku, barcode:code12, name:name, cat:cat, date:today});
+  setData(data);
+  renderTable();
+  renderStats();
+
+  // Reset form
+  document.getElementById('f-sku').value = '';
+  document.getElementById('f-name').value = '';
+  autoFillNext();
+
+  var flash = document.getElementById('success-flash');
+  flash.textContent = '已新增：'+sku+' → '+formatBarcode(code12);
+  flash.style.display = 'block';
+  setTimeout(function(){flash.style.display='none';}, 4000);
+}
+
+function deleteProduct(idx) {
+  var data = getData() || [];
+  var r = data[idx];
+  if (!r) return;
+  if (!confirm('確定要刪除 '+r.sku+' ('+r.name+')？')) return;
+  data.splice(idx, 1);
+  setData(data);
+  renderTable();
+  renderStats();
+}
+
+// ==================== EXPORT ====================
+function exportCSV() {
+  var data = getData() || [];
+  var rows = [['SKU','國際條碼(12碼)','EAN-13完整碼(13碼)','商品名稱','類別','新增日期']];
+  data.forEach(function(r){
+    var check = ean13Check(r.barcode);
+    rows.push([r.sku, formatBarcode(r.barcode), formatBarcode(r.barcode)+'-'+check, r.name, r.cat, r.date||'']);
+  });
+  var csv = rows.map(function(r){return r.map(function(c){return '"'+String(c).replace(/"/g,'""')+'"';}).join(',');}).join('\n');
+  var blob = new Blob(['﻿'+csv], {type:'text/csv;charset=utf-8'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'lele-upc-registry-'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();
+}
+
+// ==================== UTILS ====================
+function pad3(n) { return String(n).padStart(3,'0'); }
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ==================== INIT ====================
+function init() {
+  initData();
+  renderStats();
+  renderTable();
+  autoFillNext();
+}
+</script>
+</body>
+</html>
