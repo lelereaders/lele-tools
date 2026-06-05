@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>樂樂文化 · 帳務系統</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--primary:#D4A843;--primary-light:#FFF8E6;--income:#16A34A;--expense:#DC2626;--bg:#FFF8F4;--card:#fff;--border:#E8E0D5;--text:#1E293B;--muted:#64748B}
+body{font-family:'Noto Sans TC',-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+.app{display:grid;grid-template-rows:auto 1fr;min-height:100vh}
+header{background:var(--primary);color:#fff;padding:1rem 1.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem}
+header h1{font-size:18px;font-weight:700}
+header .subtitle{font-size:12px;opacity:.8}
+.badge-currency{background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700}
+
+.container{max-width:960px;margin:0 auto;padding:1.5rem 1rem;display:grid;gap:1.5rem}
+
+.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.sum-card{background:var(--card);border-radius:12px;padding:1rem 1.2rem;border:1px solid var(--border)}
+.sum-card .label{font-size:12px;color:var(--muted);margin-bottom:4px}
+.sum-card .amount{font-size:20px;font-weight:700}
+.sum-card.income .amount{color:var(--income)}
+.sum-card.expense .amount{color:var(--expense)}
+.sum-card.net .amount{color:var(--primary)}
+
+.form-card{background:var(--card);border-radius:14px;border:1px solid var(--border);padding:1.5rem}
+.form-card h2{font-size:15px;font-weight:700;margin-bottom:1rem}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+label{font-size:12px;color:var(--muted);display:block;margin-bottom:4px}
+input,select,textarea{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:inherit;outline:none;transition:border-color .2s;background:#fff;color:var(--text)}
+input:focus,select:focus,textarea:focus{border-color:var(--primary)}
+textarea{resize:vertical;min-height:56px}
+.type-toggle{display:flex;gap:8px}
+.type-btn{flex:1;padding:9px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:inherit;cursor:pointer;background:#fff;color:var(--muted);transition:all .2s;font-weight:500}
+.type-btn.active-income{background:#DCFCE7;border-color:var(--income);color:var(--income)}
+.type-btn.active-expense{background:#FEE2E2;border-color:var(--expense);color:var(--expense)}
+.amount-row{display:flex;gap:8px}
+.amount-row select{width:90px;flex-shrink:0}
+.amount-row input{flex:1}
+.fx-hint{font-size:11px;color:var(--muted);margin-top:4px}
+.btn-submit{margin-top:1rem;width:100%;padding:11px;background:var(--primary);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;transition:background .2s}
+.btn-submit:hover{background:#c19a3a}
+
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.filter-bar select,.filter-bar input[type=month]{padding:7px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;background:#fff;color:var(--text);outline:none}
+.filter-bar select:focus,.filter-bar input[type=month]:focus{border-color:var(--primary)}
+.filter-bar .spacer{flex:1}
+.btn-export{padding:7px 14px;background:#fff;border:1.5px solid var(--border);border-radius:8px;font-size:13px;cursor:pointer;font-family:inherit;color:var(--text)}
+.btn-export:hover{border-color:var(--primary);color:var(--primary)}
+
+.tx-list{display:flex;flex-direction:column;gap:8px}
+.tx-item{background:var(--card);border-radius:10px;border:1px solid var(--border);padding:.9rem 1.1rem;display:grid;grid-template-columns:auto 1fr auto;gap:.8rem;align-items:center;cursor:pointer;transition:box-shadow .15s}
+.tx-item:hover{box-shadow:0 2px 12px rgba(0,0,0,.08)}
+.tx-date{font-size:12px;color:var(--muted);white-space:nowrap}
+.tx-info .desc{font-size:14px;font-weight:500}
+.tx-info .cat{font-size:12px;color:var(--muted);margin-top:2px}
+.tx-amount{text-align:right;white-space:nowrap}
+.tx-amount .main{font-size:15px;font-weight:700}
+.tx-amount .base{font-size:11px;color:var(--muted);margin-top:2px}
+.tx-amount.inc .main{color:var(--income)}
+.tx-amount.exp .main{color:var(--expense)}
+.empty{text-align:center;color:var(--muted);padding:3rem;font-size:14px}
+
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:100;display:flex;align-items:center;justify-content:center;padding:1rem}
+.modal-bg.hidden{display:none}
+.modal{background:#fff;border-radius:16px;padding:1.5rem;max-width:400px;width:100%;max-height:90vh;overflow-y:auto}
+.modal h3{font-size:16px;font-weight:700;margin-bottom:1rem}
+.modal-row{display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--border);font-size:14px}
+.modal-row:last-child{border-bottom:none}
+.modal-row .key{color:var(--muted)}
+.modal-btns{display:flex;gap:8px;margin-top:1rem}
+.btn-del{flex:1;padding:10px;background:#FEE2E2;color:var(--expense);border:none;border-radius:8px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:600}
+.btn-close-modal{flex:1;padding:10px;background:var(--primary-light);color:#8a6a1a;border:none;border-radius:8px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:600}
+
+@media(max-width:600px){
+  .summary{grid-template-columns:1fr 1fr;}.sum-card.net{grid-column:1/-1}
+  .form-grid{grid-template-columns:1fr}
+  .sum-card .amount{font-size:16px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div>
+    <h1>樂樂文化 · 帳務系統</h1>
+    <div class="subtitle">台灣樂樂文化股份有限公司</div>
+  </div>
+  <span class="badge-currency">主要幣別：NTD</span>
+</header>
+
+<div class="container">
+
+  <div class="summary">
+    <div class="sum-card income"><div class="label">本月收入</div><div class="amount" id="sum-income">NTD 0</div></div>
+    <div class="sum-card expense"><div class="label">本月支出</div><div class="amount" id="sum-expense">NTD 0</div></div>
+    <div class="sum-card net"><div class="label">本月淨利</div><div class="amount" id="sum-net">NTD 0</div></div>
+  </div>
+
+  <div class="form-card">
+    <h2>新增交易</h2>
+    <div class="type-toggle" style="margin-bottom:12px">
+      <button class="type-btn active-income" id="btn-income" onclick="setType('income')">+ 收入</button>
+      <button class="type-btn" id="btn-expense" onclick="setType('expense')">- 支出</button>
+    </div>
+    <div class="form-grid">
+      <div>
+        <label>日期</label>
+        <input type="date" id="f-date">
+      </div>
+      <div>
+        <label>類別</label>
+        <select id="f-category"></select>
+      </div>
+    </div>
+    <div style="margin-top:12px">
+      <label>描述</label>
+      <input type="text" id="f-desc" placeholder="交易描述">
+    </div>
+    <div style="margin-top:12px">
+      <label>金額</label>
+      <div class="amount-row">
+        <select id="f-currency" onchange="onCurrencyChange()">
+          <option value="NTD">NTD</option>
+          <option value="AUD">AUD</option>
+          <option value="USD">USD</option>
+        </select>
+        <input type="number" id="f-amount" placeholder="0" min="0" step="1">
+      </div>
+    </div>
+    <div id="base-amount-row" style="margin-top:12px;display:none">
+      <label>NTD 等值金額（選填）</label>
+      <input type="number" id="f-base-amount" placeholder="0" min="0" step="1">
+      <div class="fx-hint">非 NTD 交易可輸入換算後的台幣金額</div>
+    </div>
+    <div style="margin-top:12px">
+      <label>備注</label>
+      <textarea id="f-notes" placeholder="（可留空）"></textarea>
+    </div>
+    <button class="btn-submit" onclick="submitTransaction()">新增交易</button>
+  </div>
+
+  <div>
+    <div class="filter-bar" style="margin-bottom:12px">
+      <input type="month" id="filter-month">
+      <select id="filter-type" onchange="renderList()">
+        <option value="">全部類型</option>
+        <option value="income">收入</option>
+        <option value="expense">支出</option>
+      </select>
+      <select id="filter-cat" onchange="renderList()">
+        <option value="">全部類別</option>
+      </select>
+      <div class="spacer"></div>
+      <button class="btn-export" onclick="exportCSV()">匯出 CSV</button>
+    </div>
+    <div class="tx-list" id="tx-list"></div>
+  </div>
+
+</div>
+</div>
+
+<div class="modal-bg hidden" id="modal" onclick="closeModal(event)">
+  <div class="modal" id="modal-content">
+    <h3>交易詳情</h3>
+    <div id="modal-body"></div>
+    <div class="modal-btns">
+      <button class="btn-del" onclick="deleteSelected()">刪除</button>
+      <button class="btn-close-modal" onclick="closeModalDirect()">關閉</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const STORE_KEY = 'lele_tw_accounting';
+const PRIMARY = 'NTD';
+const COMPANY = 'tw';
+
+const INCOME_CATS = ['書籍銷售','Amazon 銷售','官網銷售','授權收入','版稅','其他收入'];
+const EXPENSE_CATS = ['印刷成本','運費','行銷廣告','社群媒體','網站維護','包材','人事費用','關稅','銀行手續費','辦公費用','差旅費','稅費','其他支出'];
+
+let txType = 'income';
+let selectedId = null;
+
+function load() {
+  try { return JSON.parse(localStorage.getItem(STORE_KEY) || '[]'); }
+  catch { return []; }
+}
+function save(data) { localStorage.setItem(STORE_KEY, JSON.stringify(data)); }
+
+function init() {
+  const today = new Date().toISOString().slice(0, 10);
+  document.getElementById('f-date').value = today;
+  const ym = today.slice(0, 7);
+  document.getElementById('filter-month').value = ym;
+  document.getElementById('filter-month').addEventListener('change', renderList);
+  populateCategories();
+  renderList();
+  updateSummary();
+}
+
+function populateCategories(type) {
+  const cats = (type || txType) === 'income' ? INCOME_CATS : EXPENSE_CATS;
+  const sel = document.getElementById('f-category');
+  sel.innerHTML = cats.map(c => `<option value="${c}">${c}</option>`).join('');
+  const fcat = document.getElementById('filter-cat');
+  const allCats = [...INCOME_CATS, ...EXPENSE_CATS];
+  fcat.innerHTML = '<option value="">全部類別</option>' + allCats.map(c => `<option value="${c}">${c}</option>`).join('');
+}
+
+function setType(t) {
+  txType = t;
+  document.getElementById('btn-income').className = 'type-btn' + (t === 'income' ? ' active-income' : '');
+  document.getElementById('btn-expense').className = 'type-btn' + (t === 'expense' ? ' active-expense' : '');
+  populateCategories(t);
+}
+
+function onCurrencyChange() {
+  const cur = document.getElementById('f-currency').value;
+  document.getElementById('base-amount-row').style.display = cur !== PRIMARY ? 'block' : 'none';
+}
+
+function submitTransaction() {
+  const date = document.getElementById('f-date').value;
+  const desc = document.getElementById('f-desc').value.trim();
+  const category = document.getElementById('f-category').value;
+  const currency = document.getElementById('f-currency').value;
+  const amount = parseFloat(document.getElementById('f-amount').value);
+  const baseAmountRaw = document.getElementById('f-base-amount').value;
+  const baseAmount = currency !== PRIMARY && baseAmountRaw ? parseFloat(baseAmountRaw) : (currency === PRIMARY ? amount : null);
+  const notes = document.getElementById('f-notes').value.trim();
+
+  if (!date || !desc || !category || isNaN(amount) || amount <= 0) {
+    alert('請填寫日期、描述、類別和金額');
+    return;
+  }
+
+  const data = load();
+  const t = {
+    id: `${COMPANY}-${Date.now()}-${Math.random().toString(36).slice(2,5)}`,
+    date, description: desc, category, currency,
+    amount: txType === 'expense' ? -amount : amount,
+    base_amount: baseAmount ? (txType === 'expense' ? -baseAmount : baseAmount) : null,
+    notes,
+    created_at: new Date().toISOString()
+  };
+  data.unshift(t);
+  save(data);
+
+  document.getElementById('f-desc').value = '';
+  document.getElementById('f-amount').value = '';
+  document.getElementById('f-base-amount').value = '';
+  document.getElementById('f-notes').value = '';
+  renderList();
+  updateSummary();
+}
+
+function getFiltered() {
+  const data = load();
+  const month = document.getElementById('filter-month').value;
+  const type = document.getElementById('filter-type').value;
+  const cat = document.getElementById('filter-cat').value;
+  return data.filter(t => {
+    if (month && !t.date.startsWith(month)) return false;
+    if (type === 'income' && t.amount < 0) return false;
+    if (type === 'expense' && t.amount >= 0) return false;
+    if (cat && t.category !== cat) return false;
+    return true;
+  });
+}
+
+function renderList() {
+  const list = document.getElementById('tx-list');
+  const txs = getFiltered();
+  if (txs.length === 0) { list.innerHTML = '<div class="empty">沒有符合條件的交易</div>'; return; }
+  list.innerHTML = txs.map(t => {
+    const isInc = t.amount >= 0;
+    const sign = isInc ? '+' : '-';
+    const abs = Math.abs(t.amount);
+    const isNTD = t.currency === 'NTD';
+    const mainAmt = `${sign}${t.currency} ${isNTD ? Math.round(abs).toLocaleString() : abs.toFixed(2)}`;
+    let baseStr = '';
+    if (t.base_amount !== null && t.currency !== PRIMARY) {
+      baseStr = `<div class="base">≈ ${PRIMARY} ${Math.round(Math.abs(t.base_amount)).toLocaleString()}</div>`;
+    }
+    return `<div class="tx-item" onclick="openModal('${t.id}')">
+      <div class="tx-date">${t.date}</div>
+      <div class="tx-info"><div class="desc">${escHtml(t.description)}</div><div class="cat">${t.category}</div></div>
+      <div class="tx-amount ${isInc?'inc':'exp'}"><div class="main">${mainAmt}</div>${baseStr}</div>
+    </div>`;
+  }).join('');
+}
+
+function updateSummary() {
+  const month = document.getElementById('filter-month').value;
+  const data = load();
+  const monthly = data.filter(t => !month || t.date.startsWith(month));
+  let income = 0, expense = 0;
+  monthly.forEach(t => {
+    const base = t.base_amount !== null ? t.base_amount : (t.currency === PRIMARY ? t.amount : 0);
+    if (base > 0) income += base;
+    else expense += Math.abs(base);
+  });
+  const net = income - expense;
+  document.getElementById('sum-income').textContent = `${PRIMARY} ${Math.round(income).toLocaleString()}`;
+  document.getElementById('sum-expense').textContent = `${PRIMARY} ${Math.round(expense).toLocaleString()}`;
+  document.getElementById('sum-net').textContent = `${PRIMARY} ${Math.round(net).toLocaleString()}`;
+  document.getElementById('sum-net').style.color = net >= 0 ? 'var(--income)' : 'var(--expense)';
+}
+
+document.getElementById('filter-month').addEventListener('change', updateSummary);
+document.getElementById('filter-type').addEventListener('change', updateSummary);
+
+function openModal(id) {
+  selectedId = id;
+  const data = load();
+  const t = data.find(x => x.id === id);
+  if (!t) return;
+  const isInc = t.amount >= 0;
+  const isNTD = t.currency === 'NTD';
+  const rows = [
+    ['日期', t.date],
+    ['類型', isInc ? '收入' : '支出'],
+    ['類別', t.category],
+    ['描述', t.description],
+    ['幣別', t.currency],
+    ['金額', `${t.currency} ${isNTD ? Math.round(Math.abs(t.amount)).toLocaleString() : Math.abs(t.amount).toFixed(2)}`],
+    t.base_amount !== null && t.currency !== PRIMARY ? [`${PRIMARY} 等值`, `${PRIMARY} ${Math.round(Math.abs(t.base_amount)).toLocaleString()}`] : null,
+    t.notes ? ['備注', t.notes] : null,
+    ['建立時間', t.created_at.slice(0,16).replace('T',' ')]
+  ].filter(Boolean);
+  document.getElementById('modal-body').innerHTML = rows.map(([k,v]) =>
+    `<div class="modal-row"><span class="key">${k}</span><span>${escHtml(String(v))}</span></div>`
+  ).join('');
+  document.getElementById('modal').classList.remove('hidden');
+}
+
+function closeModal(e) {
+  if (e.target === document.getElementById('modal')) closeModalDirect();
+}
+function closeModalDirect() {
+  document.getElementById('modal').classList.add('hidden');
+  selectedId = null;
+}
+
+function deleteSelected() {
+  if (!selectedId || !confirm('確定刪除這筆交易？')) return;
+  const data = load().filter(t => t.id !== selectedId);
+  save(data);
+  closeModalDirect();
+  renderList();
+  updateSummary();
+}
+
+function exportCSV() {
+  const txs = getFiltered();
+  const headers = ['ID','日期','類型','類別','描述','幣別','金額',`${PRIMARY}等值`,'備注'];
+  const rows = txs.map(t => [
+    t.id, t.date, t.amount>=0?'收入':'支出', t.category,
+    `"${t.description.replace(/"/g,'""')}"`, t.currency,
+    Math.abs(t.amount).toFixed(2),
+    t.base_amount !== null ? Math.abs(t.base_amount).toFixed(0) : '',
+    `"${(t.notes||'').replace(/"/g,'""')}"`
+  ]);
+  const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
+  const blob = new Blob(['﻿'+csv], {type:'text/csv;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `lele-tw-accounting-${document.getElementById('filter-month').value||'all'}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+init();
+</script>
+</body>
+</html>
