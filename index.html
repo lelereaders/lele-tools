@@ -11,16 +11,19 @@ body{font-family:'Noto Sans TC',-apple-system,sans-serif;background:#FFF8F4;min-
 .header{text-align:center;margin-bottom:2.5rem}
 h1{font-size:28px;color:#1a1a1a;margin-bottom:8px}
 .header>p{font-size:15px;color:#888}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;max-width:700px;width:100%}
+.main{width:100%;max-width:1120px}
+.section{margin-bottom:2.5rem}
+.section-title{font-size:13px;font-weight:700;color:#aaa;letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #eee}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
 .card{background:white;border-radius:16px;text-decoration:none;border:1px solid #eee;display:block;overflow:hidden;transition:transform .2s,box-shadow .2s}
 .card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.1)}
 .card-cover{width:100%;aspect-ratio:16/10;background:#F1F2F6;overflow:hidden;display:flex;align-items:center;justify-content:center}
 .card-cover img{width:100%;height:100%;object-fit:cover}
 .card-cover .fallback{font-size:48px}
-.card-body{padding:1.2rem 1.5rem 1.5rem}
-.card h2{font-size:18px;color:#1a1a1a;margin-bottom:6px}
-.card p{font-size:13px;color:#888;margin-bottom:12px;line-height:1.5}
-.badge{display:inline-block;font-size:12px;padding:3px 10px;border-radius:20px;font-weight:500}
+.card-body{padding:1rem 1.2rem 1.2rem}
+.card h2{font-size:15px;color:#1a1a1a;margin-bottom:5px}
+.card p{font-size:12px;color:#888;margin-bottom:10px;line-height:1.5}
+.badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:500}
 .badge-live{background:#FFF0E6;color:#F8760D}
 .badge-new{background:#E8F5E9;color:#2E7D32}
 .footer{background:#1a1a1a;color:#fff;text-align:center;padding:1.2rem 1rem;margin-top:2.5rem;font-size:13px;width:100vw;margin-left:calc(-50vw + 50%)}
@@ -40,7 +43,8 @@ h1{font-size:28px;color:#1a1a1a;margin-bottom:8px}
 .pw-box button:hover{background:#c19a3a}
 .pw-box .pw-err{color:#e74c3c;font-size:13px;margin-top:.8rem;min-height:1.2em}
 @keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
-@media(max-width:600px){.grid{grid-template-columns:1fr}h1{font-size:22px}}
+@media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:500px){.grid{grid-template-columns:1fr}h1{font-size:22px}}
 </style>
 </head>
 <body>
@@ -82,168 +86,191 @@ h1{font-size:28px;color:#1a1a1a;margin-bottom:8px}
   inp.addEventListener('keydown',function(e){if(e.key==='Enter')check()});
 })();
 </script>
+
 <div class="header">
   <h1>樂樂文化工具箱</h1>
   <p>陪孩子一讀再讀、愛上閱讀</p>
 </div>
-<div class="grid">
 
-  <a class="card" href="/inventory">
-    <div class="card-cover" style="background:#EFF6FF;display:flex;align-items:center;justify-content:center">
-      <div class="fallback" style="font-size:48px">📦</div>
-    </div>
-    <div class="card-body">
-      <h2>庫存管理系統</h2>
-      <p>記錄生產與出貨，即時追蹤庫存數量，工廠與公司共用</p>
-      <span class="badge badge-new">新上線</span>
-    </div>
-  </a>
+<div class="main">
 
-  <a class="card" href="/upc-registry">
-    <div class="card-cover" style="background:#EEF4FF;display:flex;align-items:center;justify-content:center">
-      <div class="fallback" style="font-size:48px">🔢</div>
+  <!-- 倉儲 -->
+  <div class="section">
+    <div class="section-title">倉儲</div>
+    <div class="grid">
+      <a class="card" href="/inventory">
+        <div class="card-cover" style="background:#EFF6FF;display:flex;align-items:center;justify-content:center">
+          <div class="fallback" style="font-size:48px">📦</div>
+        </div>
+        <div class="card-body">
+          <h2>庫存管理系統</h2>
+          <p>記錄生產與出貨，即時追蹤庫存數量，工廠與公司共用</p>
+          <span class="badge badge-new">新上線</span>
+        </div>
+      </a>
+      <a class="card" href="/upc-registry">
+        <div class="card-cover" style="background:#EEF4FF;display:flex;align-items:center;justify-content:center">
+          <div class="fallback" style="font-size:48px">🔢</div>
+        </div>
+        <div class="card-body">
+          <h2>UPC 條碼登記系統</h2>
+          <p>管理所有產品國際條碼，自動生成下一個號碼，匯出 EAN-13 完整碼</p>
+          <span class="badge badge-new">新上線</span>
+        </div>
+      </a>
     </div>
-    <div class="card-body">
-      <h2>UPC 條碼登記系統</h2>
-      <p>管理所有產品國際條碼，自動生成下一個號碼，匯出 EAN-13 完整碼</p>
-      <span class="badge badge-new">新上線</span>
-    </div>
-  </a>
+  </div>
 
-  <a class="card" href="/email-reply">
-    <div class="card-cover" style="background:#FFF0E6;display:flex;align-items:center;justify-content:center">
-      <div class="fallback" style="font-size:48px">✉️</div>
+  <!-- 執行長 -->
+  <div class="section">
+    <div class="section-title">執行長</div>
+    <div class="grid">
+      <a class="card" href="/email-reply">
+        <div class="card-cover" style="background:#FFF0E6;display:flex;align-items:center;justify-content:center">
+          <div class="fallback" style="font-size:48px">✉️</div>
+        </div>
+        <div class="card-body">
+          <h2>客服信件回覆助手</h2>
+          <p>貼上中英文來信，一鍵生成符合樂樂語氣的回覆，自動累積記憶脈絡</p>
+          <span class="badge badge-new">新上線</span>
+        </div>
+      </a>
     </div>
-    <div class="card-body">
-      <h2>客服信件回覆助手</h2>
-      <p>貼上中英文來信，一鍵生成符合樂樂語氣的回覆，自動累積記憶脈絡</p>
-      <span class="badge badge-new">新上線</span>
-    </div>
-  </a>
+  </div>
 
-  <a class="card" href="/picture">
-    <div class="card-cover" style="background:#FDF0EB;display:flex;align-items:center;justify-content:center">
-      <div class="fallback" style="font-size:48px">🎨</div>
+  <!-- 內容創作 -->
+  <div class="section">
+    <div class="section-title">內容創作</div>
+    <div class="grid">
+      <a class="card" href="/picture">
+        <div class="card-cover" style="background:#FDF0EB;display:flex;align-items:center;justify-content:center">
+          <div class="fallback" style="font-size:48px">🎨</div>
+        </div>
+        <div class="card-body">
+          <h2>AI 生圖指令生成器</h2>
+          <p>輸入場景，自動生成樂樂水彩風格的 Google Flow 生圖指令</p>
+          <span class="badge badge-new">新上線</span>
+        </div>
+      </a>
+      <a class="card" href="/simplified">
+        <div class="card-cover" style="background:#EEF4FF;display:flex;align-items:center;justify-content:center">
+          <div class="fallback" style="font-size:48px">🔁</div>
+        </div>
+        <div class="card-body">
+          <h2>轉簡體</h2>
+          <p>貼上截圖，自動抓取文字並轉換成簡體中文，一鍵下載 PDF</p>
+          <span class="badge badge-new">新上線</span>
+        </div>
+      </a>
     </div>
-    <div class="card-body">
-      <h2>AI 生圖指令生成器</h2>
-      <p>輸入場景，自動生成樂樂水彩風格的 Google Flow 生圖指令</p>
-      <span class="badge badge-new">新上線</span>
-    </div>
-  </a>
+  </div>
 
-  <a class="card" href="/simplified">
-    <div class="card-cover" style="background:#EEF4FF;display:flex;align-items:center;justify-content:center">
-      <div class="fallback" style="font-size:48px">🔁</div>
+  <!-- 樂樂產品（大人用） -->
+  <div class="section">
+    <div class="section-title">樂樂產品（大人用）</div>
+    <div class="grid">
+      <a class="card" href="/reading-level">
+        <div class="card-cover" style="background:#FFF4E0;display:flex;align-items:center;justify-content:center">
+          <div class="fallback" style="font-size:48px">📊</div>
+        </div>
+        <div class="card-body">
+          <h2>樂樂閱讀程度測試器</h2>
+          <p>輸入孩子認識的字數，看看他看得懂哪些故事書，預覽 300 本書的理解度</p>
+          <span class="badge badge-new">新上線</span>
+        </div>
+      </a>
+      <a class="card" href="/reading">
+        <div class="card-cover" style="background:#FFF9F3;display:flex;align-items:center;justify-content:center">
+          <div class="fallback" style="font-size:48px">📖</div>
+        </div>
+        <div class="card-body">
+          <h2>樂樂共讀日記</h2>
+          <p>記錄孩子閱讀觀察、追蹤進度、推薦選書，陪伴每一次共讀時光</p>
+          <span class="badge badge-new">新上線</span>
+        </div>
+      </a>
+      <a class="card" href="/theme">
+        <div class="card-cover" style="background:#FFF4E0;display:flex;align-items:center;justify-content:center">
+          <div class="fallback" style="font-size:48px">🏷️</div>
+        </div>
+        <div class="card-body">
+          <h2>樂樂主題找書</h2>
+          <p>29 個主題分類，選擇節日、季節或生活主題，找到相關故事書</p>
+          <span class="badge badge-new">新上線</span>
+        </div>
+      </a>
+      <a class="card" href="/translate">
+        <div class="card-cover">
+          <img src="/covers/translate.png" alt="樂樂翻譯查找器" onerror="this.style.display='none';this.parentElement.innerHTML='<div class=fallback>🔤</div>'">
+        </div>
+        <div class="card-body">
+          <h2>樂樂翻譯查找器</h2>
+          <p>找不到書的英文翻譯？輸入書名、書號或關鍵字，英文翻譯一鍵查詢</p>
+          <span class="badge badge-new">新上線</span>
+        </div>
+      </a>
+      <a class="card" href="/characters">
+        <div class="card-cover" style="background:#F0F4FF;display:flex;align-items:center;justify-content:center">
+          <div class="fallback" style="font-size:48px">🔍</div>
+        </div>
+        <div class="card-body">
+          <h2>樂樂找字系統</h2>
+          <p>1,160 個字，點擊查看出現在哪些書、出現幾次（繁體／简体切換）</p>
+          <span class="badge badge-new">新上線</span>
+        </div>
+      </a>
+      <a class="card" href="/library">
+        <div class="card-cover">
+          <img src="/covers/library.png" alt="樂樂找書系統" onerror="this.style.display='none';this.parentElement.innerHTML='<div class=fallback>📚</div>'">
+        </div>
+        <div class="card-body">
+          <h2>樂樂找書系統</h2>
+          <p>300 本分級中文故事書，搜尋書名快速找到你要的書（繁體／简体切換）</p>
+          <span class="badge badge-new">新上線</span>
+        </div>
+      </a>
     </div>
-    <div class="card-body">
-      <h2>轉簡體</h2>
-      <p>貼上截圖，自動抓取文字並轉換成簡體中文，一鍵下載 PDF</p>
-      <span class="badge badge-new">新上線</span>
-    </div>
-  </a>
+  </div>
 
-  <a class="card" href="/reading-level">
-    <div class="card-cover" style="background:#FFF4E0;display:flex;align-items:center;justify-content:center">
-      <div class="fallback" style="font-size:48px">📊</div>
+  <!-- 樂樂產品（小孩用） -->
+  <div class="section">
+    <div class="section-title">樂樂產品（小孩用）</div>
+    <div class="grid">
+      <a class="card" href="/puzzle">
+        <div class="card-cover" style="background:#F0FFF4;display:flex;align-items:center;justify-content:center">
+          <div class="fallback" style="font-size:48px">🧩</div>
+        </div>
+        <div class="card-body">
+          <h2>樂樂搜字遊戲</h2>
+          <p>輸入中文詞彙，生成專屬搜字謎題，支援列印與線上玩</p>
+          <span class="badge badge-live">已上線</span>
+        </div>
+      </a>
+      <a class="card" href="/maze-v2">
+        <div class="card-cover" style="background:#E8F4FD;display:flex;align-items:center;justify-content:center">
+          <div class="fallback" style="font-size:48px">🗺️</div>
+        </div>
+        <div class="card-body">
+          <h2>認字迷宮 v2 · 主題版</h2>
+          <p>手繪主題迷宮（冰上溜冰、沙灘…）隨機抽路線防死記</p>
+          <span class="badge badge-new">新上線</span>
+        </div>
+      </a>
+      <a class="card" href="/maze">
+        <div class="card-cover">
+          <img src="/covers/word-maze-cover.jpg" alt="樂樂認字迷宮" onerror="this.style.display='none';this.parentElement.innerHTML='<div class=fallback>🌀</div>'">
+        </div>
+        <div class="card-body">
+          <h2>樂樂認字迷宮</h2>
+          <p>趣味中文迷宮遊戲</p>
+          <span class="badge badge-live">已上線</span>
+        </div>
+      </a>
     </div>
-    <div class="card-body">
-      <h2>樂樂閱讀程度測試器</h2>
-      <p>輸入孩子認識的字數，看看他看得懂哪些故事書，預覽 300 本書的理解度</p>
-      <span class="badge badge-new">新上線</span>
-    </div>
-  </a>
-
-  <a class="card" href="/reading">
-    <div class="card-cover" style="background:#FFF9F3;display:flex;align-items:center;justify-content:center">
-      <div class="fallback" style="font-size:48px">📖</div>
-    </div>
-    <div class="card-body">
-      <h2>樂樂共讀日記</h2>
-      <p>記錄孩子閱讀觀察、追蹤進度、推薦選書，陪伴每一次共讀時光</p>
-      <span class="badge badge-new">新上線</span>
-    </div>
-  </a>
-
-  <a class="card" href="/theme">
-    <div class="card-cover" style="background:#FFF4E0;display:flex;align-items:center;justify-content:center">
-      <div class="fallback" style="font-size:48px">🏷️</div>
-    </div>
-    <div class="card-body">
-      <h2>樂樂主題找書</h2>
-      <p>29 個主題分類，選擇節日、季節或生活主題，找到相關故事書</p>
-      <span class="badge badge-new">新上線</span>
-    </div>
-  </a>
-
-  <a class="card" href="/puzzle">
-    <div class="card-cover" style="background:#F0FFF4;display:flex;align-items:center;justify-content:center">
-      <div class="fallback" style="font-size:48px">🧩</div>
-    </div>
-    <div class="card-body">
-      <h2>樂樂搜字遊戲</h2>
-      <p>輸入中文詞彙，生成專屬搜字謎題，支援列印與線上玩</p>
-      <span class="badge badge-live">已上線</span>
-    </div>
-  </a>
-
-  <a class="card" href="/maze-v2">
-    <div class="card-cover" style="background:#E8F4FD;display:flex;align-items:center;justify-content:center">
-      <div class="fallback" style="font-size:48px">🗺️</div>
-    </div>
-    <div class="card-body">
-      <h2>認字迷宮 v2 · 主題版</h2>
-      <p>手繪主題迷宮（冰上溜冰、沙灘…）隨機抽路線防死記</p>
-      <span class="badge badge-new">新上線</span>
-    </div>
-  </a>
-
-  <a class="card" href="/maze">
-    <div class="card-cover">
-      <img src="/covers/word-maze-cover.jpg" alt="樂樂認字迷宮" onerror="this.style.display='none';this.parentElement.innerHTML='<div class=fallback>🌀</div>'">
-    </div>
-    <div class="card-body">
-      <h2>樂樂認字迷宮</h2>
-      <p>趣味中文迷宮遊戲</p>
-      <span class="badge badge-live">已上線</span>
-    </div>
-  </a>
-
-
-  <a class="card" href="/library">
-    <div class="card-cover">
-      <img src="/covers/library.png" alt="樂樂找書系統" onerror="this.style.display='none';this.parentElement.innerHTML='<div class=fallback>📚</div>'">
-    </div>
-    <div class="card-body">
-      <h2>樂樂找書系統</h2>
-      <p>300 本分級中文故事書，搜尋書名快速找到你要的書（繁體／简体切換）</p>
-      <span class="badge badge-new">新上線</span>
-    </div>
-  </a>
-
-  <a class="card" href="/translate">
-    <div class="card-cover">
-      <img src="/covers/translate.png" alt="樂樂翻譯查找器" onerror="this.style.display='none';this.parentElement.innerHTML='<div class=fallback>🔤</div>'">
-    </div>
-    <div class="card-body">
-      <h2>樂樂翻譯查找器</h2>
-      <p>找不到書的英文翻譯？輸入書名、書號或關鍵字，英文翻譯一鍵查詢</p>
-      <span class="badge badge-new">新上線</span>
-    </div>
-  </a>
-
-  <a class="card" href="/characters">
-    <div class="card-cover" style="background:#F0F4FF;display:flex;align-items:center;justify-content:center">
-      <div class="fallback" style="font-size:48px">🔍</div>
-    </div>
-    <div class="card-body">
-      <h2>樂樂找字系統</h2>
-      <p>1,160 個字，點擊查看出現在哪些書、出現幾次（繁體／简体切換）</p>
-      <span class="badge badge-new">新上線</span>
-    </div>
-  </a>
+  </div>
 
 </div>
+
 <div class="footer">
 <p><a href="https://www.lelechinese.com" target="_blank">官網</a> <a href="https://www.instagram.com/lelechinesetw" target="_blank">Instagram</a> <a href="https://www.facebook.com/lelechinese" target="_blank">Facebook</a> <a href="https://www.youtube.com/@lelechinese" target="_blank">YouTube</a></p>
 <p class="sub-footer">© 2026 <a href="https://www.lelechinese.com" target="_blank">樂樂文化 Le Le Culture</a></p>
