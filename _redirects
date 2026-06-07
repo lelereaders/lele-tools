@@ -15,4 +15,4 @@
 /word-grid-maker/*         /word-grid-maker/index.html         200
 /accounting-au/*           /accounting-au/index.html           200
 /accounting-tw/*           /accounting-tw/index.html           200
-/print/*                   https://lele-print-on-click.lele-culture.workers.dev/print/:splat  301
+/print-admin/*             /print-admin/index.html             200

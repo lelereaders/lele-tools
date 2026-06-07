@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>列印連結管理</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f5f5f5;
+      min-height: 100vh;
+      color: #111;
+    }
+
+    /* Password overlay */
+    #overlay {
+      position: fixed; inset: 0;
+      background: #fff;
+      display: flex; align-items: center; justify-content: center;
+      z-index: 999;
+    }
+    #overlay.hidden { display: none; }
+    .pw-box {
+      background: #fff;
+      border: 1px solid #e0e0e0;
+      border-radius: 12px;
+      padding: 40px 48px;
+      max-width: 360px;
+      width: 90%;
+      text-align: center;
+    }
+    .pw-box h2 { font-size: 20px; margin-bottom: 8px; }
+    .pw-box p { font-size: 14px; color: #888; margin-bottom: 24px; }
+    .pw-box input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 16px;
+      margin-bottom: 12px;
+      outline: none;
+    }
+    .pw-box input:focus { border-color: #111; }
+    .pw-box button {
+      width: 100%;
+      padding: 12px;
+      background: #111;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .pw-box button:hover { background: #333; }
+    .pw-error { color: #c00; font-size: 13px; margin-top: 8px; }
+
+    /* Main layout */
+    .header {
+      background: #fff;
+      border-bottom: 1px solid #e8e8e8;
+      padding: 16px 32px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .header h1 { font-size: 20px; font-weight: 700; }
+
+    .main { max-width: 900px; margin: 0 auto; padding: 32px 24px; }
+
+    /* Add form card */
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      border: 1px solid #e8e8e8;
+      padding: 28px 32px;
+      margin-bottom: 28px;
+    }
+    .card h2 { font-size: 16px; font-weight: 600; margin-bottom: 20px; }
+    .form-group { margin-bottom: 14px; }
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: #555;
+      margin-bottom: 6px;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .form-group input:focus { border-color: #111; }
+    .form-note {
+      font-size: 12px;
+      color: #999;
+      margin-top: 4px;
+    }
+    .btn-primary {
+      padding: 11px 28px;
+      background: #111;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn-primary:hover { background: #333; }
+    .btn-primary:disabled { background: #ccc; cursor: default; }
+
+    /* Links list */
+    .list-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .list-header h2 { font-size: 16px; font-weight: 600; }
+    .count-badge {
+      background: #f0f0f0;
+      color: #555;
+      font-size: 12px;
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 48px 0;
+      color: #aaa;
+      font-size: 14px;
+    }
+
+    .link-item {
+      background: #fff;
+      border: 1px solid #e8e8e8;
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .link-info { flex: 1; min-width: 0; }
+    .link-name {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .link-url {
+      font-size: 12px;
+      color: #888;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .link-url a { color: #888; text-decoration: none; }
+    .link-url a:hover { color: #111; text-decoration: underline; }
+    .link-actions { display: flex; gap: 8px; flex-shrink: 0; }
+    .btn-copy {
+      padding: 7px 16px;
+      background: #fff;
+      color: #111;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-copy:hover { border-color: #999; }
+    .btn-copy.copied { background: #e8f5e9; border-color: #81c784; color: #2e7d32; }
+    .btn-open {
+      padding: 7px 16px;
+      background: #f5f5f5;
+      color: #111;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      transition: background 0.15s;
+    }
+    .btn-open:hover { background: #ebebeb; }
+    .btn-delete {
+      padding: 7px 16px;
+      background: #fff;
+      color: #c00;
+      border: 1px solid #fcc;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-delete:hover { background: #fff0f0; }
+
+    .link-date {
+      font-size: 11px;
+      color: #bbb;
+      margin-top: 2px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Password overlay -->
+<div id="overlay">
+  <div class="pw-box">
+    <h2>列印連結管理</h2>
+    <p>請輸入密碼以繼續</p>
+    <input type="password" id="pwInput" placeholder="密碼" autocomplete="current-password">
+    <button onclick="checkPassword()">進入</button>
+    <div class="pw-error" id="pwError"></div>
+  </div>
+</div>
+
+<!-- Main content -->
+<div id="mainContent" style="display:none">
+  <div class="header">
+    <h1>列印連結管理</h1>
+  </div>
+
+  <div class="main">
+    <!-- Add form -->
+    <div class="card">
+      <h2>新增連結</h2>
+      <div class="form-group">
+        <label>檔案名稱（顯示給使用者）</label>
+        <input type="text" id="nameInput" placeholder="例：繁體_FA007_PR006_TC_202606_V01 做虎帽，過端午">
+      </div>
+      <div class="form-group">
+        <label>Google Drive 分享連結或檔案 ID</label>
+        <input type="text" id="driveInput" placeholder="https://drive.google.com/file/d/... 或直接貼 ID">
+        <div class="form-note">Drive 檔案需設定為「知道連結的任何人皆可檢視」</div>
+      </div>
+      <button class="btn-primary" onclick="addLink()">建立連結</button>
+      <span id="addError" style="color:#c00;font-size:13px;margin-left:12px;"></span>
+    </div>
+
+    <!-- Links list -->
+    <div>
+      <div class="list-header">
+        <h2>現有連結</h2>
+        <span class="count-badge" id="countBadge">0 個</span>
+      </div>
+      <div id="linkList"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const PASSWORD = 'MILLIONS';
+  const STORAGE_KEY = 'lele_print_links';
+  const BASE_URL = 'https://tools.lelechinese.com/print/';
+
+  // Password
+  function checkPassword() {
+    const val = document.getElementById('pwInput').value;
+    if (val === PASSWORD) {
+      document.getElementById('overlay').classList.add('hidden');
+      document.getElementById('mainContent').style.display = 'block';
+      renderList();
+    } else {
+      document.getElementById('pwError').textContent = '密碼錯誤';
+    }
+  }
+  document.getElementById('pwInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') checkPassword();
+  });
+
+  // Auto-unlock if already authenticated this session
+  if (sessionStorage.getItem('print_admin_auth') === '1') {
+    document.getElementById('overlay').classList.add('hidden');
+    document.getElementById('mainContent').style.display = 'block';
+  }
+
+  // Override checkPassword to also set session flag
+  const _check = checkPassword;
+  window.checkPassword = function() {
+    const val = document.getElementById('pwInput').value;
+    if (val === PASSWORD) {
+      sessionStorage.setItem('print_admin_auth', '1');
+    }
+    _check();
+  };
+
+  // Storage
+  function loadLinks() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
+    catch(e) { return []; }
+  }
+  function saveLinks(links) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(links));
+  }
+
+  // Extract Drive file ID
+  function extractDriveId(input) {
+    const s = input.trim();
+    const m1 = s.match(/\/file\/d\/([A-Za-z0-9_-]+)/);
+    if (m1) return m1[1];
+    const m2 = s.match(/[?&]id=([A-Za-z0-9_-]+)/);
+    if (m2) return m2[1];
+    if (/^[A-Za-z0-9_-]{10,}$/.test(s)) return s;
+    return null;
+  }
+
+  // Generate short random ID
+  function nanoid(len) {
+    const chars = '0123456789abcdefghijklmnopqrstuvwxyz';
+    let result = '';
+    const arr = new Uint8Array(len);
+    crypto.getRandomValues(arr);
+    for (let i = 0; i < len; i++) result += chars[arr[i] % chars.length];
+    return result;
+  }
+
+  // Build public URL
+  function buildUrl(driveFileId, name) {
+    return BASE_URL + '?d=' + encodeURIComponent(driveFileId) + '&n=' + encodeURIComponent(name);
+  }
+
+  // Add link
+  function addLink() {
+    const name = document.getElementById('nameInput').value.trim();
+    const driveRaw = document.getElementById('driveInput').value.trim();
+    const errEl = document.getElementById('addError');
+    errEl.textContent = '';
+
+    if (!name) { errEl.textContent = '請輸入檔案名稱'; return; }
+    if (!driveRaw) { errEl.textContent = '請輸入 Google Drive 連結'; return; }
+
+    const driveId = extractDriveId(driveRaw);
+    if (!driveId) { errEl.textContent = '無法解析 Drive 連結或 ID'; return; }
+
+    const links = loadLinks();
+    const newLink = {
+      id: nanoid(10),
+      name,
+      driveFileId: driveId,
+      createdAt: new Date().toISOString(),
+    };
+    links.unshift(newLink);
+    saveLinks(links);
+
+    document.getElementById('nameInput').value = '';
+    document.getElementById('driveInput').value = '';
+    renderList();
+  }
+
+  // Delete
+  function deleteLink(id) {
+    if (!confirm('確定要刪除這個連結？')) return;
+    const links = loadLinks().filter(l => l.id !== id);
+    saveLinks(links);
+    renderList();
+  }
+
+  // Copy
+  function copyUrl(url, btnEl) {
+    navigator.clipboard.writeText(url).then(() => {
+      btnEl.textContent = '已複製';
+      btnEl.classList.add('copied');
+      setTimeout(() => {
+        btnEl.textContent = '複製連結';
+        btnEl.classList.remove('copied');
+      }, 2000);
+    });
+  }
+
+  // Format date
+  function fmtDate(iso) {
+    const d = new Date(iso);
+    return d.getFullYear() + '/' + String(d.getMonth()+1).padStart(2,'0') + '/' + String(d.getDate()).padStart(2,'0');
+  }
+
+  // Render
+  function renderList() {
+    const links = loadLinks();
+    const listEl = document.getElementById('linkList');
+    const countEl = document.getElementById('countBadge');
+    countEl.textContent = links.length + ' 個';
+
+    if (links.length === 0) {
+      listEl.innerHTML = '<div class="empty">尚無連結，從上方新增第一個連結</div>';
+      return;
+    }
+
+    listEl.innerHTML = links.map(function(l) {
+      const url = buildUrl(l.driveFileId, l.name);
+      return '<div class="link-item">' +
+        '<div class="link-info">' +
+          '<div class="link-name">' + escHtml(l.name) + '</div>' +
+          '<div class="link-url"><a href="' + escHtml(url) + '" target="_blank">' + escHtml(url) + '</a></div>' +
+          '<div class="link-date">' + fmtDate(l.createdAt) + '</div>' +
+        '</div>' +
+        '<div class="link-actions">' +
+          '<button class="btn-copy" onclick="copyUrl(\'' + escAttr(url) + '\', this)">複製連結</button>' +
+          '<a class="btn-open" href="' + escHtml(url) + '" target="_blank">開啟</a>' +
+          '<button class="btn-delete" onclick="deleteLink(\'' + l.id + '\')">刪除</button>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  function escHtml(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  function escAttr(s) {
+    return String(s).replace(/'/g, "\\'");
+  }
+
+  // Enter key for form
+  document.getElementById('nameInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') document.getElementById('driveInput').focus();
+  });
+  document.getElementById('driveInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') addLink();
+  });
+
+  if (sessionStorage.getItem('print_admin_auth') === '1') renderList();
+</script>
+</body>
+</html>
