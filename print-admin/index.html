@@ -310,9 +310,10 @@
   // Extract Drive file ID
   function extractDriveId(input) {
     const s = input.trim();
-    const m1 = s.match(/\/file\/d\/([A-Za-z0-9_-]+)/);
+    // /file/d/{id}, /presentation/d/{id}, /document/d/{id}, /spreadsheets/d/{id}, etc.
+    const m1 = s.match(/\/d\/([A-Za-z0-9_-]{10,})/);
     if (m1) return m1[1];
-    const m2 = s.match(/[?&]id=([A-Za-z0-9_-]+)/);
+    const m2 = s.match(/[?&]id=([A-Za-z0-9_-]{10,})/);
     if (m2) return m2[1];
     if (/^[A-Za-z0-9_-]{10,}$/.test(s)) return s;
     return null;
