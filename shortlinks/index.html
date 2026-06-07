@@ -251,28 +251,24 @@
     await loadLinks();
   }
 
-  async function deleteLink(code) {
-    if (!confirm('確定刪除 /' + code + '？')) return;
-    await fetch(WORKER_URL + '/api/links/' + code, { method: 'DELETE', headers: { 'X-Admin-Key': ADMIN_KEY } });
-    showToast('已刪除');
-    await loadLinks();
-  }
 
   // ── Render ───────────────────────────────────────────────────────
+  let _filtered = [];
+
   function renderTable() {
     const q = (document.getElementById('searchBar').value || '').toLowerCase();
-    const filtered = allLinks.filter(l =>
+    _filtered = allLinks.filter(l =>
       !q || l.code.includes(q) || (l.name || '').toLowerCase().includes(q) || (l.url || '').toLowerCase().includes(q)
     );
     document.getElementById('countBadge').textContent = allLinks.length + ' 個';
     const wrap = document.getElementById('tableWrap');
-    if (filtered.length === 0) {
+    if (_filtered.length === 0) {
       wrap.innerHTML = '<div class="empty">' + (q ? '沒有符合的結果' : '尚無連結') + '</div>';
       return;
     }
     wrap.innerHTML = '<table>' +
       '<thead><tr><th>代碼</th><th>名稱 / 短網址</th><th>目標網址</th><th>點擊</th><th>建立日期</th><th></th></tr></thead>' +
-      '<tbody>' + filtered.map(l => {
+      '<tbody>' + _filtered.map((l, i) => {
         const shortUrl = SHORT_DOMAIN + '/' + l.code;
         const date = l.createdAt ? l.createdAt.slice(0,10) : '';
         return '<tr>' +
@@ -283,23 +279,36 @@
           '<td class="clicks-cell">' + (l.clicks || 0) + '</td>' +
           '<td style="font-size:12px;color:#bbb">' + date + '</td>' +
           '<td class="actions-cell">' +
-            '<button class="btn btn-outline btn-sm" onclick="copyLink(\'' + esc(shortUrl) + '\',this)">複製</button>' +
-            '<button class="btn btn-outline btn-sm" onclick="showQr(\'' + esc(shortUrl) + '\',\'' + esc(l.name||l.code) + '\')">QR</button>' +
-            '<button class="btn btn-danger btn-sm" onclick="deleteLink(\'' + l.code + '\')">刪除</button>' +
+            '<button class="btn btn-outline btn-sm" onclick="copyLink(' + i + ',this)">複製</button>' +
+            '<button class="btn btn-outline btn-sm" onclick="showQr(' + i + ')">QR</button>' +
+            '<button class="btn btn-danger btn-sm" onclick="deleteLink(' + i + ')">刪除</button>' +
           '</td>' +
         '</tr>';
       }).join('') + '</tbody></table>';
   }
 
-  function copyLink(url, btn) {
+  function copyLink(idx, btn) {
+    const l = _filtered[idx];
+    const url = SHORT_DOMAIN + '/' + l.code;
     navigator.clipboard.writeText(url);
     const orig = btn.textContent;
     btn.textContent = '已複製';
     setTimeout(() => { btn.textContent = orig; }, 2000);
   }
 
+  async function deleteLink(idx) {
+    const l = _filtered[idx];
+    if (!confirm('確定刪除 /' + l.code + '？')) return;
+    await fetch(WORKER_URL + '/api/links/' + l.code, { method: 'DELETE', headers: { 'X-Admin-Key': ADMIN_KEY } });
+    showToast('已刪除');
+    await loadLinks();
+  }
+
   // ── QR ───────────────────────────────────────────────────────────
-  function showQr(url, name) {
+  function showQr(idx) {
+    const l = _filtered[idx];
+    const url = SHORT_DOMAIN + '/' + l.code;
+    const name = l.name || l.code;
     currentQrUrl = url;
     currentQrName = name;
     document.getElementById('qrTitle').textContent = name;
