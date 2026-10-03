@@ -66,16 +66,25 @@ m{background:#FFEAA7;padding:0 2px;border-radius:3px;font-style:normal}
 .footer a{color:#fff;text-decoration:none;margin:0 .6rem;opacity:.8}
 .footer a:hover{opacity:1}
 .sub-footer{font-size:12px;opacity:.6;margin-top:6px}
+/* --- 中/英介面切換 --- */
+.lang-toggle{position:absolute;top:12px;right:12px;z-index:60;display:flex;background:#fff;border:1px solid #e5e5e5;border-radius:20px;padding:3px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.lang-toggle button{border:none;background:none;font-family:inherit;font-size:13px;font-weight:500;color:#888;padding:5px 12px;border-radius:16px;cursor:pointer;transition:background .2s,color .2s}
+.lang-toggle button.active{background:#D4A843;color:#fff}
+@media(max-width:600px){.hdr{padding-top:3.5rem}}
 @media(max-width:600px){.grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}.hdr img{max-width:280px}}
 </style>
 </head>
 <body>
+<div class="lang-toggle" role="group" aria-label="Language">
+  <button type="button" data-lang="zh">中</button>
+  <button type="button" data-lang="en">EN</button>
+</div>
 <div class="hdr">
 <img src="/covers/header-library.png" alt="找書系統">
 <div class="desc" id="pageDesc">輸入書名或內容關鍵字，快速找到你要的書！</div>
 <div class="toggle-row">
-<button class="toggle-btn active" onclick="setVariant('tc')">繁體中文 (TC)</button>
-<button class="toggle-btn" onclick="setVariant('sc')">简体中文 (SC)</button>
+<button class="toggle-btn active" onclick="setVariant('tc')" data-en="Traditional Chinese (TC)">繁體中文 (TC)</button>
+<button class="toggle-btn" onclick="setVariant('sc')" data-en="Simplified Chinese (SC)">简体中文 (SC)</button>
 </div>
 </div>
 <div class="search-wrap"><div class="search-box"><span style="margin-right:10px;color:#ccc;font-size:18px">🔍</span><input id="q" placeholder="輸入書名或關鍵字搜尋..." autocomplete="off"><span class="cnt" id="cnt">300 本</span></div></div>
@@ -86,7 +95,7 @@ m{background:#FFEAA7;padding:0 2px;border-radius:3px;font-style:normal}
 <div class="modal"><button class="modal-close" onclick="closeM()">&times;</button><div class="modal-bar" id="mbar"></div><div class="mbody" id="mbody"></div></div>
 </div>
 <div class="footer">
-<p><a href="https://www.lelechinese.com" target="_blank">官網</a> <a href="https://www.instagram.com/lelechinesetw" target="_blank">Instagram</a> <a href="https://www.facebook.com/lelechinese" target="_blank">Facebook</a> <a href="https://www.youtube.com/@lelechinese" target="_blank">YouTube</a></p>
+<p><a href="https://www.lelechinese.com" target="_blank" data-en="Website">官網</a> <a href="https://www.instagram.com/lelechinesetw" target="_blank">Instagram</a> <a href="https://www.facebook.com/lelechinese" target="_blank">Facebook</a> <a href="https://www.youtube.com/@lelechinese" target="_blank">YouTube</a></p>
 <p class="sub-footer">© 2026 <a href="https://www.lelechinese.com" target="_blank">樂樂文化 Le Le Culture</a></p>
 </div>
 <script>
@@ -99,32 +108,74 @@ var lc=function(l){return l.toLowerCase()[0]};
 var ll={};
 var labels={
   tc:{desc:'輸入書名或內容關鍵字，快速找到你要的書！',placeholder:'輸入書名或關鍵字搜尋...',unit:'本',all:'全部',allTopic:'全部主題',noResult:'找不到符合的書，試試其他關鍵字',freq:'高頻字：',rec:'推薦閱讀（相同字詞）',common:'共同字：',levels:{'RED':'初階','YELLOW':'中階','GREEN':'進階'},redL:'Red 初階',yelL:'Yellow 中階',grnL:'Green 進階'},
-  sc:{desc:'输入书名或内容关键字，快速找到你要的书！',placeholder:'输入书名或关键字搜索...',unit:'本',all:'全部',allTopic:'全部主题',noResult:'找不到符合的书，试试其他关键字',freq:'高频字：',rec:'推荐阅读（相同字词）',common:'共同字：',levels:{'RED':'初阶','YELLOW':'中阶','GREEN':'进阶'},redL:'Red 初阶',yelL:'Yellow 中阶',grnL:'Green 进阶'}
+  sc:{desc:'输入书名或内容关键字，快速找到你要的书！',placeholder:'输入书名或关键字搜索...',unit:'本',all:'全部',allTopic:'全部主题',noResult:'找不到符合的书，试试其他关键字',freq:'高频字：',rec:'推荐阅读（相同字词）',common:'共同字：',levels:{'RED':'初阶','YELLOW':'中阶','GREEN':'进阶'},redL:'Red 初阶',yelL:'Yellow 中阶',grnL:'Green 进阶'},
+  en:{desc:'Search by title or keyword to quickly find the book you need!',placeholder:'Search by title or keyword...',unit:'books',all:'All',allTopic:'All topics',noResult:'No matching books. Try another keyword.',freq:'Top characters: ',rec:'Recommended reading (shared words)',common:'Shared: ',levels:{'RED':'Beginner','YELLOW':'Intermediate','GREEN':'Advanced'},redL:'Red · Beginner',yelL:'Yellow · Intermediate',grnL:'Green · Advanced'}
 };
+function curLabels(){return UI_LANG==='en'?labels.en:labels[variant]}
 function setVariant(v){
-  variant=v;BOOKS=v==='tc'?TC_BOOKS:SC_BOOKS;ll=labels[v].levels;
+  variant=v;BOOKS=v==='tc'?TC_BOOKS:SC_BOOKS;
   document.querySelectorAll('.toggle-btn').forEach(function(b,i){b.className='toggle-btn'+(i===(v==='tc'?0:1)?' active':'')});
-  var L=labels[v];
+  applyLabels();curT='ALL';renderTopics();render();
+}
+function applyLabels(){
+  var L=curLabels();ll=L.levels;
   document.getElementById('pageDesc').textContent=L.desc;
   document.getElementById('q').placeholder=L.placeholder;
-  renderFilters();curT='ALL';renderTopics();render();
+  renderFilters();
 }
 function renderFilters(){
-  var L=labels[variant];
+  var L=curLabels();
   document.getElementById('filterRow').innerHTML='<button class="fb '+(curL==='ALL'?'a-all':'')+'" data-l="ALL" onclick="setL(\'ALL\')">🔴🟡🟢 '+L.all+'</button><button class="fb '+(curL==='RED'?'a-red':'')+'" data-l="RED" onclick="setL(\'RED\')">🔴 '+L.redL+'</button><button class="fb '+(curL==='YELLOW'?'a-yel':'')+'" data-l="YELLOW" onclick="setL(\'YELLOW\')">🟡 '+L.yelL+'</button><button class="fb '+(curL==='GREEN'?'a-grn':'')+'" data-l="GREEN" onclick="setL(\'GREEN\')">🟢 '+L.grnL+'</button>';
 }
 function hl(t,q){if(!q||!t)return t;try{return t.replace(new RegExp('('+q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi'),'<m>$1</m>')}catch(e){return t}}
 function getTopics(){var s=new Set();(curL==='ALL'?BOOKS:BOOKS.filter(function(b){return b.level===curL})).forEach(function(b){if(b.topic)s.add(b.topic)});return Array.from(s)}
-function renderTopics(){var L=labels[variant];var t=getTopics(),r=document.getElementById('topicRow');if(!t.length){r.innerHTML='';return}r.innerHTML='<button class="tb '+(curT==='ALL'?'active':'')+'" onclick="setT(\'ALL\')">'+L.allTopic+'</button>'+t.map(function(x){return'<button class="tb '+(curT===x?'active':'')+'" onclick="setT(\''+x.replace(/'/g,"\\'")+'\')">'+x+'</button>'}).join('')}
+function renderTopics(){var L=curLabels();var t=getTopics(),r=document.getElementById('topicRow');if(!t.length){r.innerHTML='';return}r.innerHTML='<button class="tb '+(curT==='ALL'?'active':'')+'" onclick="setT(\'ALL\')">'+L.allTopic+'</button>'+t.map(function(x){return'<button class="tb '+(curT===x?'active':'')+'" onclick="setT(\''+x.replace(/'/g,"\\'")+'\')">'+x+'</button>'}).join('')}
 function filter(){var q=query.toLowerCase().trim();return BOOKS.filter(function(b){if(curL!=='ALL'&&b.level!==curL)return false;if(curT!=='ALL'&&b.topic!==curT)return false;if(!q)return true;return[b.title_zh,b.title_en,b.id,b.topic,b.s].join(' ').toLowerCase().indexOf(q)>=0})}
-function render(){var L=labels[variant];var f=filter();document.getElementById('cnt').textContent=f.length+' '+L.unit;var g=document.getElementById('grid');if(!f.length){g.innerHTML='<div class="empty"><div class="ico">📚</div><h3>'+L.noResult+'</h3></div>';return}g.innerHTML=f.map(function(b){var c=lc(b.level);return'<div class="card" onclick="openM(\''+b.id+'\')"><div class="cbar '+c+'"></div><div class="cover-wrap"><img src="'+b.cover+'" alt="'+b.title_zh+'" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'"><div class="cover-placeholder">📖</div></div><div class="cbody"><span class="badge '+c+'">'+b.level+' '+ll[b.level]+'</span>'+(b.topic?'<span class="topic-tag">'+b.topic+'</span>':'')+'<div class="cnum">#'+b.number+'</div><div class="ctitle">'+(query?hl(b.title_zh,query):b.title_zh)+'</div>'+(b.top_chars?'<div class="cfreq">'+L.freq+b.top_chars+'</div>':'')+'</div></div>'}).join('')}
+function render(){var L=curLabels();var f=filter();document.getElementById('cnt').textContent=f.length+' '+L.unit;var g=document.getElementById('grid');if(!f.length){g.innerHTML='<div class="empty"><div class="ico">📚</div><h3>'+L.noResult+'</h3></div>';return}g.innerHTML=f.map(function(b){var c=lc(b.level);return'<div class="card" onclick="openM(\''+b.id+'\')"><div class="cbar '+c+'"></div><div class="cover-wrap"><img src="'+b.cover+'" alt="'+b.title_zh+'" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'"><div class="cover-placeholder">📖</div></div><div class="cbody"><span class="badge '+c+'">'+b.level+' '+ll[b.level]+'</span>'+(b.topic?'<span class="topic-tag">'+b.topic+'</span>':'')+'<div class="cnum">#'+b.number+'</div><div class="ctitle">'+(query?hl(b.title_zh,query):b.title_zh)+'</div>'+(b.top_chars?'<div class="cfreq">'+L.freq+b.top_chars+'</div>':'')+'</div></div>'}).join('')}
 function setL(l){curL=l;curT='ALL';renderFilters();renderTopics();render()}
 function setT(t){curT=t;renderTopics();render()}
 document.getElementById('q').addEventListener('input',function(e){query=e.target.value;render()});
-function openM(id){var L=labels[variant];var b=BOOKS.find(function(x){return x.id===id});if(!b)return;var c=lc(b.level);document.getElementById('mbar').className='modal-bar '+c;var recs=(b.rec_ids||[]).map(function(rid,i){var rb=BOOKS.find(function(x){return x.id===rid});var sc=b.rec_chars&&b.rec_chars[i]?b.rec_chars[i]:'';return rb?'<div class="mrec-item" onclick="openM(\''+rid+'\')">'+rid+' '+rb.title_zh+(sc?' <span style="color:var(--brand);font-size:.7rem">（'+L.common+sc+'）</span>':'')+'</div>':''}).join('');document.getElementById('mbody').innerHTML='<span class="badge '+c+'">'+b.level+' #'+b.number+' · '+ll[b.level]+'</span>'+(b.topic?'<span class="topic-tag" style="margin-left:.5rem">'+b.topic+'</span>':'')+'<div class="mtitle">'+b.title_zh+'</div>'+(b.title_en?'<div class="men">'+b.title_en+'</div>':'')+'<div class="minfo">'+(b.top_chars?'<span>'+L.freq+b.top_chars+'</span>':'')+'</div>'+(recs?'<div class="msection"><div class="msection-label">📖 '+L.rec+'</div><div class="mrec">'+recs+'</div></div>':'');document.getElementById('mo').classList.add('show');document.body.style.overflow='hidden'}
+function openM(id){var L=curLabels();var b=BOOKS.find(function(x){return x.id===id});if(!b)return;var c=lc(b.level);document.getElementById('mbar').className='modal-bar '+c;var recs=(b.rec_ids||[]).map(function(rid,i){var rb=BOOKS.find(function(x){return x.id===rid});var sc=b.rec_chars&&b.rec_chars[i]?b.rec_chars[i]:'';return rb?'<div class="mrec-item" onclick="openM(\''+rid+'\')">'+rid+' '+rb.title_zh+(sc?' <span style="color:var(--brand);font-size:.7rem">（'+L.common+sc+'）</span>':'')+'</div>':''}).join('');document.getElementById('mbody').innerHTML='<span class="badge '+c+'">'+b.level+' #'+b.number+' · '+ll[b.level]+'</span>'+(b.topic?'<span class="topic-tag" style="margin-left:.5rem">'+b.topic+'</span>':'')+'<div class="mtitle">'+b.title_zh+'</div>'+(b.title_en?'<div class="men">'+b.title_en+'</div>':'')+'<div class="minfo">'+(b.top_chars?'<span>'+L.freq+b.top_chars+'</span>':'')+'</div>'+(recs?'<div class="msection"><div class="msection-label">📖 '+L.rec+'</div><div class="mrec">'+recs+'</div></div>':'');document.getElementById('mo').classList.add('show');document.body.style.overflow='hidden'}
 function closeM(e){if(e&&e.target!==document.getElementById('mo')&&!e.target.classList.contains('modal-close'))return;document.getElementById('mo').classList.remove('show');document.body.style.overflow=''}
 document.addEventListener('keydown',function(e){if(e.key==='Escape')closeM()});
+// --- 中/英介面切換：靜態文字用 data-en / data-en-placeholder，動態文字用 tx('中文','English') ---
+var UI_LANG='zh',LANG_KEY='lele_library_lang';
+function tx(zh,en){return UI_LANG==='en'?en:zh}
+function setUiLang(lang){
+  UI_LANG=lang==='en'?'en':'zh';
+  document.querySelectorAll('[data-en]').forEach(function(el){
+    if(el.dataset.zh===undefined)el.dataset.zh=el.innerHTML;
+    el.innerHTML=UI_LANG==='en'?el.dataset.en:el.dataset.zh;
+  });
+  document.querySelectorAll('[data-en-placeholder]').forEach(function(el){
+    if(el.dataset.zhPlaceholder===undefined)el.dataset.zhPlaceholder=el.placeholder;
+    el.placeholder=UI_LANG==='en'?el.dataset.enPlaceholder:el.dataset.zhPlaceholder;
+  });
+  document.documentElement.lang=UI_LANG==='en'?'en':'zh-TW';
+  document.querySelectorAll('.lang-toggle button').forEach(function(b){
+    var on=b.dataset.lang===UI_LANG;
+    b.classList.toggle('active',on);
+    b.setAttribute('aria-pressed',on);
+  });
+  try{localStorage.setItem(LANG_KEY,UI_LANG)}catch(e){}
+  onUiLangChange();
+}
+function initUiLang(){
+  var lang='zh';
+  try{lang=localStorage.getItem(LANG_KEY)||lang}catch(e){}
+  var q=new URLSearchParams(location.search).get('lang');
+  if(q==='en'||q==='zh')lang=q;
+  document.querySelectorAll('.lang-toggle button').forEach(function(b){
+    b.addEventListener('click',function(){setUiLang(b.dataset.lang)});
+  });
+  setUiLang(lang);
+}
+function onUiLangChange(){
+  document.title=tx('樂樂找書 | Le Le Book Finder','Le Le Book Finder');
+  applyLabels();renderTopics();render();
+}
 setVariant('tc');
+initUiLang();
 </script>
 </body>
 </html>

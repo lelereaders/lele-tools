@@ -108,7 +108,12 @@ body{font-family:'Noto Sans TC','Noto Sans SC',-apple-system,sans-serif;backgrou
 .back-top{position:fixed;bottom:20px;right:20px;background:var(--brand);color:#fff;border:none;border-radius:50%;width:44px;height:44px;font-size:20px;cursor:pointer;display:none;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,.2);z-index:50;transition:opacity .2s}
 .back-top.show{display:flex}
 
+/* --- 中/英介面切換 --- */
+.lang-toggle{position:absolute;top:12px;right:12px;z-index:60;display:flex;background:#fff;border:1px solid #e5e5e5;border-radius:20px;padding:3px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.lang-toggle button{border:none;background:none;font-family:inherit;font-size:13px;font-weight:500;color:#888;padding:5px 12px;border-radius:16px;cursor:pointer;transition:background .2s,color .2s}
+.lang-toggle button.active{background:#D4A843;color:#fff}
 @media(max-width:768px){
+  .hdr{padding-top:3.5rem}
   .theme-grid{grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
   .theme-card{padding:14px 8px}
   .theme-card .emoji{font-size:28px}
@@ -125,32 +130,37 @@ body{font-family:'Noto Sans TC','Noto Sans SC',-apple-system,sans-serif;backgrou
 </head>
 <body>
 
+<div class="lang-toggle" role="group" aria-label="Language">
+  <button type="button" data-lang="zh">中</button>
+  <button type="button" data-lang="en">EN</button>
+</div>
+
 <!-- Header -->
 <div class="hdr">
-  <div class="hdr-title">📚 樂樂<span>主題找書</span>系統</div>
-  <div class="hdr-desc">選擇主題，找到相關的故事書！29 個主題 · 300 本書</div>
+  <div class="hdr-title" data-en="📚 Le Le <span>Theme</span> Book Finder">📚 樂樂<span>主題找書</span>系統</div>
+  <div class="hdr-desc" data-en="Pick a theme to find related storybooks! 29 themes · 300 books">選擇主題，找到相關的故事書！29 個主題 · 300 本書</div>
 </div>
 
 <!-- Search -->
 <div class="search-wrap">
   <div class="search-box">
     <span class="icon">🔍</span>
-    <input id="searchInput" placeholder="搜尋主題或書名…" autocomplete="off">
+    <input id="searchInput" placeholder="搜尋主題或書名…" data-en-placeholder="Search themes or books…" autocomplete="off">
     <span class="cnt" id="resultCount"></span>
   </div>
 </div>
 
 <!-- Level Filters -->
 <div class="filters">
-  <button class="fb active" data-level="ALL" onclick="setLevel('ALL')">全部</button>
-  <button class="fb" data-level="RED" onclick="setLevel('RED')">🔴 紅色 · 入門</button>
-  <button class="fb" data-level="YELLOW" onclick="setLevel('YELLOW')">🟡 黃色 · 中級</button>
-  <button class="fb" data-level="GREEN" onclick="setLevel('GREEN')">🟢 綠色 · 進階</button>
+  <button class="fb active" data-level="ALL" onclick="setLevel('ALL')" data-en="All">全部</button>
+  <button class="fb" data-level="RED" onclick="setLevel('RED')" data-en="🔴 Red · Beginner">🔴 紅色 · 入門</button>
+  <button class="fb" data-level="YELLOW" onclick="setLevel('YELLOW')" data-en="🟡 Yellow · Intermediate">🟡 黃色 · 中級</button>
+  <button class="fb" data-level="GREEN" onclick="setLevel('GREEN')" data-en="🟢 Green · Advanced">🟢 綠色 · 進階</button>
 </div>
 
 <!-- Theme Categories -->
 <div class="theme-section" id="themeSection">
-  <div class="section-title" id="sectionLabel">🏷️ 選擇一個主題</div>
+  <div class="section-title" id="sectionLabel" data-en="🏷️ Choose a theme">🏷️ 選擇一個主題</div>
   <div class="theme-grid" id="themeGrid"></div>
 </div>
 
@@ -162,10 +172,10 @@ body{font-family:'Noto Sans TC','Noto Sans SC',-apple-system,sans-serif;backgrou
       <div class="td-title" id="tdTitle"></div>
       <div class="td-en" id="tdEn"></div>
     </div>
-    <button class="td-close" onclick="closeTheme()">✕ 返回全部主題</button>
+    <button class="td-close" onclick="closeTheme()" data-en="✕ Back to all themes">✕ 返回全部主題</button>
   </div>
   <div class="words-section">
-    <div class="words-label">📝 主題字詞（點擊篩選）</div>
+    <div class="words-label" data-en="📝 Theme words (click to filter)">📝 主題字詞（點擊篩選）</div>
     <div class="words-wrap" id="wordsWrap"></div>
   </div>
   <div class="book-count" id="bookCount"></div>
@@ -188,14 +198,14 @@ body{font-family:'Noto Sans TC','Noto Sans SC',-apple-system,sans-serif;backgrou
 <!-- Footer -->
 <div class="footer">
   <p>
-    <a href="/">🏠 工具箱</a>
-    <a href="/library">📚 找書系統</a>
-    <a href="/translate">🔤 翻譯查找</a>
-    <a href="/characters">🔍 找字系統</a>
-    <a href="/puzzle">🧩 搜字遊戲</a>
+    <a href="/" data-en="🏠 Toolbox">🏠 工具箱</a>
+    <a href="/library" data-en="📚 Book Finder">📚 找書系統</a>
+    <a href="/translate" data-en="🔤 Translation Finder">🔤 翻譯查找</a>
+    <a href="/characters" data-en="🔍 Character Finder">🔍 找字系統</a>
+    <a href="/puzzle" data-en="🧩 Word Search">🧩 搜字遊戲</a>
   </p>
   <p style="margin-top:8px">
-    <a href="https://www.lelechinese.com" target="_blank">官網</a>
+    <a href="https://www.lelechinese.com" target="_blank" data-en="Website">官網</a>
     <a href="https://www.instagram.com/lelechinesetw" target="_blank">Instagram</a>
     <a href="https://www.facebook.com/lelechinese" target="_blank">Facebook</a>
     <a href="https://www.youtube.com/@lelechinese" target="_blank">YouTube</a>
@@ -240,7 +250,7 @@ function renderThemes() {
     var count = getFilteredBooks(t).length;
 
     html += '<div class="theme-card" onclick="selectTheme(\'' + t.id + '\')">' +
-      '<span class="count">' + count + ' 本</span>' +
+      '<span class="count">' + count + tx(' 本',' books') + '</span>' +
       '<span class="emoji">' + t.emoji + '</span>' +
       '<div class="name">' + t.zh + '</div>' +
       '<div class="sub">' + t.en + '</div>' +
@@ -249,11 +259,11 @@ function renderThemes() {
   });
 
   if (!shown) {
-    html = '<div class="empty"><div class="ico">🔍</div><p>找不到符合的主題</p></div>';
+    html = '<div class="empty"><div class="ico">🔍</div><p>' + tx('找不到符合的主題','No matching themes') + '</p></div>';
   }
 
   grid.innerHTML = html;
-  document.getElementById('resultCount').textContent = shown + ' 個主題';
+  document.getElementById('resultCount').textContent = shown + tx(' 個主題',' themes');
 }
 
 function getFilteredBooks(theme) {
@@ -282,7 +292,7 @@ function selectTheme(id) {
 
   // Render words
   var ww = document.getElementById('wordsWrap');
-  ww.innerHTML = '<div class="word-tag active" onclick="filterWord(null)">全部</div>' +
+  ww.innerHTML = '<div class="word-tag active" data-all="1" onclick="filterWord(null)">' + tx('全部','All') + '</div>' +
     theme.words.map(function(w) {
       return '<div class="word-tag" onclick="filterWord(\'' + w + '\')">' + w + '</div>';
     }).join('');
@@ -296,7 +306,7 @@ function filterWord(word) {
   // Update word tag styles
   document.querySelectorAll('.word-tag').forEach(function(el) {
     el.classList.remove('active');
-    if ((!word && el.textContent === '全部') || el.textContent === word) {
+    if ((!word && el.dataset.all) || (word && !el.dataset.all && el.textContent === word)) {
       el.classList.add('active');
     }
   });
@@ -313,10 +323,10 @@ function renderBooks() {
   // If a word filter is active, we could further filter (for future use with word-level data)
   // For now, show all books in theme
 
-  document.getElementById('bookCount').textContent = '共 ' + filteredIds.length + ' 本相關書籍';
+  document.getElementById('bookCount').textContent = tx('共 ' + filteredIds.length + ' 本相關書籍', filteredIds.length + ' related books');
 
   if (!filteredIds.length) {
-    bookGrid.innerHTML = '<div class="empty"><div class="ico">📚</div><p>此主題在目前級別下沒有書籍</p></div>';
+    bookGrid.innerHTML = '<div class="empty"><div class="ico">📚</div><p>' + tx('此主題在目前級別下沒有書籍','No books for this theme at the selected level') + '</p></div>';
     return;
   }
 
@@ -417,8 +427,48 @@ window.addEventListener('scroll', function() {
   btn.classList.toggle('show', window.scrollY > 400);
 });
 
+// --- 中/英介面切換：靜態文字用 data-en / data-en-placeholder，動態文字用 tx('中文','English') ---
+var UI_LANG='zh',LANG_KEY='lele_theme_lang';
+function tx(zh,en){return UI_LANG==='en'?en:zh}
+function setUiLang(lang){
+  UI_LANG=lang==='en'?'en':'zh';
+  document.querySelectorAll('[data-en]').forEach(function(el){
+    if(el.dataset.zh===undefined)el.dataset.zh=el.innerHTML;
+    el.innerHTML=UI_LANG==='en'?el.dataset.en:el.dataset.zh;
+  });
+  document.querySelectorAll('[data-en-placeholder]').forEach(function(el){
+    if(el.dataset.zhPlaceholder===undefined)el.dataset.zhPlaceholder=el.placeholder;
+    el.placeholder=UI_LANG==='en'?el.dataset.enPlaceholder:el.dataset.zhPlaceholder;
+  });
+  document.documentElement.lang=UI_LANG==='en'?'en':'zh-TW';
+  document.querySelectorAll('.lang-toggle button').forEach(function(b){
+    var on=b.dataset.lang===UI_LANG;
+    b.classList.toggle('active',on);
+    b.setAttribute('aria-pressed',on);
+  });
+  try{localStorage.setItem(LANG_KEY,UI_LANG)}catch(e){}
+  onUiLangChange();
+}
+function initUiLang(){
+  var lang='zh';
+  try{lang=localStorage.getItem(LANG_KEY)||lang}catch(e){}
+  var q=new URLSearchParams(location.search).get('lang');
+  if(q==='en'||q==='zh')lang=q;
+  document.querySelectorAll('.lang-toggle button').forEach(function(b){
+    b.addEventListener('click',function(){setUiLang(b.dataset.lang)});
+  });
+  setUiLang(lang);
+}
+function onUiLangChange(){
+  document.title=tx('樂樂主題找書 | Le Le Theme Book Finder','Le Le Theme Book Finder');
+  var all=document.querySelector('.word-tag[data-all]');
+  if(all)all.textContent=tx('全部','All');
+  renderThemes();
+  if(state.activeTheme)renderBooks();
+}
+
 // Init
-renderThemes();
+initUiLang();
 </script>
 </body>
 </html>

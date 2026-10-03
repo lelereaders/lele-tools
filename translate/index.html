@@ -397,6 +397,12 @@
             color: #999;
         }
 
+/* --- 中/英介面切換 --- */
+.lang-toggle{position:absolute;top:12px;right:12px;z-index:60;display:flex;background:#fff;border:1px solid #e5e5e5;border-radius:20px;padding:3px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.lang-toggle button{border:none;background:none;font-family:inherit;font-size:13px;font-weight:500;color:#888;padding:5px 12px;border-radius:16px;cursor:pointer;transition:background .2s,color .2s}
+.lang-toggle button.active{background:#D4A843;color:#fff}
+        @media (max-width: 768px) { .header { padding-top: 56px; } }
+
         /* Responsive */
         @media (max-width: 768px) {
             .grid {
@@ -436,12 +442,16 @@
     </style>
 </head>
 <body>
+<div class="lang-toggle" role="group" aria-label="Language">
+  <button type="button" data-lang="zh">中</button>
+  <button type="button" data-lang="en">EN</button>
+</div>
     <!-- Header -->
     <div class="header">
         <img src="/covers/header-translate.png" alt="樂樂翻譯查找器">
         <div class="header-text">
-            <h1>樂樂翻譯查找器</h1>
-            <p>Can't read Chinese? Search by book name, number, or keyword to find the English translation instantly.</p>
+            <h1 data-en="Le Le Translation Finder">樂樂翻譯查找器</h1>
+            <p data-en="Can't read Chinese? Search by book name, number, or keyword to find the English translation instantly.">找不到書的英文翻譯？輸入書名、書號或關鍵字，英文翻譯一鍵查詢。</p>
         </div>
     </div>
 
@@ -450,19 +460,17 @@
         <!-- Search Section -->
         <div class="search-section">
             <div class="search-box">
-                <input type="text" id="searchInput" class="search-input" placeholder="Search by book name, number, or keyword...">
+                <input type="text" id="searchInput" class="search-input" placeholder="輸入書名、書號或關鍵字…" data-en-placeholder="Search by book name, number, or keyword...">
             </div>
 
             <div class="filter-buttons">
-                <button class="filter-btn active" data-filter="all">All</button>
-                <button class="filter-btn red" data-filter="RED">Red · Beginner</button>
-                <button class="filter-btn yellow" data-filter="YELLOW">Yellow · Intermediate</button>
-                <button class="filter-btn green" data-filter="GREEN">Green · Advanced</button>
+                <button class="filter-btn active" data-filter="all" data-en="All">全部</button>
+                <button class="filter-btn red" data-filter="RED" data-en="Red · Beginner">紅色 · 入門</button>
+                <button class="filter-btn yellow" data-filter="YELLOW" data-en="Yellow · Intermediate">黃色 · 中級</button>
+                <button class="filter-btn green" data-filter="GREEN" data-en="Green · Advanced">綠色 · 進階</button>
             </div>
 
-            <div class="search-count">
-                Showing <span id="resultCount">0</span> books
-            </div>
+            <div class="search-count" data-en="Showing <span id=&quot;resultCount&quot;>0</span> books">共 <span id="resultCount">0</span> 本書</div>
         </div>
 
         <!-- Books Grid -->
@@ -484,7 +492,7 @@
                 <div class="modal-subtitle" id="modalSubtitle"></div>
             </div>
             <div class="modal-translation">
-                <div class="modal-translation-title">English Translation</div>
+                <div class="modal-translation-title" data-en="English Translation">英文翻譯</div>
                 <div class="modal-translation-text" id="modalTranslation"></div>
             </div>
         </div>
@@ -493,7 +501,7 @@
     <!-- Footer -->
     <div class="footer">
         <div class="footer-links">
-            <a href="https://www.leleculture.com" target="_blank">官網</a>
+            <a href="https://www.leleculture.com" target="_blank" data-en="Website">官網</a>
             <a href="https://www.instagram.com/leleculture" target="_blank">Instagram</a>
             <a href="https://www.facebook.com/leleculture" target="_blank">Facebook</a>
             <a href="https://www.youtube.com/@leleculture" target="_blank">YouTube</a>
@@ -511,7 +519,6 @@ var BOOKS=[{"id": "RED1", "level": "RED", "number": 1, "title_zh": "溜冰", "ti
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
-            renderBooks();
             setupEventListeners();
         });
 
@@ -581,7 +588,7 @@ var BOOKS=[{"id": "RED1", "level": "RED", "number": 1, "title_zh": "溜冰", "ti
             grid.innerHTML = '';
 
             if (filteredBooks.length === 0) {
-                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px 20px; color: #999;">No books found</div>';
+                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px 20px; color: #999;">' + tx('找不到符合的書', 'No books found') + '</div>';
                 document.getElementById('resultCount').textContent = '0';
                 return;
             }
@@ -643,6 +650,44 @@ var BOOKS=[{"id": "RED1", "level": "RED", "number": 1, "title_zh": "溜冰", "ti
         function closeModal() {
             document.getElementById('modal').classList.remove('active');
         }
+
+// --- 中/英介面切換：靜態文字用 data-en / data-en-placeholder，動態文字用 tx('中文','English') ---
+var UI_LANG='zh',LANG_KEY='lele_translate_lang';
+function tx(zh,en){return UI_LANG==='en'?en:zh}
+function setUiLang(lang){
+  UI_LANG=lang==='en'?'en':'zh';
+  document.querySelectorAll('[data-en]').forEach(function(el){
+    if(el.dataset.zh===undefined)el.dataset.zh=el.innerHTML;
+    el.innerHTML=UI_LANG==='en'?el.dataset.en:el.dataset.zh;
+  });
+  document.querySelectorAll('[data-en-placeholder]').forEach(function(el){
+    if(el.dataset.zhPlaceholder===undefined)el.dataset.zhPlaceholder=el.placeholder;
+    el.placeholder=UI_LANG==='en'?el.dataset.enPlaceholder:el.dataset.zhPlaceholder;
+  });
+  document.documentElement.lang=UI_LANG==='en'?'en':'zh-TW';
+  document.querySelectorAll('.lang-toggle button').forEach(function(b){
+    var on=b.dataset.lang===UI_LANG;
+    b.classList.toggle('active',on);
+    b.setAttribute('aria-pressed',on);
+  });
+  try{localStorage.setItem(LANG_KEY,UI_LANG)}catch(e){}
+  onUiLangChange();
+}
+function initUiLang(){
+  var lang='en';
+  try{lang=localStorage.getItem(LANG_KEY)||lang}catch(e){}
+  var q=new URLSearchParams(location.search).get('lang');
+  if(q==='en'||q==='zh')lang=q;
+  document.querySelectorAll('.lang-toggle button').forEach(function(b){
+    b.addEventListener('click',function(){setUiLang(b.dataset.lang)});
+  });
+  setUiLang(lang);
+}
+function onUiLangChange(){
+  document.title=tx('樂樂翻譯查找器 | Le Le Translation Finder','Le Le Translation Finder');
+  filterAndRender();
+}
+initUiLang();
     </script>
 </body>
 </html>
